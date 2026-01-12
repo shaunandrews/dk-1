@@ -19,8 +19,10 @@ Design Kit brings together **Calypso**, **Gutenberg**, and **WordPress Core** in
 ```bash
 git clone https://github.com/Automattic/dk.git
 cd dk
-git submodule update --init --depth 1
+./bin/setup.sh
 ```
+
+This initializes submodules and installs dependencies for all three repos.
 
 ### 2. Open in Cursor
 
@@ -68,6 +70,26 @@ dk/
 │   └── repo-map.md
 │
 └── dk.config.json       # Central configuration
+```
+
+## Environment Management
+
+Just tell the AI what you need:
+
+| You Say | What Happens |
+|---------|--------------|
+| "Set up the env" | Runs `./bin/setup.sh` - initializes submodules, installs deps |
+| "Reset everything" | Runs `./bin/reset.sh` - pulls latest from all repos |
+| "Full reset" | Runs `./bin/reset.sh --full` - reset + reinstall all deps |
+| "Show status" | Runs `./bin/status.sh` - shows state of all repos |
+
+Or run directly:
+
+```bash
+./bin/setup.sh          # Initial setup
+./bin/reset.sh          # Pull latest from all repos
+./bin/reset.sh --full   # Pull latest + reinstall dependencies
+./bin/status.sh         # Check status of all repos
 ```
 
 ## Development Servers

@@ -31,15 +31,16 @@ git clone https://github.com/Automattic/dk.git
 cd dk
 ```
 
-### 2. Initialize Submodules
-
-The repositories are included as git submodules. Initialize them:
+### 2. Run Setup
 
 ```bash
-git submodule update --init --depth 1
+./bin/setup.sh
 ```
 
-This will clone Calypso, Gutenberg, and WordPress Core into the `repos/` directory.
+This will:
+- Initialize all submodules (Calypso, Gutenberg, WordPress Core)
+- Install dependencies for each repository
+- Take about 5-10 minutes depending on your connection
 
 ### 3. Open in Cursor
 
@@ -48,6 +49,17 @@ cursor .
 ```
 
 The AI will automatically have context about all three repositories thanks to the Cursor rules in `.cursor/rules/`.
+
+## Managing Your Environment
+
+You can tell the AI naturally or run scripts directly:
+
+| What You Want | Say This | Or Run |
+|---------------|----------|--------|
+| Initial setup | "Set up the env" | `./bin/setup.sh` |
+| Pull latest code | "Reset everything" | `./bin/reset.sh` |
+| Full clean install | "Full reset" | `./bin/reset.sh --full` |
+| Check repo status | "Show status" | `./bin/status.sh` |
 
 ## Quick Tour
 

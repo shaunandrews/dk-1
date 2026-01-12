@@ -67,6 +67,24 @@ This workspace contains three interconnected repositories:
 3. Identify the "seams" where repos connect
 4. Suggest which repo changes would be needed
 
+## Environment Commands
+
+When the designer asks to manage the environment, use these scripts:
+
+| Request | Command |
+|---------|---------|
+| "Set up the env" / "setup" | `./bin/setup.sh` |
+| "Reset everything" / "pull latest" | `./bin/reset.sh` |
+| "Full reset" / "clean install" | `./bin/reset.sh --full` |
+| "Show status" / "what's the state" | `./bin/status.sh` |
+
+### What each does:
+
+- **setup.sh**: Initializes submodules with `--depth 1`, installs dependencies for all repos
+- **reset.sh**: Fetches latest from trunk for all repos, stashes local changes first
+- **reset.sh --full**: Same as reset, plus cleans and reinstalls all node_modules
+- **status.sh**: Shows current branch, last commit, and uncommitted changes for all repos
+
 ## Configuration Reference
 
 See `dk.config.json` for:

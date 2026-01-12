@@ -1,0 +1,9 @@
+[submodule "repos/calypso"]
+	path = repos/calypso
+	url = https://github.com/Automattic/wp-calypso
+[submodule "repos/gutenberg"]
+	path = repos/gutenberg
+	url = https://github.com/WordPress/gutenberg
+[submodule "repos/wordpress-core"]
+	path = repos/wordpress-core
+	url = https://github.com/WordPress/wordpress-develop

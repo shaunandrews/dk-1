@@ -1,0 +1,37 @@
+# Dependencies
+node_modules/
+vendor/
+
+# Build outputs
+dist/
+build/
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE/Editor
+.idea/
+*.swp
+*.swo
+*~
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Submodule build artifacts (keep submodules clean)
+repos/*/node_modules/
+repos/*/vendor/
+repos/*/build/
+repos/*/dist/
+
+# Temporary files
+*.tmp
+*.temp
+.cache/
+
+# Local development overrides
+dk.config.local.json

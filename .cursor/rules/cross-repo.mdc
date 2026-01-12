@@ -1,0 +1,239 @@
+---
+description: Cross-repository workflows and connections
+globs: ["**/*"]
+---
+
+# Cross-Repository Workflows
+
+This guide helps navigate features that span multiple repositories in the WordPress ecosystem.
+
+## Repository Relationships
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                        Calypso                               │
+│              (WordPress.com Dashboard)                       │
+│                                                              │
+│  Uses: @wordpress/components, @wordpress/data, REST API      │
+└─────────────────────────────┬───────────────────────────────┘
+                              │
+                    REST API  │  npm packages
+                              │
+┌─────────────────────────────┴───────────────────────────────┐
+│                       Gutenberg                              │
+│           (Block Editor & Component Library)                 │
+│                                                              │
+│  Exports: @wordpress/components, @wordpress/icons,           │
+│           @wordpress/block-editor, @wordpress/data           │
+└─────────────────────────────┬───────────────────────────────┘
+                              │
+                   Syncs to   │  PHP packages
+                              │
+┌─────────────────────────────┴───────────────────────────────┐
+│                    WordPress Core                            │
+│                (Foundation Software)                         │
+│                                                              │
+│  Provides: REST API, Database, Hooks, Block infrastructure   │
+└─────────────────────────────────────────────────────────────┘
+```
+
+## Common Cross-Repo Scenarios
+
+### Scenario 1: Add a Settings Page in Calypso that Saves to WordPress
+
+**Flow**: Calypso UI → REST API → WordPress Core
+
+1. **Calypso** (`repos/calypso`):
+   - Create the settings page UI in `client/my-sites/`
+   - Use `@wordpress/components` for form elements
+   - Call WordPress REST API to save
+
+2. **WordPress Core** (`repos/wordpress-core`):
+   - Ensure REST endpoint exists (usually `/wp-json/wp/v2/settings`)
+   - Or create custom endpoint if needed
+
+```typescript
+// Calypso: Call WP REST API
+import apiFetch from '@wordpress/api-fetch';
+
+const saveSettings = async (settings) => {
+  await apiFetch({
+    path: '/wp/v2/settings',
+    method: 'POST',
+    data: settings,
+  });
+};
+```
+
+### Scenario 2: Create a New Block with Calypso Integration
+
+**Flow**: Gutenberg Block → WordPress Core → Calypso Editor
+
+1. **Gutenberg** (`repos/gutenberg`):
+   - Create block in `packages/block-library/src/`
+   - Define attributes, edit, and save components
+
+2. **WordPress Core**:
+   - Block syncs to Core via release process
+   - Available in `src/wp-includes/blocks/`
+
+3. **Calypso**:
+   - Block automatically available in Calypso's editor
+   - Custom Calypso blocks go in `client/blocks/`
+
+### Scenario 3: Use @wordpress/components in Calypso
+
+**Flow**: Gutenberg packages → npm → Calypso
+
+Calypso consumes Gutenberg packages via npm:
+
+```typescript
+// In Calypso
+import { Button, Card, TextControl } from '@wordpress/components';
+import { Icon, settings } from '@wordpress/icons';
+```
+
+These packages are:
+- Developed in `repos/gutenberg/packages/`
+- Published to npm as `@wordpress/*`
+- Consumed by `repos/calypso/package.json`
+
+### Scenario 4: Add REST API Endpoint Called by Calypso
+
+**Flow**: WordPress Core API → Calypso fetch
+
+1. **WordPress Core** (`repos/wordpress-core`):
+
+```php
+// src/wp-includes/rest-api/endpoints/class-wp-rest-my-controller.php
+register_rest_route('wp/v2', '/my-custom-data', [
+    'methods'  => 'GET',
+    'callback' => function($request) {
+        return rest_ensure_response(['data' => 'value']);
+    },
+    'permission_callback' => function() {
+        return current_user_can('read');
+    },
+]);
+```
+
+2. **Calypso** (`repos/calypso`):
+
+```typescript
+import apiFetch from '@wordpress/api-fetch';
+
+const fetchMyData = async (siteId) => {
+  const response = await apiFetch({
+    path: `/wp/v2/my-custom-data`,
+    apiNamespace: 'wp/v2',
+  });
+  return response;
+};
+```
+
+## Shared Packages Reference
+
+| Package | Source | Used In |
+|---------|--------|---------|
+| `@wordpress/components` | Gutenberg | Calypso, Gutenberg, Plugins |
+| `@wordpress/icons` | Gutenberg | Calypso, Gutenberg, Plugins |
+| `@wordpress/data` | Gutenberg | Calypso, Gutenberg |
+| `@wordpress/api-fetch` | Gutenberg | Calypso, Gutenberg |
+| `@wordpress/element` | Gutenberg | Calypso, Gutenberg |
+| `@wordpress/i18n` | Gutenberg | All |
+
+## API Boundaries
+
+### Calypso → WordPress (REST API)
+
+```
+Base: https://public-api.wordpress.com/wp/v2/sites/{site_id}/
+
+Common endpoints:
+  GET  /posts                    # List posts
+  POST /posts                    # Create post
+  GET  /posts/{id}               # Get post
+  PUT  /posts/{id}               # Update post
+  GET  /settings                 # Site settings
+  POST /settings                 # Update settings
+  GET  /users/me                 # Current user
+```
+
+### Gutenberg → WordPress Core
+
+Gutenberg blocks communicate with Core via:
+- Block attributes (saved to post content)
+- `@wordpress/core-data` for entity operations
+- ServerSideRender for PHP-rendered blocks
+
+## Feature Flag Coordination
+
+When building features across repos, you may need feature flags in multiple places:
+
+### Calypso Feature Flags
+
+```typescript
+// config/development.json
+{
+  "features": {
+    "my-feature": true
+  }
+}
+
+// Usage
+import config from '@automattic/calypso-config';
+if (config.isEnabled('my-feature')) {
+  // Feature code
+}
+```
+
+### Gutenberg Experiments
+
+```javascript
+// Check for experimental features
+import { __experimentalFeature } from '@wordpress/experiments';
+```
+
+### WordPress Core Feature Flags
+
+```php
+// Via constants in wp-config.php
+if (defined('MY_FEATURE_FLAG') && MY_FEATURE_FLAG) {
+    // Feature code
+}
+
+// Or via options
+if (get_option('my_feature_enabled')) {
+    // Feature code
+}
+```
+
+## Coordinating Changes
+
+When a feature requires changes to multiple repos:
+
+1. **Plan the sequence**: Usually Core API → Gutenberg → Calypso
+2. **Use feature flags**: Ship disabled, enable when all pieces are ready
+3. **Version dependencies**: Calypso may need to wait for npm publish
+4. **Test integration**: Use local linking for development
+
+### Local Development Linking
+
+```bash
+# Link Gutenberg packages to Calypso for testing
+cd repos/gutenberg
+npm link ./packages/components
+
+cd repos/calypso
+npm link @wordpress/components
+```
+
+## When Things Connect
+
+| User Action | Calypso | Gutenberg | Core |
+|-------------|---------|-----------|------|
+| Edit post | Router, shell | Block editor | REST API, storage |
+| Change setting | Settings UI | - | Options API |
+| Upload media | Media library | Media blocks | REST API, files |
+| Install plugin | Plugin UI | - | Plugins API |
+| View stats | Stats pages | - | Jetpack/API |

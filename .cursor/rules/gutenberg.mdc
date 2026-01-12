@@ -1,0 +1,244 @@
+---
+description: Gutenberg-specific development context
+globs: ["repos/gutenberg/**/*"]
+---
+
+# Gutenberg Development Context
+
+Gutenberg is the WordPress Block Editor and home to `@wordpress/components`, the primary component library for the WordPress ecosystem.
+
+## Quick Reference
+
+| Aspect | Details |
+|--------|---------|
+| **Repo Path** | `repos/gutenberg` |
+| **Language** | JavaScript/TypeScript |
+| **Framework** | React |
+| **Styling** | SCSS |
+| **State** | @wordpress/data |
+| **Dev Server** | `npm run dev` |
+| **Storybook** | `npm run storybook` |
+
+## Key Directories
+
+```
+repos/gutenberg/
+├── packages/
+│   ├── components/       # @wordpress/components (PRIMARY)
+│   ├── block-library/    # Core blocks (paragraph, image, etc.)
+│   ├── block-editor/     # Editor framework
+│   ├── editor/           # Post editor
+│   ├── data/             # State management
+│   ├── icons/            # @wordpress/icons
+│   └── primitives/       # Low-level primitives
+├── lib/                  # PHP functionality
+├── storybook/            # Component documentation
+└── docs/                 # Written documentation
+```
+
+## @wordpress/components
+
+This is THE component library for WordPress. Use these components first.
+
+### Essential Components
+
+```javascript
+// Layout
+import { Card, CardBody, CardHeader, Panel, PanelBody } from '@wordpress/components';
+
+// Forms
+import { 
+  TextControl, 
+  TextareaControl,
+  SelectControl,
+  CheckboxControl,
+  RadioControl,
+  ToggleControl,
+  RangeControl
+} from '@wordpress/components';
+
+// Buttons & Actions
+import { Button, ButtonGroup, Dropdown, DropdownMenu } from '@wordpress/components';
+
+// Feedback
+import { Notice, Spinner, Snackbar } from '@wordpress/components';
+
+// Navigation
+import { TabPanel, NavigableMenu } from '@wordpress/components';
+
+// Overlays
+import { Modal, Popover, Tooltip } from '@wordpress/components';
+```
+
+### Component Documentation
+
+- **Storybook**: https://wordpress.github.io/gutenberg/?path=/docs/components-introduction--docs
+- **Local Storybook**: `npm run storybook` → http://localhost:50240
+
+### Styling @wordpress/components
+
+Components accept `className` for custom styling:
+
+```javascript
+<Button className="my-custom-button" variant="primary">
+  Click Me
+</Button>
+```
+
+```scss
+.my-custom-button {
+  // Custom styles
+}
+```
+
+## @wordpress/icons
+
+Icon library with 200+ icons [[memory:5195297]]:
+
+```javascript
+import { Icon, wordpress, plus, settings, trash } from '@wordpress/icons';
+
+// Basic usage - Icon only accepts icon and size props
+<Icon icon={wordpress} size={24} />
+
+// Styling must be done via CSS, not inline styles
+// Wrap in container and target SVG:
+<span className="my-icon-wrapper">
+  <Icon icon={settings} />
+</span>
+```
+
+```scss
+.my-icon-wrapper svg {
+  fill: var(--wp-admin-theme-color);
+}
+```
+
+## Block Development
+
+### Block Structure
+
+```
+packages/block-library/src/my-block/
+├── block.json          # Block metadata
+├── edit.js             # Editor component
+├── save.js             # Frontend output
+├── index.js            # Registration
+├── style.scss          # Frontend styles
+└── editor.scss         # Editor-only styles
+```
+
+### Basic Block Template
+
+```javascript
+// block.json
+{
+  "apiVersion": 3,
+  "name": "core/my-block",
+  "title": "My Block",
+  "category": "common",
+  "icon": "smiley",
+  "attributes": {
+    "content": { "type": "string" }
+  }
+}
+
+// edit.js
+import { useBlockProps, RichText } from '@wordpress/block-editor';
+
+export default function Edit({ attributes, setAttributes }) {
+  return (
+    <div {...useBlockProps()}>
+      <RichText
+        value={attributes.content}
+        onChange={(content) => setAttributes({ content })}
+      />
+    </div>
+  );
+}
+```
+
+## State Management (@wordpress/data)
+
+### Using Stores
+
+```javascript
+import { useSelect, useDispatch } from '@wordpress/data';
+import { store as coreStore } from '@wordpress/core-data';
+import { store as editorStore } from '@wordpress/editor';
+
+function MyComponent() {
+  // Reading data
+  const postTitle = useSelect(
+    (select) => select(editorStore).getEditedPostAttribute('title'),
+    []
+  );
+  
+  // Dispatching actions
+  const { editPost } = useDispatch(editorStore);
+  
+  const updateTitle = (title) => {
+    editPost({ title });
+  };
+}
+```
+
+### Core Stores
+
+- `@wordpress/core-data` - Entities (posts, users, settings)
+- `@wordpress/editor` - Post editor state
+- `@wordpress/block-editor` - Block manipulation
+- `@wordpress/notices` - User notifications
+
+## Block Editor Components
+
+For building block UIs:
+
+```javascript
+import {
+  RichText,
+  InnerBlocks,
+  MediaUpload,
+  MediaUploadCheck,
+  InspectorControls,
+  BlockControls,
+  useBlockProps
+} from '@wordpress/block-editor';
+```
+
+## Dev Commands
+
+```bash
+cd repos/gutenberg
+
+# Start development
+npm run dev
+
+# Build
+npm run build
+
+# Storybook
+npm run storybook
+
+# Tests
+npm run test-unit
+
+# Lint
+npm run lint
+```
+
+## PHP Integration
+
+Gutenberg has PHP components in `lib/`:
+
+```
+lib/
+├── blocks.php              # Block registration
+├── block-patterns.php      # Pattern registration  
+├── client-assets.php       # Asset enqueuing
+└── experimental/           # Experimental features
+```
+
+## AI Context Files
+
+Read `AGENTS.md` for additional AI-specific guidance.

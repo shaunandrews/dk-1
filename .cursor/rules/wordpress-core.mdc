@@ -1,0 +1,310 @@
+---
+description: WordPress Core development context
+globs: ["repos/wordpress-core/**/*"]
+---
+
+# WordPress Core Development Context
+
+WordPress Core is the foundational software that powers WordPress sites. This is the development repository (`wordpress-develop`).
+
+## Quick Reference
+
+| Aspect | Details |
+|--------|---------|
+| **Repo Path** | `repos/wordpress-core` |
+| **Language** | PHP (backend), JS (admin) |
+| **Database** | MySQL |
+| **Dev Server** | `npm run dev` → http://localhost:8889 |
+
+## Key Directories
+
+```
+repos/wordpress-core/
+├── src/
+│   ├── wp-admin/           # Admin dashboard
+│   │   ├── css/            # Admin styles
+│   │   ├── js/             # Admin scripts
+│   │   └── includes/       # Admin PHP
+│   ├── wp-includes/        # Core library
+│   │   ├── rest-api/       # REST API
+│   │   ├── blocks/         # Core blocks
+│   │   ├── class-wp-*.php  # Core classes
+│   │   └── js/             # Core scripts
+│   ├── wp-content/
+│   │   ├── themes/         # Bundled themes
+│   │   └── plugins/        # Bundled plugins
+│   └── js/_enqueues/       # Modern JS entry points
+└── tests/                  # Test suites
+```
+
+## REST API
+
+The REST API is how external applications (like Calypso) communicate with WordPress.
+
+### Endpoint Structure
+
+```
+/wp-json/wp/v2/posts        # Posts
+/wp-json/wp/v2/pages        # Pages  
+/wp-json/wp/v2/users        # Users
+/wp-json/wp/v2/settings     # Site settings
+/wp-json/wp/v2/blocks       # Reusable blocks
+```
+
+### Creating Custom Endpoints
+
+```php
+// src/wp-includes/rest-api/endpoints/class-wp-rest-my-controller.php
+
+class WP_REST_My_Controller extends WP_REST_Controller {
+    
+    public function register_routes() {
+        register_rest_route('wp/v2', '/my-endpoint', [
+            'methods'  => 'GET',
+            'callback' => [$this, 'get_items'],
+            'permission_callback' => [$this, 'get_items_permissions_check'],
+        ]);
+    }
+    
+    public function get_items($request) {
+        return rest_ensure_response(['data' => 'value']);
+    }
+    
+    public function get_items_permissions_check($request) {
+        return current_user_can('edit_posts');
+    }
+}
+```
+
+### Registering Endpoints
+
+```php
+// In a plugin or theme functions.php
+add_action('rest_api_init', function() {
+    $controller = new WP_REST_My_Controller();
+    $controller->register_routes();
+});
+```
+
+## Admin Pages
+
+### Adding Admin Pages
+
+```php
+// Add a top-level menu page
+add_action('admin_menu', function() {
+    add_menu_page(
+        'My Page Title',           // Page title
+        'My Menu',                 // Menu title
+        'manage_options',          // Capability
+        'my-page-slug',            // Menu slug
+        'my_page_render_callback', // Render function
+        'dashicons-admin-generic', // Icon
+        20                         // Position
+    );
+});
+
+function my_page_render_callback() {
+    ?>
+    <div class="wrap">
+        <h1><?php echo esc_html(get_admin_page_title()); ?></h1>
+        <!-- Page content -->
+    </div>
+    <?php
+}
+```
+
+### Adding Settings
+
+```php
+add_action('admin_init', function() {
+    // Register setting
+    register_setting('my_settings_group', 'my_option');
+    
+    // Add settings section
+    add_settings_section(
+        'my_section',
+        'My Settings Section',
+        'my_section_callback',
+        'my-page-slug'
+    );
+    
+    // Add settings field
+    add_settings_field(
+        'my_field',
+        'My Field',
+        'my_field_callback',
+        'my-page-slug',
+        'my_section'
+    );
+});
+```
+
+## Hooks System
+
+WordPress uses hooks (actions and filters) for extensibility.
+
+### Actions
+
+```php
+// Register a callback
+add_action('init', 'my_init_function');
+add_action('wp_enqueue_scripts', 'my_enqueue_function');
+add_action('save_post', 'my_save_function', 10, 3);
+
+// Trigger an action
+do_action('my_custom_action', $arg1, $arg2);
+```
+
+### Filters
+
+```php
+// Modify data
+add_filter('the_content', 'my_content_filter');
+add_filter('wp_title', 'my_title_filter', 10, 2);
+
+// Apply a filter
+$value = apply_filters('my_custom_filter', $default_value);
+```
+
+### Common Hooks
+
+| Hook | When |
+|------|------|
+| `init` | WordPress initialized |
+| `admin_init` | Admin area initialized |
+| `wp_enqueue_scripts` | Enqueue frontend assets |
+| `admin_enqueue_scripts` | Enqueue admin assets |
+| `save_post` | Post is saved |
+| `rest_api_init` | REST API initialized |
+
+## Blocks in Core
+
+Core blocks are synced from Gutenberg:
+
+```
+src/wp-includes/blocks/
+├── paragraph/
+│   ├── block.json
+│   ├── style.css
+│   └── editor.css
+├── image/
+├── heading/
+└── ...
+```
+
+## Database
+
+### Direct Queries (when necessary)
+
+```php
+global $wpdb;
+
+// Select
+$results = $wpdb->get_results(
+    $wpdb->prepare("SELECT * FROM {$wpdb->posts} WHERE post_type = %s", 'page')
+);
+
+// Insert
+$wpdb->insert($wpdb->posts, [
+    'post_title' => 'My Post',
+    'post_status' => 'publish'
+]);
+
+// Update
+$wpdb->update(
+    $wpdb->posts,
+    ['post_title' => 'Updated Title'],
+    ['ID' => 123]
+);
+```
+
+### Preferred: WP_Query
+
+```php
+$query = new WP_Query([
+    'post_type' => 'post',
+    'posts_per_page' => 10,
+    'meta_query' => [
+        ['key' => 'featured', 'value' => '1']
+    ]
+]);
+
+while ($query->have_posts()) {
+    $query->the_post();
+    the_title();
+}
+wp_reset_postdata();
+```
+
+## Asset Enqueuing
+
+```php
+add_action('wp_enqueue_scripts', function() {
+    // Styles
+    wp_enqueue_style(
+        'my-style',
+        get_stylesheet_uri(),
+        [],
+        '1.0.0'
+    );
+    
+    // Scripts
+    wp_enqueue_script(
+        'my-script',
+        get_template_directory_uri() . '/js/script.js',
+        ['jquery'],
+        '1.0.0',
+        true // In footer
+    );
+    
+    // Pass data to JS
+    wp_localize_script('my-script', 'myData', [
+        'ajaxUrl' => admin_url('admin-ajax.php'),
+        'nonce' => wp_create_nonce('my_nonce')
+    ]);
+});
+```
+
+## Dev Commands
+
+```bash
+cd repos/wordpress-core
+
+# Start development environment
+npm run dev
+
+# Build
+npm run build
+
+# Run PHP tests
+npm run test-php
+
+# Run JS tests
+npm run test-unit
+```
+
+## Security Practices
+
+Always sanitize, escape, and validate:
+
+```php
+// Sanitize input
+$clean = sanitize_text_field($_POST['field']);
+$clean_email = sanitize_email($_POST['email']);
+
+// Escape output
+echo esc_html($text);
+echo esc_attr($attribute);
+echo esc_url($url);
+
+// Verify nonces
+if (!wp_verify_nonce($_POST['_wpnonce'], 'my_action')) {
+    die('Security check failed');
+}
+
+// Check capabilities
+if (!current_user_can('edit_posts')) {
+    wp_die('Unauthorized');
+}
+```

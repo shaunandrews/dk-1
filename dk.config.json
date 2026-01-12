@@ -1,0 +1,163 @@
+{
+  "$schema": "./schemas/dk.config.schema.json",
+  "version": "1.0.0",
+  "name": "Automattic Design Kit",
+  "description": "Cross-repository design and prototyping environment for WordPress ecosystem",
+  
+  "repositories": {
+    "calypso": {
+      "path": "repos/calypso",
+      "name": "Calypso",
+      "description": "WordPress.com custom dashboard and apps",
+      "upstream": "https://github.com/Automattic/wp-calypso",
+      "defaultBranch": "trunk",
+      "stack": {
+        "language": "TypeScript",
+        "framework": "React",
+        "styling": "SCSS",
+        "stateManagement": "Redux"
+      },
+      "paths": {
+        "components": "client/components",
+        "pages": "client/my-sites",
+        "layouts": "client/layout",
+        "blocks": "client/blocks",
+        "lib": "client/lib",
+        "state": "client/state",
+        "packages": "packages",
+        "designSystem": "apps/design-system-docs",
+        "assets": "static/images",
+        "styles": "client/assets/stylesheets"
+      },
+      "devServer": {
+        "command": "yarn start",
+        "port": 3000,
+        "url": "http://calypso.localhost:3000"
+      },
+      "aiContext": ["CLAUDE.md", "AGENTS.md"]
+    },
+    
+    "gutenberg": {
+      "path": "repos/gutenberg",
+      "name": "Gutenberg",
+      "description": "WordPress Block Editor and component library",
+      "upstream": "https://github.com/WordPress/gutenberg",
+      "defaultBranch": "trunk",
+      "stack": {
+        "language": "JavaScript/TypeScript",
+        "framework": "React",
+        "styling": "SCSS",
+        "stateManagement": "@wordpress/data"
+      },
+      "paths": {
+        "components": "packages/components/src",
+        "blocks": "packages/block-library/src",
+        "blockEditor": "packages/block-editor/src",
+        "editor": "packages/editor/src",
+        "data": "packages/data/src",
+        "icons": "packages/icons/src",
+        "primitives": "packages/primitives/src",
+        "packages": "packages",
+        "storybook": "storybook",
+        "phpLib": "lib"
+      },
+      "devServer": {
+        "command": "npm run dev",
+        "port": 9999,
+        "url": "http://localhost:9999"
+      },
+      "aiContext": ["AGENTS.md"]
+    },
+    
+    "wordpress-core": {
+      "path": "repos/wordpress-core",
+      "name": "WordPress Core",
+      "description": "Core WordPress software (development repository)",
+      "upstream": "https://github.com/WordPress/wordpress-develop",
+      "defaultBranch": "trunk",
+      "stack": {
+        "language": "PHP",
+        "framework": "WordPress",
+        "styling": "CSS",
+        "database": "MySQL"
+      },
+      "paths": {
+        "admin": "src/wp-admin",
+        "includes": "src/wp-includes",
+        "content": "src/wp-content",
+        "themes": "src/wp-content/themes",
+        "plugins": "src/wp-content/plugins",
+        "js": "src/js/_enqueues",
+        "restApi": "src/wp-includes/rest-api",
+        "blocks": "src/wp-includes/blocks"
+      },
+      "devServer": {
+        "command": "npm run dev",
+        "port": 8889,
+        "url": "http://localhost:8889"
+      },
+      "aiContext": []
+    }
+  },
+  
+  "connections": {
+    "calypso-gutenberg": {
+      "description": "Calypso embeds Gutenberg editor for post/page editing",
+      "integration": "Calypso loads Gutenberg via @wordpress/block-editor and @wordpress/components",
+      "sharedPackages": [
+        "@wordpress/components",
+        "@wordpress/icons",
+        "@wordpress/data",
+        "@wordpress/element"
+      ]
+    },
+    "gutenberg-core": {
+      "description": "Gutenberg is bundled into WordPress Core",
+      "integration": "Gutenberg packages sync to Core via the release process",
+      "syncPath": "src/wp-includes/blocks"
+    },
+    "calypso-core": {
+      "description": "Calypso communicates with WordPress via REST API",
+      "integration": "REST API endpoints at /wp-json/wp/v2/",
+      "apiBase": "/wp-json/wp/v2/"
+    }
+  },
+  
+  "componentLibraries": {
+    "primary": {
+      "name": "@wordpress/components",
+      "repo": "gutenberg",
+      "path": "packages/components/src",
+      "storybook": "https://wordpress.github.io/gutenberg/?path=/docs/components-introduction--docs",
+      "description": "Primary component library used across WordPress ecosystem"
+    },
+    "calypsoComponents": {
+      "name": "Calypso Components",
+      "repo": "calypso",
+      "path": "client/components",
+      "designSystem": "apps/design-system-docs",
+      "description": "Calypso-specific components for WordPress.com"
+    },
+    "icons": {
+      "name": "@wordpress/icons",
+      "repo": "gutenberg",
+      "path": "packages/icons/src",
+      "description": "WordPress icon library"
+    }
+  },
+  
+  "skills": {
+    "componentDiscovery": "skills/component-discovery.md",
+    "screenBuilding": "skills/screen-building.md",
+    "crossRepoNav": "skills/cross-repo-nav.md",
+    "prototyping": "skills/prototyping.md",
+    "gitWorkflows": "skills/git-workflows.md"
+  },
+  
+  "designer": {
+    "preferredComponents": "@wordpress/components",
+    "skipTechnicalDetails": true,
+    "autoSuggestExisting": true,
+    "simplifyGitWorkflows": true
+  }
+}

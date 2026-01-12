@@ -1,0 +1,193 @@
+---
+description: Calypso-specific development context
+globs: ["repos/calypso/**/*"]
+---
+
+# Calypso Development Context
+
+Calypso is WordPress.com's custom dashboard, built with React and TypeScript.
+
+## Quick Reference
+
+| Aspect | Details |
+|--------|---------|
+| **Repo Path** | `repos/calypso` |
+| **Language** | TypeScript |
+| **Framework** | React |
+| **Styling** | SCSS with CSS custom properties |
+| **State** | Redux + @wordpress/data |
+| **Dev Server** | `yarn start` → http://calypso.localhost:3000 |
+
+## Key Directories
+
+```
+repos/calypso/
+├── client/
+│   ├── components/      # Reusable UI components (START HERE)
+│   ├── my-sites/        # Site management pages
+│   ├── layout/          # App shell and layouts
+│   ├── blocks/          # Gutenberg blocks for Calypso
+│   ├── state/           # Redux state management
+│   ├── lib/             # Utilities and helpers
+│   └── assets/stylesheets/  # Global styles
+├── packages/            # Internal shared packages
+├── apps/
+│   └── design-system-docs/  # Component documentation
+└── static/images/       # Static assets
+```
+
+## Component Patterns
+
+### Finding Components
+
+1. **First**: Check `client/components/` for Calypso-specific components
+2. **Then**: Check if `@wordpress/components` has what you need
+3. **Finally**: Create new in `client/components/[component-name]/`
+
+### Component Structure
+
+Each component should have its own folder [[memory:5415837]]:
+
+```
+client/components/my-component/
+├── index.tsx           # Main component export
+├── style.scss          # Component styles
+├── types.ts            # TypeScript types (if complex)
+└── test/
+    └── index.tsx       # Tests
+```
+
+### Styling Approach
+
+Use the codebase's color variables [[memory:5415477]]:
+
+```scss
+// Import the color variables
+@import 'calypso/assets/stylesheets/shared/colors';
+
+.my-component {
+  color: var(--color-text);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-subtle);
+}
+```
+
+Common color tokens:
+- `--color-primary` - Primary brand color
+- `--color-text` - Main text color
+- `--color-text-subtle` - Secondary text
+- `--color-surface` - Background surfaces
+- `--color-border-subtle` - Light borders
+- `--color-success`, `--color-warning`, `--color-error` - Status colors
+
+## Page/Route Patterns
+
+### Creating a New Page
+
+Pages live in `client/my-sites/` or similar route directories:
+
+```typescript
+// client/my-sites/settings/new-setting/index.tsx
+import { useTranslate } from 'i18n-calypso';
+import Main from 'calypso/components/main';
+import NavigationHeader from 'calypso/components/navigation-header';
+
+export default function NewSettingPage() {
+  const translate = useTranslate();
+  
+  return (
+    <Main>
+      <NavigationHeader title={translate('New Setting')} />
+      {/* Page content */}
+    </Main>
+  );
+}
+```
+
+### Registering Routes
+
+Routes are defined in section configurations. Look for patterns in existing sections.
+
+## State Management
+
+### Using Redux State
+
+```typescript
+import { useSelector, useDispatch } from 'calypso/state';
+import { getSiteOption } from 'calypso/state/sites/selectors';
+import { updateSiteSettings } from 'calypso/state/site-settings/actions';
+
+function MyComponent({ siteId }) {
+  const siteName = useSelector(state => getSiteOption(state, siteId, 'blogname'));
+  const dispatch = useDispatch();
+  
+  const handleUpdate = () => {
+    dispatch(updateSiteSettings(siteId, { blogname: 'New Name' }));
+  };
+}
+```
+
+### Using @wordpress/data
+
+For newer features, prefer `@wordpress/data`:
+
+```typescript
+import { useSelect, useDispatch } from '@wordpress/data';
+```
+
+## Common UI Components
+
+### From Calypso
+
+```typescript
+import Button from 'calypso/components/button';
+import Card from 'calypso/components/card';
+import FormLabel from 'calypso/components/forms/form-label';
+import FormTextInput from 'calypso/components/forms/form-text-input';
+import FormToggle from 'calypso/components/forms/form-toggle';
+import Notice from 'calypso/components/notice';
+import SectionHeader from 'calypso/components/section-header';
+```
+
+### From @wordpress/components
+
+```typescript
+import { Button, Card, TextControl, ToggleControl } from '@wordpress/components';
+```
+
+## Internationalization
+
+Always wrap user-facing strings:
+
+```typescript
+import { useTranslate } from 'i18n-calypso';
+
+function MyComponent() {
+  const translate = useTranslate();
+  return <h1>{translate('Settings')}</h1>;
+}
+```
+
+## Dev Commands
+
+```bash
+cd repos/calypso
+
+# Start development server
+yarn start
+
+# Run tests
+yarn test-client
+
+# Type checking
+yarn tsc
+
+# Lint
+yarn eslint
+```
+
+## AI Context Files
+
+Read these for additional context:
+- `CLAUDE.md` - AI-specific guidance
+- `AGENTS.md` - Agent behavior rules

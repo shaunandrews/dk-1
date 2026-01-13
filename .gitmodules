@@ -7,3 +7,6 @@
 [submodule "repos/wordpress-core"]
 	path = repos/wordpress-core
 	url = https://github.com/WordPress/wordpress-develop
+[submodule "repos/ciab"]
+	path = repos/ciab
+	url = git@github.a8c.com:Automattic/ciab-admin.git

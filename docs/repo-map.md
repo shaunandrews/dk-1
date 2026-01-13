@@ -1,6 +1,6 @@
 # Repository Map
 
-This document explains how Calypso, Gutenberg, and WordPress Core connect and work together.
+This document explains how Calypso, Gutenberg, WordPress Core, and CIAB connect and work together.
 
 ## Overview
 
@@ -10,9 +10,9 @@ This document explains how Calypso, Gutenberg, and WordPress Core connect and wo
 │                     (Designers, Developers, Visitors)                    │
 └─────────────────────────────────────┬───────────────────────────────────┘
                                       │
-                  ┌───────────────────┼───────────────────┐
-                  │                   │                   │
-                  ▼                   ▼                   ▼
+          ┌───────────────────────────┼───────────────────────────┐
+          │                           │                           │
+          ▼                           ▼                           ▼
 ┌─────────────────────┐   ┌─────────────────┐   ┌─────────────────────────┐
 │      CALYPSO        │   │    GUTENBERG    │   │    WORDPRESS CORE       │
 │                     │   │                 │   │                         │
@@ -30,9 +30,23 @@ This document explains how Calypso, Gutenberg, and WordPress Core connect and wo
            │                       ├────────────────────────►│
            │              REST API                           │
            └────────────────────────────────────────────────►│
+                                      │
+                                      │ REST API
+                                      │
+                           ┌──────────▼──────────┐
+                           │        CIAB         │
+                           │                     │
+                           │  WordPress Admin    │
+                           │  Redesign (SPA)     │
+                           │                     │
+                           │  • Modern UI        │
+                           │  • React/TypeScript │
+                           │  • TanStack Router  │
+                           │  • Plugin system   │
+                           └─────────────────────┘
 ```
 
-## The Three Repositories
+## The Four Repositories
 
 ### Calypso (`repos/calypso`)
 
@@ -123,6 +137,45 @@ src/
 
 **Tech stack**: PHP, MySQL, JavaScript
 
+---
+
+### CIAB (`repos/ciab`)
+
+**What it is**: A modern WordPress admin redesign - a React/TypeScript Single Page Application (SPA).
+
+**What it does**:
+- Provides a modern, modular redesign of the WordPress admin interface
+- Replaces traditional WordPress admin with a SPA built on React
+- Uses TanStack Router for client-side routing
+- Integrates with WordPress Core via REST API
+- Uses `@wordpress/components` and `@automattic/design-system` for UI
+- Provides a plugin system for extending the admin
+
+**Key paths**:
+```
+wordpress/plugins/
+├── ciab-admin/          # Main admin plugin
+│   ├── routes/          # Route modules (TanStack Router)
+│   ├── packages/        # Internal packages
+│   ├── fields/          # Field definitions
+│   └── dashboard-widgets/
+├── ciab-next/           # Next-gen CIAB features
+├── woocommerce-next/    # WooCommerce integration
+└── ...                  # Other plugins
+
+docs/                    # Architecture documentation
+tests/                   # E2E tests (Playwright)
+```
+
+**Tech stack**: React, TypeScript, TanStack Router, SCSS, pnpm
+
+**Key dependencies**:
+- `@wordpress/components` - UI components
+- `@wordpress/core-data` - WordPress data layer
+- `@wordpress/data` - State management
+- `@automattic/design-system` - Automattic components
+- `@wordpress/i18n` - Internationalization
+
 ## How They Connect
 
 ### Connection 1: Gutenberg → Calypso (npm packages)
@@ -184,6 +237,28 @@ Gutenberg blocks and packages are synced to WordPress Core during releases:
 
 The sync happens through the WordPress release process.
 
+### Connection 4: CIAB → WordPress Core (REST API)
+
+CIAB communicates with WordPress Core via the REST API, similar to Calypso:
+
+```tsx
+// In CIAB
+import { useSelect, useDispatch } from '@wordpress/data';
+import { store as coreDataStore } from '@wordpress/core-data';
+
+// Fetch posts
+const posts = useSelect(
+  (select) => select(coreDataStore).getEntityRecords('postType', 'post'),
+  []
+);
+
+// Save data
+const { saveEntityRecord } = useDispatch(coreDataStore);
+await saveEntityRecord('postType', 'post', { title: 'New Post' });
+```
+
+CIAB runs as a WordPress plugin and provides a SPA interface that replaces the traditional WordPress admin.
+
 ## Feature Flow Examples
 
 ### Example: User Changes Site Title
@@ -222,6 +297,26 @@ The sync happens through the WordPress release process.
    └── Core renders block using PHP render callback
 ```
 
+### Example: User Manages Posts in CIAB Admin
+
+```
+1. User opens CIAB Admin in WordPress
+   └── CIAB loads React SPA with TanStack Router
+
+2. User navigates to Posts route
+   └── Route loader fetches data via @wordpress/core-data
+
+3. Data request hits WordPress Core REST API
+   └── GET /wp/v2/posts
+
+4. Core responds with posts data
+   └── CIAB renders posts using @wordpress/components
+
+5. User edits a post
+   └── CIAB calls saveEntityRecord() via @wordpress/core-data
+   └── Core updates database via REST API
+```
+
 ### Example: Creating a New Feature
 
 If you're building a feature that needs work in multiple repos:
@@ -233,10 +328,15 @@ If you're building a feature that needs work in multiple repos:
 2. Gutenberg (if new component/block needed)
    └── Create in packages/components/ or packages/block-library/
 
-3. Calypso (UI for the feature)
+3. Calypso (UI for WordPress.com)
    └── Create page in client/my-sites/
    └── Use components from @wordpress/components
    └── Call REST API to save/load data
+
+4. CIAB (UI for WordPress admin)
+   └── Create route in wordpress/plugins/ciab-admin/routes/
+   └── Use components from @wordpress/components
+   └── Use @wordpress/core-data for data management
 ```
 
 ## Data Flows
@@ -283,13 +383,14 @@ Calypso shows confirmation
 
 | If you need to... | Work in... |
 |-------------------|------------|
-| Create a new UI page | Calypso (`client/my-sites/`) |
+| Create a new UI page | Calypso (`client/my-sites/`) or CIAB (`wordpress/plugins/ciab-admin/routes/`) |
 | Use existing components | Import from `@wordpress/components` |
-| Create a new component | Gutenberg (`packages/components/`) or Calypso (`client/components/`) |
+| Create a new component | Gutenberg (`packages/components/`) or Calypso (`client/components/`) or CIAB (`wordpress/plugins/ciab-admin/packages/`) |
 | Create a new block | Gutenberg (`packages/block-library/`) |
 | Add a REST endpoint | WordPress Core (`src/wp-includes/rest-api/`) |
 | Store new data | WordPress Core (options, post meta, custom table) |
 | Add admin page (PHP) | WordPress Core (`src/wp-admin/`) |
+| Modernize WordPress admin | CIAB (`wordpress/plugins/ciab-admin/`) |
 
 ## Quick Reference
 
@@ -311,6 +412,10 @@ cd repos/gutenberg && npm run storybook
 # WordPress Core
 cd repos/wordpress-core && npm run dev
 # → http://localhost:8889
+
+# CIAB
+cd repos/ciab && pnpm dev
+# → http://localhost:9001/wp-admin/
 ```
 
 ### Find Things
@@ -319,9 +424,13 @@ cd repos/wordpress-core && npm run dev
 # Find a component
 ls repos/gutenberg/packages/components/src/
 ls repos/calypso/client/components/
+ls repos/ciab/wordpress/plugins/ciab-admin/packages/
 
 # Find a block
 ls repos/gutenberg/packages/block-library/src/
+
+# Find a CIAB route
+ls repos/ciab/wordpress/plugins/ciab-admin/routes/
 
 # Find REST endpoint
 grep -r "register_rest_route" repos/wordpress-core/src/wp-includes/rest-api/

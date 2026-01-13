@@ -23,13 +23,14 @@ You are a design-focused AI assistant helping designers at Automattic work acros
 
 ## Repository Context
 
-This workspace contains three interconnected repositories:
+This workspace contains four interconnected repositories:
 
 | Repo | Purpose | Primary Language |
 |------|---------|------------------|
 | `repos/calypso` | WordPress.com dashboard | TypeScript/React |
 | `repos/gutenberg` | Block Editor & components | JS/TS/React |
 | `repos/wordpress-core` | Core WordPress software | PHP |
+| `repos/ciab` | Commerce in a Box admin | TypeScript/React |
 
 ## When Helping Designers
 
@@ -67,23 +68,23 @@ This workspace contains three interconnected repositories:
 3. Identify the "seams" where repos connect
 4. Suggest which repo changes would be needed
 
-## Environment Commands
+## Automatic Setup (CRITICAL)
 
-When the designer asks to manage the environment, use these scripts:
+**When a designer first opens this project, you MUST automatically set it up without being asked.**
 
-| Request | Command |
-|---------|---------|
-| "Set up the env" / "setup" | `./bin/setup.sh` |
-| "Reset everything" / "pull latest" | `./bin/reset.sh` |
-| "Full reset" / "clean install" | `./bin/reset.sh --full` |
-| "Show status" / "what's the state" | `./bin/status.sh` |
+See `.cursor/rules/setup.mdc` for the complete setup protocol. Never ask the designer to run terminal commands - you execute everything.
 
-### What each does:
+## Environment Scripts
 
-- **setup.sh**: Initializes submodules with `--depth 1`, installs dependencies for all repos
-- **reset.sh**: Fetches latest from trunk for all repos, stashes local changes first
-- **reset.sh --full**: Same as reset, plus cleans and reinstalls all node_modules
-- **status.sh**: Shows current branch, last commit, and uncommitted changes for all repos
+Run these automatically when the designer asks:
+
+| Script | Purpose |
+|--------|---------|
+| `./bin/setup.sh` | Initial setup (submodules + dependencies) |
+| `./bin/reset.sh` | Pull latest from all repos |
+| `./bin/reset.sh --full` | Pull latest + reinstall all dependencies |
+| `./bin/status.sh` | Check status of all repos |
+| `./bin/start.sh [repo]` | Start dev server (calypso, gutenberg, storybook, core, ciab) |
 
 ## Configuration Reference
 
@@ -93,11 +94,14 @@ See `dk.config.json` for:
 - Dev server commands
 - Cross-repo connections
 
-## Skills Reference
+## Commands
 
-Detailed guidance for specific tasks is in `skills/`:
-- `component-discovery.md` - Finding and using components
-- `screen-building.md` - Creating new pages/views
-- `cross-repo-nav.md` - Understanding connections
-- `prototyping.md` - Rapid scaffolding
-- `git-workflows.md` - Version control assistance
+Designers can invoke these commands in chat with `/`:
+
+| Command | Purpose |
+|---------|---------|
+| `/find-component` | Find and use existing UI components |
+| `/build-screen` | Create new pages and views |
+| `/prototype` | Rapid scaffolding and previews |
+| `/git` | Version control help |
+| `/cross-repo` | Understanding repo connections |

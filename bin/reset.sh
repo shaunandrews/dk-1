@@ -61,6 +61,7 @@ reset_repo() {
 reset_repo "Calypso" "repos/calypso" "trunk"
 reset_repo "Gutenberg" "repos/gutenberg" "trunk"
 reset_repo "WordPress Core" "repos/wordpress-core" "trunk"
+reset_repo "CIAB" "repos/ciab" "trunk"
 
 echo ""
 
@@ -90,6 +91,18 @@ if [ "$FULL_RESET" = true ]; then
     cd "$ROOT_DIR/repos/wordpress-core"
     rm -rf node_modules
     npm install
+    cd "$ROOT_DIR"
+    
+    # CIAB
+    echo "📦 Reinstalling CIAB dependencies..."
+    cd "$ROOT_DIR/repos/ciab"
+    rm -rf node_modules
+    if command -v pnpm &> /dev/null; then
+        pnpm install
+    fi
+    if command -v composer &> /dev/null; then
+        composer install
+    fi
     cd "$ROOT_DIR"
     
     echo ""

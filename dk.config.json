@@ -173,12 +173,12 @@
     }
   },
   
-  "skills": {
-    "componentDiscovery": "skills/component-discovery.md",
-    "screenBuilding": "skills/screen-building.md",
-    "crossRepoNav": "skills/cross-repo-nav.md",
-    "prototyping": "skills/prototyping.md",
-    "gitWorkflows": "skills/git-workflows.md"
+  "commands": {
+    "findComponent": ".cursor/commands/find-component.md",
+    "buildScreen": ".cursor/commands/build-screen.md",
+    "prototype": ".cursor/commands/prototype.md",
+    "git": ".cursor/commands/git.md",
+    "crossRepo": ".cursor/commands/cross-repo.md"
   },
   
   "designer": {

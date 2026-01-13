@@ -52,10 +52,11 @@ show_status() {
 show_status "Calypso" "repos/calypso"
 show_status "Gutenberg" "repos/gutenberg"
 show_status "WordPress Core" "repos/wordpress-core"
+show_status "CIAB" "repos/ciab"
 
 echo "📁 Design Kit"
 echo "   Path: $ROOT_DIR"
-local dk_changes=$(git status --porcelain 2>/dev/null | wc -l | tr -d ' ')
+dk_changes=$(git status --porcelain 2>/dev/null | wc -l | tr -d ' ')
 if [ "$dk_changes" -gt 0 ]; then
     echo "   Changes: $dk_changes uncommitted files"
 else

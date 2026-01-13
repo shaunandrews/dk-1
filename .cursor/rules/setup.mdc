@@ -1,0 +1,168 @@
+---
+description: AI-driven setup protocol for Design Kit
+globs: ["**/*"]
+---
+
+# AI Setup Protocol for Design Kit
+
+When a designer opens this project in Cursor for the first time, you MUST automatically handle the entire setup process. The designer should never need to open a terminal or run commands manually.
+
+## Setup Flow (AI Must Execute)
+
+### Step 1: Initial Discovery
+When the workspace is opened, immediately:
+1. Check if this is a fresh clone (no `repos/` subdirectories exist)
+2. Read `README.md` to understand the project structure
+3. Read `dk.config.json` to understand repository configuration
+4. Read `bin/setup.sh` to understand setup steps
+5. Read `.gitmodules` to see which repos need to be cloned
+
+### Step 2: Prerequisites Check
+Before proceeding, check for required tools:
+- **Git** - Must be installed (check with `git --version`)
+- **Node.js** - Must be v18+ (check with `node --version`)
+- **Yarn** - Required for Calypso (check with `yarn --version`)
+- **npm** - Required for Gutenberg/WP Core (comes with Node.js)
+- **pnpm** - Required for CIAB (check with `pnpm --version`)
+- **Composer** - Required for CIAB PHP deps (check with `composer --version`)
+- **Docker** - Optional, required for WordPress Core/CIAB environments (check with `docker --version`)
+
+If any required tools are missing, inform the designer and offer to help install them, or proceed with what's available.
+
+If Docker is missing, inform the designer that Calypso, Gutenberg, and Storybook will work fine, but WordPress Core and CIAB local environments require Docker Desktop to be installed. Provide download links:
+- Mac: https://docs.docker.com/desktop/setup/install/mac-install/
+- Windows: https://docs.docker.com/desktop/setup/install/windows-install/
+- Linux: https://docs.docker.com/desktop/setup/install/linux/
+
+### Step 3: Automatic Setup Execution
+Execute these steps automatically (using terminal commands via run_terminal_cmd):
+
+1. **Initialize Git Submodules**
+   ```bash
+   git submodule update --init --depth 1
+   ```
+
+2. **Install Dependencies in Parallel** (when safe to do so)
+   - Calypso: `cd repos/calypso && yarn install --frozen-lockfile`
+   - Gutenberg: `cd repos/gutenberg && npm ci`
+   - WordPress Core: `cd repos/wordpress-core && npm ci`
+   - CIAB: `cd repos/ciab && pnpm install --frozen-lockfile && composer install`
+
+3. **Verify Setup**
+   - Check that all `node_modules` directories exist
+   - Check that submodules are initialized
+   - Report any errors clearly
+
+### Step 4: Post-Setup Communication
+After setup completes, tell the designer:
+- ✅ What was set up
+- ✅ What repositories are available
+- ✅ How to start development servers (you'll handle this too)
+- ⚠️ Any warnings or issues encountered
+
+## Starting Development Servers (AI Must Handle)
+
+When the designer wants to work on a specific repo, you should:
+
+1. **Detect Intent**: Understand which repo they want to work on
+2. **Check Status**: Verify dependencies are installed
+3. **Start Server**: Run `./bin/start.sh [repo]` in the background
+4. **Open Browser**: Automatically open the development URL
+5. **Monitor**: Keep track of running processes
+
+### Server Commands:
+```bash
+./bin/start.sh calypso    # → http://calypso.localhost:3000
+./bin/start.sh gutenberg  # → http://localhost:9999
+./bin/start.sh storybook  # → http://localhost:50240
+./bin/start.sh core       # → http://localhost:8889
+./bin/start.sh ciab       # → http://localhost:9001/wp-admin/
+```
+
+## Designer Interaction Patterns
+
+### When Designer Opens Project
+```
+You: "I see you've opened the Design Kit project. Let me set everything up for you automatically. This will take a few minutes..."
+
+[Execute setup automatically]
+
+You: "✅ Setup complete! I've initialized all repositories and installed dependencies. You can now ask me to start any development server, or just tell me what you want to work on."
+```
+
+### When Designer Asks to Work on Something
+```
+Designer: "I want to work on Calypso"
+
+You: "Starting Calypso development server for you..."
+
+[Run ./bin/start.sh calypso in background, open browser]
+
+You: "✅ Calypso is running at http://calypso.localhost:3000 (I've opened it in your browser)"
+```
+
+### When Setup Fails
+```
+You: "I encountered an issue during setup: [specific error]. Let me try to fix this..."
+
+[Attempt automatic recovery]
+
+You: "✅ Fixed! Setup is now complete."
+```
+
+## Key Files to Read for Context
+
+1. **`README.md`** - Project overview and quick start
+2. **`dk.config.json`** - Repository configuration and dev server info
+3. **`bin/setup.sh`** - Setup script logic
+4. **`bin/start.sh`** - Dev server launcher
+5. **`.gitmodules`** - Submodule definitions
+6. **`docs/getting-started.md`** - Detailed setup instructions
+
+## Important Rules
+
+1. **Never ask the designer to run terminal commands** - You execute everything
+2. **Always check before acting** - Verify current state before making changes
+3. **Provide clear feedback** - Tell the designer what you're doing and why
+4. **Handle errors gracefully** - Attempt recovery, explain issues clearly
+5. **Be proactive** - Don't wait for the designer to ask, set up automatically on first open
+
+## Example: Complete First-Time Setup
+
+```
+[Designer opens project in Cursor]
+
+AI: "Welcome to Design Kit! I can see this is a fresh project. Let me set everything up for you automatically. This will:
+- Clone 4 git submodules (Calypso, Gutenberg, WordPress Core, CIAB)
+- Install dependencies for each repository
+- Take about 5-10 minutes
+
+I'll keep you updated as I go..."
+
+[AI executes git submodule update --init --depth 1]
+
+AI: "✅ Submodules initialized"
+
+[AI executes yarn install in repos/calypso]
+
+AI: "✅ Calypso dependencies installed"
+
+[AI executes npm ci in repos/gutenberg]
+
+AI: "✅ Gutenberg dependencies installed"
+
+[AI executes npm ci in repos/wordpress-core]
+
+AI: "✅ WordPress Core dependencies installed"
+
+[AI executes pnpm install and composer install in repos/ciab]
+
+AI: "✅ CIAB dependencies installed"
+
+AI: "🎉 Setup complete! All repositories are ready. You can now:
+- Ask me to start any development server
+- Tell me what you want to work on
+- Ask me to show you the project structure
+
+What would you like to do first?"
+```

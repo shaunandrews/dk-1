@@ -1,6 +1,6 @@
-# Skill: Git Workflows
+# Git
 
-**Purpose**: Help designers manage version control across multiple repositories with minimal friction.
+Help the designer manage version control across multiple repositories with minimal friction.
 
 ## Quick Reference
 
@@ -21,6 +21,7 @@
 | Calypso | `trunk` | `origin` (Automattic/wp-calypso) |
 | Gutenberg | `trunk` | `origin` (WordPress/gutenberg) |
 | WordPress Core | `trunk` | `origin` (WordPress/wordpress-develop) |
+| CIAB | `trunk` | `origin` (Automattic/ciab-admin) |
 
 ## Branch Naming Conventions
 
@@ -33,11 +34,6 @@ fix/bug-description    # Bug fix
 try/experiment-name    # Experiment
 ```
 
-Examples:
-- `add/settings-dark-mode`
-- `fix/button-alignment`
-- `update/navigation-redesign`
-
 ### Gutenberg
 
 ```
@@ -46,20 +42,12 @@ update/feature-name
 fix/issue-number-description
 ```
 
-Examples:
-- `add/new-block-settings`
-- `fix/12345-modal-a11y`
-
 ### WordPress Core
 
 ```
 feature/feature-name
 fix/trac-ticket-description
 ```
-
-Examples:
-- `feature/new-admin-page`
-- `fix/56789-rest-api-response`
 
 ## Common Workflows
 
@@ -105,19 +93,6 @@ git rebase origin/trunk
 # If there are conflicts, resolve them, then:
 git add .
 git rebase --continue
-```
-
-### Switching Between Repos
-
-```bash
-# Save work in current repo
-cd repos/calypso
-git add .
-git commit -m "WIP: Saving before switching"
-
-# Switch to another repo
-cd ../gutenberg
-git status
 ```
 
 ## Commit Message Format
@@ -196,70 +171,6 @@ git checkout -b add/feature-x-ui
 # Work on both, commit separately
 ```
 
-### Status Check Across All Repos
-
-```bash
-# Check status of all repos at once
-for repo in repos/*; do
-  echo "=== $repo ==="
-  git -C "$repo" status -s
-done
-```
-
-## Pull Request Guidelines
-
-### Calypso PR Template
-
-When creating a PR on GitHub:
-
-```markdown
-## What
-
-Brief description of what this PR does.
-
-## Why
-
-Why is this change needed?
-
-## How
-
-How does this implementation work?
-
-## Testing
-
-Steps to test:
-1. Go to...
-2. Click on...
-3. Verify that...
-
-## Screenshots
-
-(If UI changes, include before/after screenshots)
-```
-
-### Gutenberg PR Template
-
-```markdown
-## Description
-
-What does this PR do?
-
-## How has this been tested?
-
-Steps to reproduce / test.
-
-## Screenshots
-
-(If applicable)
-
-## Types of changes
-
-- [ ] Bug fix
-- [ ] New feature
-- [ ] Enhancement
-- [ ] Documentation
-```
-
 ## Common Issues & Solutions
 
 ### "I made changes to the wrong branch"
@@ -330,33 +241,6 @@ git pull origin trunk
 
 # Check submodule status from dk root
 git submodule status
-```
-
-## Helpful Aliases
-
-Add these to your `~/.gitconfig`:
-
-```ini
-[alias]
-  s = status -s
-  co = checkout
-  br = branch
-  cm = commit -m
-  aa = add .
-  last = log -1 HEAD
-  undo = reset --soft HEAD~1
-  branches = branch -a
-  sync = !git fetch origin && git rebase origin/trunk
-```
-
-Usage:
-```bash
-git s          # Short status
-git co trunk   # Checkout trunk
-git cm "msg"   # Commit with message
-git aa         # Add all
-git undo       # Undo last commit
-git sync       # Update from trunk
 ```
 
 ## Response Pattern

@@ -1,6 +1,6 @@
-# Skill: Cross-Repo Navigation
+# Cross-Repo
 
-**Purpose**: Help designers understand how Calypso, Gutenberg, and WordPress Core connect, and navigate features that span multiple repositories.
+Help the designer understand how Calypso, Gutenberg, and WordPress Core connect, and navigate features that span multiple repositories.
 
 ## The Big Picture
 
@@ -62,7 +62,7 @@
 - `@wordpress/element` - React wrapper
 - `@wordpress/i18n` - Internationalization
 
-**Example flow**:
+**Example**:
 ```tsx
 // In Calypso, using Gutenberg components
 import { Button, Card, TextControl } from '@wordpress/components';
@@ -84,7 +84,7 @@ import { Icon, settings } from '@wordpress/icons';
 | `GET /wp/v2/users/me` | Current user info |
 | `GET /wp/v2/media` | Media library |
 
-**Example flow**:
+**Example**:
 ```tsx
 // In Calypso
 import apiFetch from '@wordpress/api-fetch';
@@ -110,22 +110,6 @@ await apiFetch({
 **Where blocks live**:
 - Development: `repos/gutenberg/packages/block-library/src/`
 - In Core: `repos/wordpress-core/src/wp-includes/blocks/`
-
-**Example block registration**:
-```php
-// In WordPress Core (PHP)
-register_block_type('core/paragraph', [
-    'render_callback' => 'render_block_core_paragraph'
-]);
-```
-
-```js
-// In Gutenberg (JS)
-registerBlockType('core/paragraph', {
-    edit: Edit,
-    save: Save,
-});
-```
 
 ## Feature Flow Examples
 
@@ -174,24 +158,6 @@ registerBlockType('core/paragraph', {
 - `repos/gutenberg/packages/block-library/src/quote/`
 - `repos/wordpress-core/src/wp-includes/blocks/quote/`
 
-### Example 3: New Admin Setting Across All Three Repos
-
-When you need a new setting that touches everything:
-
-```
-1. WordPress Core: Create REST endpoint
-   └─► repos/wordpress-core/src/wp-includes/rest-api/endpoints/
-
-2. WordPress Core: Create option storage
-   └─► register_setting() in appropriate hook
-
-3. Gutenberg: (if editor integration needed)
-   └─► Add to relevant store or settings panel
-
-4. Calypso: Create settings UI
-   └─► repos/calypso/client/my-sites/settings/
-```
-
 ## Finding Related Code
 
 ### "Where is X handled?"
@@ -204,18 +170,35 @@ When you need a new setting that touches everything:
 | Where is this block defined? | Gutenberg: `packages/block-library/src/` |
 | Where is this REST endpoint? | Core: `src/wp-includes/rest-api/endpoints/` |
 
-### Quick Search Commands
+## Common Cross-Repo Tasks
 
-```bash
-# Find API endpoint in Core
-grep -r "register_rest_route.*my-endpoint" repos/wordpress-core/
+### Task: Add a new site setting
 
-# Find API call in Calypso
-grep -r "/wp/v2/my-endpoint" repos/calypso/client/
+1. **Core** - Register setting:
+   ```php
+   register_setting('general', 'my_new_setting');
+   ```
 
-# Find component usage across repos
-grep -r "import.*MyComponent" repos/calypso repos/gutenberg
-```
+2. **Core** - Expose via REST:
+   ```php
+   register_rest_field('settings', 'my_new_setting', [...]);
+   ```
+
+3. **Calypso** - Create UI:
+   ```tsx
+   // New page in client/my-sites/settings/
+   ```
+
+### Task: Create a custom block
+
+1. **Gutenberg** - Create block:
+   ```
+   packages/block-library/src/my-block/
+   ```
+
+2. **Core** - Block syncs automatically on release
+
+3. **Calypso** - Block available in editor automatically
 
 ## Data Flow Patterns
 
@@ -253,52 +236,12 @@ User Action in Calypso
                                 └─► Success/Error Response
 ```
 
-## Common Cross-Repo Tasks
+## Response Pattern
 
-### Task: Add a new site setting
+When designer asks about cross-repo connections:
 
-1. **Core** - Register setting:
-   ```php
-   register_setting('general', 'my_new_setting');
-   ```
-
-2. **Core** - Expose via REST:
-   ```php
-   register_rest_field('settings', 'my_new_setting', [...]);
-   ```
-
-3. **Calypso** - Create UI:
-   ```tsx
-   // New page in client/my-sites/settings/
-   ```
-
-### Task: Create a custom block
-
-1. **Gutenberg** - Create block:
-   ```
-   packages/block-library/src/my-block/
-   ```
-
-2. **Core** - Block syncs automatically on release
-
-3. **Calypso** - Block available in editor automatically
-
-## Debugging Connections
-
-### API Issues
-```bash
-# Watch network calls in Calypso
-# Browser DevTools → Network tab → filter "wp/v2"
-
-# Test endpoint directly
-curl -X GET "http://localhost:8889/wp-json/wp/v2/posts"
-```
-
-### Component Issues
-```bash
-# Check package version in Calypso
-cat repos/calypso/package.json | grep "@wordpress/components"
-
-# Compare with Gutenberg
-cat repos/gutenberg/packages/components/package.json | grep "version"
-```
+1. **Identify the repos involved** - Which parts touch which repo?
+2. **Explain the connection type** - npm package, REST API, or sync?
+3. **Show the data flow** - How does info move between repos?
+4. **Point to specific files** - Where to look in each repo
+5. **Suggest approach** - Which repo to start with

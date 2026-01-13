@@ -1,49 +1,15 @@
-# Skill: Component Discovery
+# Find Component
 
-**Purpose**: Help designers find and use existing UI components across the WordPress ecosystem before creating new ones.
+Help the designer find and use existing UI components across the WordPress ecosystem before creating new ones.
 
 ## Priority Order
 
-When a designer asks for a component, search in this order:
+Search in this order:
 
 1. **@wordpress/components** (Gutenberg) - The canonical component library
 2. **Calypso Components** - WordPress.com specific components
 3. **@wordpress/icons** - Icon library
 4. **Existing patterns** - How similar UIs are built in the codebase
-
-## Quick Lookup Commands
-
-### Find @wordpress/components
-
-```bash
-# List all components
-ls repos/gutenberg/packages/components/src/
-
-# Search for a specific component
-find repos/gutenberg/packages/components/src -name "button" -type d
-find repos/gutenberg/packages/components/src -name "*toggle*" -type d
-
-# View component source
-cat repos/gutenberg/packages/components/src/button/index.tsx
-```
-
-### Find Calypso Components
-
-```bash
-# List all Calypso components
-ls repos/calypso/client/components/
-
-# Search for component
-find repos/calypso/client/components -name "*button*" -type d
-find repos/calypso/client/components -name "*card*" -type d
-```
-
-### Find Icons
-
-```bash
-# List all icons
-ls repos/gutenberg/packages/icons/src/library/
-```
 
 ## Component Categories
 
@@ -201,12 +167,7 @@ import Button from 'calypso/components/button';
 ### @wordpress/components Storybook
 
 - **Live**: https://wordpress.github.io/gutenberg/?path=/docs/components-introduction--docs
-- **Local**: `cd repos/gutenberg && npm run storybook`
-
-Browse by category:
-- `/docs/components-button--docs`
-- `/docs/components-textcontrol--docs`
-- `/docs/components-card--docs`
+- **Local**: Run `./bin/start.sh storybook`
 
 ### Calypso Design System
 
@@ -216,22 +177,11 @@ Browse by category:
 
 When designer asks for something like "I need a toggle switch":
 
-1. Search Gutenberg first:
-   ```bash
-   grep -r "toggle" repos/gutenberg/packages/components/src --include="*.tsx" -l
-   ```
+1. Search Gutenberg components first
+2. Check if used in Calypso for examples
+3. Show usage example from codebase
 
-2. Check if used in Calypso:
-   ```bash
-   grep -r "ToggleControl" repos/calypso/client --include="*.tsx" -l | head -5
-   ```
-
-3. Show usage example from codebase:
-   ```bash
-   grep -A10 "ToggleControl" repos/calypso/client/my-sites/settings/*/index.tsx | head -20
-   ```
-
-## Response Template
+## Response Pattern
 
 When designer asks for a component:
 

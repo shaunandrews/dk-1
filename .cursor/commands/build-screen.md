@@ -1,6 +1,6 @@
-# Skill: Screen Building
+# Build Screen
 
-**Purpose**: Help designers create new pages, views, and screens across the WordPress ecosystem.
+Help the designer create new pages, views, and screens across the WordPress ecosystem.
 
 ## Where Screens Live
 
@@ -281,65 +281,6 @@ require_once ABSPATH . 'wp-admin/admin-header.php';
 
 <?php
 require_once ABSPATH . 'wp-admin/admin-footer.php';
-```
-
-### Settings Page (PHP)
-
-```php
-<?php
-// Register settings page
-add_action('admin_menu', function() {
-    add_options_page(
-        __('My Settings'),      // Page title
-        __('My Settings'),      // Menu title
-        'manage_options',        // Capability
-        'my-settings',          // Menu slug
-        'my_settings_page'      // Callback
-    );
-});
-
-// Register settings
-add_action('admin_init', function() {
-    register_setting('my_settings_group', 'my_option');
-    
-    add_settings_section(
-        'my_section',
-        __('General Settings'),
-        '__return_null',
-        'my-settings'
-    );
-    
-    add_settings_field(
-        'my_field',
-        __('My Field'),
-        'my_field_render',
-        'my-settings',
-        'my_section'
-    );
-});
-
-function my_field_render() {
-    $value = get_option('my_option');
-    ?>
-    <input type="text" name="my_option" value="<?php echo esc_attr($value); ?>">
-    <?php
-}
-
-function my_settings_page() {
-    ?>
-    <div class="wrap">
-        <h1><?php echo esc_html(get_admin_page_title()); ?></h1>
-        
-        <form method="post" action="options.php">
-            <?php
-            settings_fields('my_settings_group');
-            do_settings_sections('my-settings');
-            submit_button();
-            ?>
-        </form>
-    </div>
-    <?php
-}
 ```
 
 ## Common Page Layouts

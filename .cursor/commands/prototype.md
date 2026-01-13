@@ -1,6 +1,6 @@
-# Skill: Rapid Prototyping
+# Prototype
 
-**Purpose**: Help designers quickly scaffold and preview ideas without getting bogged down in setup, configuration, or perfect code.
+Help the designer quickly scaffold and preview ideas without getting bogged down in setup, configuration, or perfect code.
 
 ## Philosophy
 
@@ -16,11 +16,8 @@
 **Fastest path**: Create a component in an existing section
 
 ```bash
-# Navigate to Calypso
-cd repos/calypso
-
-# Start dev server (if not running)
-yarn start
+# Start dev server
+./bin/start.sh calypso
 ```
 
 **Create prototype component**:
@@ -73,53 +70,25 @@ export default function Prototype() {
 }
 ```
 
-### Gutenberg Block Prototype
+### Gutenberg Storybook Prototype
 
-**Fastest path**: Modify an existing block or use Storybook
+**Fastest path**: Use Storybook for isolated component prototyping
 
 ```bash
-# Start Storybook for component prototyping
-cd repos/gutenberg
-npm run storybook
+./bin/start.sh storybook
 ```
 
-**Create prototype block**:
+Create a story file:
 
 ```tsx
-// packages/block-library/src/prototype/index.js
-import { registerBlockType } from '@wordpress/blocks';
-import Edit from './edit';
-import save from './save';
+// packages/components/src/prototype/stories/index.story.js
+export default { title: 'Prototype/MyIdea' };
 
-registerBlockType('core/prototype', {
-  title: 'Prototype',
-  icon: 'smiley',
-  category: 'common',
-  edit: Edit,
-  save,
-});
-```
-
-```tsx
-// packages/block-library/src/prototype/edit.js
-import { useBlockProps } from '@wordpress/block-editor';
-import { TextControl, Card, CardBody } from '@wordpress/components';
-
-export default function Edit({ attributes, setAttributes }) {
-  return (
-    <div {...useBlockProps()}>
-      <Card>
-        <CardBody>
-          <TextControl
-            label="Content"
-            value={attributes.content || ''}
-            onChange={(content) => setAttributes({ content })}
-          />
-        </CardBody>
-      </Card>
-    </div>
-  );
-}
+export const Default = () => (
+  <div>
+    {/* Prototype here */}
+  </div>
+);
 ```
 
 ### WordPress Admin Prototype
@@ -369,15 +338,6 @@ function ModalPrototype() {
 }
 ```
 
-## Dev Server Commands
-
-| Repo | Start Dev Server | URL |
-|------|------------------|-----|
-| Calypso | `yarn start` | http://calypso.localhost:3000 |
-| Gutenberg | `npm run dev` | http://localhost:9999 |
-| Gutenberg Storybook | `npm run storybook` | http://localhost:50240 |
-| WP Core | `npm run dev` | http://localhost:8889 |
-
 ## Tips for Fast Prototyping
 
 ### 1. Start with Storybook
@@ -385,21 +345,7 @@ function ModalPrototype() {
 Gutenberg's Storybook is great for isolated component prototyping:
 
 ```bash
-cd repos/gutenberg
-npm run storybook
-```
-
-Create a story file to prototype:
-
-```tsx
-// packages/components/src/prototype/stories/index.story.js
-export default { title: 'Prototype/MyIdea' };
-
-export const Default = () => (
-  <div>
-    {/* Prototype here */}
-  </div>
-);
+./bin/start.sh storybook
 ```
 
 ### 2. Copy Existing Patterns

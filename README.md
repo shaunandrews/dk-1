@@ -12,25 +12,24 @@ Design Kit brings together **Calypso**, **Gutenberg**, and **WordPress Core** in
 - **Prototype rapidly** using real components
 - **Manage git workflows** with simplified commands
 
-## Quick Start
+## Quick Start (AI-Driven)
 
-### 1. Clone and Setup
+### For Designers
 
-```bash
-git clone https://github.com/Automattic/dk.git
-cd dk
-./bin/setup.sh
-```
+1. **Clone the repository** (or provide the repo URL to AI in Cursor)
+2. **Open in Cursor**: `cursor .`
+3. **That's it!** The AI will automatically:
+   - Detect this is a new project
+   - Read setup instructions
+   - Initialize all git submodules
+   - Install all dependencies
+   - Set everything up for you
 
-This initializes submodules and installs dependencies for all three repos.
+You never need to open a terminal or run commands. Just tell the AI what you want to work on!
 
-### 2. Open in Cursor
+### For AI Assistants
 
-```bash
-cursor .
-```
-
-The AI will automatically have context about all three repositories.
+When a designer opens this project, **automatically execute setup** by following the protocol in `.cursor/rules/setup.mdc`.
 
 ### 3. Start Building
 
@@ -53,12 +52,12 @@ dk/
 │   ├── wordpress-core.mdc
 │   └── cross-repo.mdc   # Cross-repo workflows
 │
-├── skills/              # AI skill definitions
-│   ├── component-discovery.md
-│   ├── screen-building.md
-│   ├── cross-repo-nav.md
-│   ├── prototyping.md
-│   └── git-workflows.md
+├── .cursor/commands/    # Slash commands for common tasks
+│   ├── find-component.md
+│   ├── build-screen.md
+│   ├── prototype.md
+│   ├── git.md
+│   └── cross-repo.md
 │
 ├── repos/               # Git submodules
 │   ├── calypso/         # WordPress.com dashboard
@@ -94,12 +93,15 @@ Or run directly:
 
 ## Development Servers
 
-| Repository | Command | URL |
-|------------|---------|-----|
-| Calypso | `cd repos/calypso && yarn start` | http://calypso.localhost:3000 |
-| Gutenberg | `cd repos/gutenberg && npm run dev` | http://localhost:9999 |
-| Storybook | `cd repos/gutenberg && npm run storybook` | http://localhost:50240 |
-| WP Core | `cd repos/wordpress-core && npm run dev` | http://localhost:8889 |
+Use the unified launcher (AI will call this automatically):
+
+```bash
+./bin/start.sh calypso    # http://calypso.localhost:3000
+./bin/start.sh gutenberg  # http://localhost:9999
+./bin/start.sh storybook  # http://localhost:50240
+./bin/start.sh core       # http://localhost:8889
+./bin/start.sh ciab       # http://localhost:9001/wp-admin/
+```
 
 ## Key Concepts
 
@@ -130,11 +132,39 @@ The `.cursor/rules/` directory contains context that helps the AI:
 - Suggest existing solutions before creating new ones
 - Handle git workflows appropriately
 
+## Troubleshooting
+
+**Submodules not initializing:**
+- Try `git submodule update --init --recursive --depth 1`
+
+**Dependencies failing:**
+- Check Node.js version (must be v18+)
+- Clear cache: `yarn cache clean` or `npm cache clean --force`
+
+**Port conflicts:**
+- Check if ports are in use: `lsof -i :3000`
+
+**Docker not installed (for WordPress Core / CIAB):**
+- Download Docker Desktop: https://docs.docker.com/desktop/install/
+- Only needed if you want to run local WordPress environments
+- Calypso, Gutenberg, and Storybook work without Docker
+
 ## Documentation
 
 - **[Getting Started](docs/getting-started.md)** - Complete setup guide
 - **[Repository Map](docs/repo-map.md)** - How the repos connect
-- **[Skills](skills/)** - Detailed guides for specific tasks
+
+## Commands
+
+Type `/` in chat to access these commands:
+
+| Command | Purpose |
+|---------|---------|
+| `/find-component` | Find existing UI components |
+| `/build-screen` | Create new pages/views |
+| `/prototype` | Quick mockups |
+| `/git` | Version control help |
+| `/cross-repo` | Navigate between repos |
 
 ## Configuration
 
@@ -150,7 +180,7 @@ See `dk.config.json` for:
 When adding features to dk:
 
 1. Update relevant `.cursor/rules/*.mdc` files for AI context
-2. Add or update `skills/*.md` for new capabilities
+2. Add or update `.cursor/commands/*.md` for new workflows
 3. Update `dk.config.json` if paths or structure change
 4. Keep documentation in sync
 

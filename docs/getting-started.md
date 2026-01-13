@@ -22,44 +22,55 @@ Before you begin, make sure you have:
 - **npm** - Package manager for Gutenberg/Core
 - **Cursor** - AI-powered editor (recommended)
 
-## Initial Setup
+### Optional (for WordPress Core / CIAB development)
 
-### 1. Clone the Design Kit
+- **Docker Desktop** - Required to run local WordPress environments
+  - [Download for Mac](https://docs.docker.com/desktop/setup/install/mac-install/)
+  - [Download for Windows](https://docs.docker.com/desktop/setup/install/windows-install/)
+  - [Download for Linux](https://docs.docker.com/desktop/setup/install/linux/)
 
-```bash
-git clone https://github.com/Automattic/dk.git
-cd dk
-```
+Note: Calypso, Gutenberg, and Storybook work without Docker.
 
-### 2. Run Setup
+## Initial Setup (AI-Driven)
 
-```bash
-./bin/setup.sh
-```
+### The Simple Way
 
-This will:
-- Initialize all submodules (Calypso, Gutenberg, WordPress Core)
+1. **Clone the repository** (or just provide the repo URL to your AI assistant in Cursor)
+2. **Open in Cursor**: `cursor .` or just open the folder
+3. **That's it!** The AI will automatically detect this is a new project and set everything up for you
+
+The AI will:
+- Initialize all git submodules (Calypso, Gutenberg, WordPress Core, CIAB)
 - Install dependencies for each repository
 - Take about 5-10 minutes depending on your connection
+- Keep you updated on progress
+- Confirm when everything is ready
 
-### 3. Open in Cursor
+**You never need to open a terminal or run commands manually.**
 
-```bash
-cursor .
-```
+### What the AI Does Automatically
 
-The AI will automatically have context about all three repositories thanks to the Cursor rules in `.cursor/rules/`.
+When you open this project for the first time, the AI will:
+1. Read `README.md` to understand the project
+2. Check for required tools (git, node, yarn, npm, pnpm, composer)
+3. Initialize git submodules
+4. Install dependencies for all repositories
+5. Verify everything is set up correctly
+6. Tell you when it's done and what you can do next
 
 ## Managing Your Environment
 
-You can tell the AI naturally or run scripts directly:
+Just tell the AI what you want - it will handle everything:
 
-| What You Want | Say This | Or Run |
-|---------------|----------|--------|
-| Initial setup | "Set up the env" | `./bin/setup.sh` |
-| Pull latest code | "Reset everything" | `./bin/reset.sh` |
-| Full clean install | "Full reset" | `./bin/reset.sh --full` |
-| Check repo status | "Show status" | `./bin/status.sh` |
+| What You Want | Say This |
+|---------------|----------|
+| Initial setup | "Set up the env" or just open the project |
+| Pull latest code | "Reset everything" or "pull latest" |
+| Full clean install | "Full reset" or "clean install" |
+| Check repo status | "Show status" or "what's the state" |
+| Start a dev server | "Start Calypso" or "I want to work on Gutenberg" |
+
+The AI will execute all commands automatically. You never need to run terminal commands yourself.
 
 ## Quick Tour
 
@@ -68,7 +79,7 @@ You can tell the AI naturally or run scripts directly:
 ```
 dk/
 ├── .cursor/rules/       # AI context and behavior
-├── skills/              # AI skill definitions
+├── .cursor/commands/    # Slash commands for tasks
 ├── repos/               # The actual codebases
 │   ├── calypso/         # WordPress.com dashboard
 │   ├── gutenberg/       # Block editor
@@ -83,7 +94,7 @@ dk/
 |------|---------|
 | `dk.config.json` | Maps repositories, paths, and connections |
 | `.cursor/rules/base.mdc` | Core AI behavior |
-| `skills/*.md` | Detailed guides for specific tasks |
+| `.cursor/commands/*.md` | Slash commands for specific tasks |
 
 ## Working with the AI
 
@@ -105,43 +116,32 @@ The AI understands design language. Just ask:
 
 ## Starting Development Servers
 
-### Calypso
+Just tell the AI what you want to work on, and it will start the server and open your browser automatically:
 
-```bash
-cd repos/calypso
-yarn
-yarn start
-```
+### Examples
 
-Open http://calypso.localhost:3000
+**"I want to work on Calypso"**
+- AI starts Calypso dev server
+- AI opens http://calypso.localhost:3000 in your browser
+- You're ready to work!
 
-### Gutenberg
+**"Start Gutenberg"**
+- AI starts Gutenberg dev server  
+- AI opens http://localhost:9999 in your browser
 
-```bash
-cd repos/gutenberg
-npm install
-npm run dev
-```
+**"Show me Storybook"**
+- AI starts Storybook
+- AI opens http://localhost:50240 in your browser
 
-Open http://localhost:9999
+**"I need WordPress Core running"**
+- AI starts WP Core dev server
+- AI opens http://localhost:8889 in your browser
 
-For component development with Storybook:
+**"Start CIAB"**
+- AI starts CIAB dev server and WordPress environment
+- AI opens http://localhost:9001/wp-admin/ in your browser
 
-```bash
-npm run storybook
-```
-
-Open http://localhost:50240
-
-### WordPress Core
-
-```bash
-cd repos/wordpress-core
-npm install
-npm run dev
-```
-
-Open http://localhost:8889
+The AI handles all the terminal commands, directory navigation, and browser opening. You just tell it what you want to work on.
 
 ## First Tasks to Try
 
@@ -170,7 +170,7 @@ Ask the AI:
 ### Documentation
 
 - Check the `docs/` folder for guides
-- Read `skills/*.md` for task-specific help
+- Use `/` commands in chat for task-specific help
 - Review `dk.config.json` for configuration details
 
 ### AI Context
@@ -195,8 +195,8 @@ A: Start the dev server for the repo you're working in (see "Starting Developmen
 ## Next Steps
 
 1. Read `docs/repo-map.md` to understand how the repos connect
-2. Browse `skills/` for detailed guides on specific tasks
-3. Start with small prototypes to get familiar with the workflow
+2. Try `/prototype` to quickly scaffold an idea
+3. Use `/find-component` when looking for existing UI components
 4. Ask the AI whenever you're unsure!
 
 ---

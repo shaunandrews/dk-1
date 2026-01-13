@@ -20,7 +20,7 @@ echo "📦 Initializing submodules..."
 git submodule update --init --depth 1
 
 # Check if submodules exist
-if [ ! -d "repos/calypso" ] || [ ! -d "repos/gutenberg" ] || [ ! -d "repos/wordpress-core" ]; then
+if [ ! -d "repos/calypso" ] || [ ! -d "repos/gutenberg" ] || [ ! -d "repos/wordpress-core" ] || [ ! -d "repos/ciab" ]; then
     echo "❌ Error: Submodules not found. Please check your git configuration."
     exit 1
 fi
@@ -56,6 +56,24 @@ echo "✅ WordPress Core dependencies installed"
 cd "$ROOT_DIR"
 echo ""
 
+# CIAB setup
+echo "📦 Setting up CIAB..."
+cd "$ROOT_DIR/repos/ciab"
+if command -v pnpm &> /dev/null; then
+    pnpm install --frozen-lockfile 2>/dev/null || pnpm install
+    echo "✅ CIAB dependencies installed"
+    if command -v composer &> /dev/null; then
+        composer install
+        echo "✅ CIAB PHP dependencies installed"
+    else
+        echo "⚠️  Composer not found. Install composer to set up CIAB PHP dependencies"
+    fi
+else
+    echo "⚠️  pnpm not found. Install pnpm to set up CIAB: npm install -g pnpm"
+fi
+cd "$ROOT_DIR"
+echo ""
+
 echo "🎉 Setup complete!"
 echo ""
 echo "Next steps:"
@@ -64,4 +82,5 @@ echo "  • Start Calypso:  cd repos/calypso && yarn start"
 echo "  • Start Gutenberg: cd repos/gutenberg && npm run dev"
 echo "  • Start Storybook: cd repos/gutenberg && npm run storybook"
 echo "  • Start WP Core:  cd repos/wordpress-core && npm run dev"
+echo "  • Start CIAB:  cd repos/ciab && pnpm dev && pnpm env:start"
 echo ""

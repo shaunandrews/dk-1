@@ -168,6 +168,21 @@ function MyComponent() {
 }
 ```
 
+## Git & Branch Workflows
+
+When checking out a branch (especially for PRs):
+
+1. **Don't assume a branch doesn't exist** if `git fetch origin branch_name` fails
+2. **Search for PRs first** to confirm the branch exists:
+   ```bash
+   gh pr list --search "keyword" --state open
+   ```
+3. **Fetch remote branches properly** using this syntax:
+   ```bash
+   git fetch origin branch-name:branch-name && git checkout branch-name
+   ```
+4. **Never create a new branch** if the user says one already exists - find it first
+
 ## Dev Commands
 
 ```bash
@@ -175,6 +190,9 @@ cd repos/calypso
 
 # Start development server
 yarn start
+
+# Start with debug mode (more memory, sourcemaps)
+yarn start:debug
 
 # Run tests
 yarn test-client

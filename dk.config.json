@@ -97,6 +97,33 @@
         "url": "http://localhost:8889"
       },
       "aiContext": []
+    },
+    
+    "ciab": {
+      "path": "repos/ciab",
+      "name": "Commerce in a Box (CIAB)",
+      "description": "Commerce in a Box admin interface",
+      "upstream": "https://github.a8c.com/Automattic/ciab-admin",
+      "defaultBranch": "trunk",
+      "stack": {
+        "language": "TypeScript",
+        "framework": "React",
+        "styling": "SCSS",
+        "stateManagement": "Redux"
+      },
+      "paths": {
+        "routes": "wordpress/plugins/ciab-admin/routes",
+        "packages": "wordpress/plugins/ciab-admin/packages",
+        "fields": "wordpress/plugins/ciab-admin/fields",
+        "plugins": "wordpress/plugins",
+        "docs": "docs"
+      },
+      "devServer": {
+        "command": "pnpm dev",
+        "port": 9001,
+        "url": "http://localhost:9001/wp-admin/"
+      },
+      "aiContext": []
     }
   },
   

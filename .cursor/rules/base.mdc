@@ -100,6 +100,8 @@ Designers can invoke these commands in chat with `/`:
 
 | Command | Purpose |
 |---------|---------|
+| `/setup` | Set up the environment (submodules + dependencies) |
+| `/start` | Start a development server |
 | `/find-component` | Find and use existing UI components |
 | `/build-screen` | Create new pages and views |
 | `/prototype` | Rapid scaffolding and previews |

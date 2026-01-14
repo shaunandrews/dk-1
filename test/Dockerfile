@@ -10,7 +10,7 @@
 #   docker build -t dk-test -f test/Dockerfile .
 #   docker run --rm -v "$(pwd):/repo:ro" dk-test
 
-FROM node:20-slim
+FROM node:22-slim
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \

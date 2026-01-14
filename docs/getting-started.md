@@ -40,20 +40,31 @@ Note: Calypso, Gutenberg, and Storybook work without Docker.
 
 1. **Clone the repository** (or just provide the repo URL to your AI assistant in Cursor)
 2. **Open in Cursor**: `cursor .` or just open the folder
-3. **That's it!** The AI will automatically detect this is a new project and set everything up for you
+3. **Tell the AI to set things up** - use one of these methods:
+
+#### Option A: Use the Setup Command
+Type `/setup` in the chat and the AI will run the full setup process.
+
+#### Option B: Just Ask
+Tell the AI in natural language:
+- "Set up the environment"
+- "Initialize everything"
+- "Install dependencies"
+- "Get this project ready"
 
 The AI will:
+- Check for required tools (git, node, yarn, npm, pnpm, composer)
 - Initialize all git submodules (Calypso, Gutenberg, WordPress Core, CIAB, Jetpack)
 - Install dependencies for each repository
 - Take about 5-10 minutes depending on your connection
 - Keep you updated on progress
 - Confirm when everything is ready
 
-**You never need to open a terminal or run commands manually.**
+**You never need to open a terminal or run commands manually - just tell the AI what you need.**
 
-### What the AI Does Automatically
+### What the AI Does During Setup
 
-When you open this project for the first time, the AI will:
+When you ask the AI to set up the project, it will:
 1. Read `README.md` to understand the project
 2. Check for required tools (git, node, yarn, npm, pnpm, composer)
 3. Initialize git submodules
@@ -120,13 +131,19 @@ The AI understands design language. Just ask:
 
 ## Starting Development Servers
 
-Just tell the AI what you want to work on, and it will start the server and open your browser automatically:
+Just tell the AI what you want to work on, and it will start the server for you.
 
-### Examples
+### Using the Start Command
 
-**"I want to work on Calypso"**
+Type `/start` in the chat to see all available servers and start one.
+
+### Or Just Ask
+
+Tell the AI what you want in natural language:
+
+**"I want to work on Calypso"** or **"Start Calypso"**
 - AI starts Calypso dev server
-- AI opens http://calypso.localhost:3000 in your browser
+- URL: http://calypso.localhost:3000
 - You're ready to work!
 
 **"Start Gutenberg"**

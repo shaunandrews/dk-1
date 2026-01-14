@@ -87,6 +87,15 @@ if [ -d "repos/wordpress-core" ]; then
     echo "   ✅ WordPress Core dependencies installed"
 fi
 
+# Jetpack
+if [ -d "repos/jetpack" ]; then
+    echo "   Installing Jetpack dependencies..."
+    cd repos/jetpack
+    pnpm install --frozen-lockfile 2>/dev/null || pnpm install
+    cd ../..
+    echo "   ✅ Jetpack dependencies installed"
+fi
+
 # CIAB (skip if not available - check for package.json since git creates empty dirs)
 if [ -f "repos/ciab/package.json" ]; then
     echo "   Installing CIAB dependencies..."
@@ -129,6 +138,8 @@ check_required "repos/gutenberg" "Gutenberg submodule"
 check_required "repos/gutenberg/node_modules" "Gutenberg dependencies"
 check_required "repos/wordpress-core" "WordPress Core submodule"
 check_required "repos/wordpress-core/node_modules" "WordPress Core dependencies"
+check_required "repos/jetpack" "Jetpack submodule"
+check_required "repos/jetpack/node_modules" "Jetpack dependencies"
 
 # Optional repos (internal) - check for package.json since git creates empty dirs
 if [ -f "repos/ciab/package.json" ]; then

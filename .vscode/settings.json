@@ -1,0 +1,7 @@
+{
+  "git.autoRepositoryDetection": "subFolders",
+  "git.repositoryScanMaxDepth": 3,
+  "search.exclude": {
+    "**/repos/wordpress-core/src/wp-content/plugins/gutenberg": true
+  }
+}

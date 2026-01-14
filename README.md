@@ -87,6 +87,28 @@ Once setup is complete, just ask naturally. Here are examples of what you can as
 
 All repositories are managed automatically. The AI knows where everything lives and how to work across them.
 
+## How It Works: Cursor Rules
+
+This workspace includes specialized AI rules (in `.cursor/rules/`) that teach the AI about the WordPress ecosystem:
+
+- **`base.mdc`** - Core AI behavior focused on design-first language and simplifying technical complexity
+- **`calypso.mdc`** - Calypso-specific context: structure, patterns, and conventions
+- **`gutenberg.mdc`** - Gutenberg block editor and component library knowledge
+- **`wordpress-core.mdc`** - WordPress Core structure, APIs, and PHP conventions
+- **`jetpack.mdc`** - Jetpack plugin architecture and development patterns
+- **`ciab.mdc`** - CIAB (Commerce in a Box) internal tools context
+- **`cross-repo.mdc`** - How features span multiple repositories and workflows
+- **`setup.mdc`** - Environment setup protocol and automation
+
+These rules help the AI:
+- Understand where code lives across repositories
+- Suggest existing components before creating new ones
+- Navigate cross-repo features seamlessly
+- Use the right patterns and conventions for each project
+- Handle git workflows appropriately
+
+You also have slash commands (in `.cursor/commands/`) for common tasks like `/setup`, `/start`, `/find-component`, and more. Just type `/` in chat to see them all.
+
 ## Need Help?
 
 Just ask your AI:

@@ -478,7 +478,7 @@ Calypso shows confirmation
 
 ```bash
 # Calypso
-cd repos/calypso && yarn start
+cd repos/calypso && yarn start:debug
 # → http://calypso.localhost:3000
 
 # Gutenberg

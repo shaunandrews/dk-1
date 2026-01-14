@@ -16,7 +16,7 @@ Calypso is WordPress.com's custom dashboard, built with React and TypeScript.
 | **Framework** | React |
 | **Styling** | SCSS with CSS custom properties |
 | **State** | Redux + @wordpress/data |
-| **Dev Server** | `yarn start` → http://calypso.localhost:3000 |
+| **Dev Server** | `yarn start:debug` → http://calypso.localhost:3000 |
 
 ## Key Directories
 

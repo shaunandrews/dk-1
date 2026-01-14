@@ -30,7 +30,7 @@
         "styles": "client/assets/stylesheets"
       },
       "devServer": {
-        "command": "yarn start",
+        "command": "yarn start:debug",
         "port": 3000,
         "url": "http://calypso.localhost:3000"
       },

@@ -64,7 +64,9 @@ Run the appropriate command in a **background terminal** so it keeps running:
 ./bin/start.sh [repo]
 ```
 
-**Important**: This should run in the background. Tell the designer the server is starting.
+**Important**: 
+- This should run in the background. Tell the designer the server is starting.
+- Calypso uses `yarn start:debug` (not `yarn start`) for development.
 
 ### Step 4: Report Status
 
@@ -78,10 +80,11 @@ Tell the designer:
 ### Starting Calypso
 
 ```
-🚀 Starting Calypso development server...
+🚀 Starting Calypso development server (debug mode)...
 
 This will be ready at http://calypso.localhost:3000
 It takes about 30-60 seconds to compile on first run.
+Running with yarn start:debug for development.
 
 I'll let you know when it's ready, or you can check the terminal for progress.
 ```

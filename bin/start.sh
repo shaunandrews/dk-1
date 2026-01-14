@@ -69,7 +69,7 @@ start_calypso() {
         exit 1
     fi
     echo "   URL: http://calypso.localhost:3000"
-    exec yarn start
+    exec yarn start:debug
 }
 
 start_gutenberg() {

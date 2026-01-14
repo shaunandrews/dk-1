@@ -18,18 +18,21 @@ Design Kit brings together **Calypso**, **Gutenberg**, **WordPress Core**, and *
 
 1. **Clone the repository** (or provide the repo URL to AI in Cursor)
 2. **Open in Cursor**: `cursor .`
-3. **That's it!** The AI will automatically:
-   - Detect this is a new project
-   - Read setup instructions
-   - Initialize all git submodules
-   - Install all dependencies
-   - Set everything up for you
+3. **Tell the AI to set things up** using one of these methods:
 
-You never need to open a terminal or run commands. Just tell the AI what you want to work on!
+   **Option A: Use the `/setup` command**
+   Type `/setup` in the chat to run the full setup process.
+
+   **Option B: Just ask naturally**
+   - "Set up the environment"
+   - "Initialize everything"
+   - "Get this project ready"
+
+The AI will initialize all git submodules, install dependencies, and get everything ready for you. You never need to open a terminal or run commands manually!
 
 ### For AI Assistants
 
-When a designer opens this project, **automatically execute setup** by following the protocol in `.cursor/rules/setup.mdc`.
+When a designer asks to set up this project, follow the protocol in `.cursor/rules/setup.mdc` and the `/setup` command in `.cursor/commands/setup.md`.
 
 ### 3. Start Building
 
@@ -54,6 +57,8 @@ dk/
 │   └── cross-repo.mdc   # Cross-repo workflows
 │
 ├── .cursor/commands/    # Slash commands for common tasks
+│   ├── setup.md         # Environment setup
+│   ├── start.md         # Start dev servers
 │   ├── find-component.md
 │   ├── build-screen.md
 │   ├── prototype.md
@@ -95,7 +100,23 @@ Or run directly:
 
 ## Development Servers
 
-Use the unified launcher (AI will call this automatically):
+Use the `/start` command or just tell the AI what you want to work on:
+
+- `/start` - shows available servers and starts one
+- "Start Calypso" or "I want to work on Calypso"
+- "Show me Storybook"
+- "Start Gutenberg"
+
+| Server | URL | Requires Docker |
+|--------|-----|-----------------|
+| Calypso | http://calypso.localhost:3000 | No |
+| Gutenberg | http://localhost:9999 | No |
+| Storybook | http://localhost:50240 | No |
+| WordPress Core | http://localhost:8889 | Yes |
+| CIAB | http://localhost:9001/wp-admin/ | Yes |
+| Jetpack | http://localhost:8889 | Yes |
+
+Or run directly:
 
 ```bash
 ./bin/start.sh calypso    # http://calypso.localhost:3000
@@ -164,6 +185,8 @@ Type `/` in chat to access these commands:
 
 | Command | Purpose |
 |---------|---------|
+| `/setup` | Set up the environment (submodules + dependencies) |
+| `/start` | Start a development server |
 | `/find-component` | Find existing UI components |
 | `/build-screen` | Create new pages/views |
 | `/prototype` | Quick mockups |

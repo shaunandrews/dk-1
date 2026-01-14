@@ -10,220 +10,89 @@ Design Kit brings together **Calypso**, **Gutenberg**, **WordPress Core**, and *
 - **Discover and use existing components** across all repositories
 - **Navigate cross-repo features** seamlessly
 - **Prototype rapidly** using real components
-- **Manage git workflows** with simplified commands
 
-## Quick Start (AI-Driven)
+## Getting Started
 
-### For Designers
+### Step 1: Ask Your AI to Set It Up
 
-1. **Clone the repository:**
-   ```bash
-   git clone https://github.com/Automattic/dk.git
-   cd dk
-   ```
-   > **Note:** The `ciab` repository requires Automattic internal access and is optional. All other repos (Calypso, Gutenberg, WordPress Core, Jetpack) are public and will be cloned automatically during setup.
-
-2. **Open in Cursor**: `cursor .`
-3. **Tell the AI to set things up** using one of these methods:
-
-   **Option A: Use the `/setup` command**
-   Type `/setup` in the chat to run the full setup process.
-
-   **Option B: Just ask naturally**
-   - "Set up the environment"
-   - "Initialize everything"
-   - "Get this project ready"
-
-The AI will clone all repositories, install dependencies, and get everything ready for you. You never need to open a terminal or run commands manually!
-
-### For AI Assistants
-
-When a designer asks to set up this project, follow the protocol in `.cursor/rules/setup.mdc` and the `/setup` command in `.cursor/commands/setup.md`.
-
-### 3. Start Building
-
-Ask the AI naturally:
-
-> "I need a settings page with a toggle for dark mode"
-
-> "Show me all button variants available"
-
-> "Create a prototype of a notification center"
-
-## Repository Structure
+Open Cursor (or your AI-powered editor) and use this prompt:
 
 ```
-dk/
-├── .cursor/rules/       # AI context and behavior rules
-│   ├── base.mdc         # Core AI behavior
-│   ├── calypso.mdc      # Calypso-specific context
-│   ├── gutenberg.mdc    # Gutenberg-specific context
-│   ├── wordpress-core.mdc
-│   ├── jetpack.mdc      # Jetpack-specific context
-│   └── cross-repo.mdc   # Cross-repo workflows
-│
-├── .cursor/commands/    # Slash commands for common tasks
-│   ├── setup.md         # Environment setup
-│   ├── start.md         # Start dev servers
-│   ├── find-component.md
-│   ├── build-screen.md
-│   ├── prototype.md
-│   ├── git.md
-│   └── cross-repo.md
-│
-├── repos/               # Cloned repositories (managed by bin/repos.sh)
-│   ├── calypso/         # WordPress.com dashboard
-│   ├── gutenberg/       # Block editor & components
-│   ├── wordpress-core/  # Core WordPress software
-│   ├── jetpack/         # Security, performance & marketing plugin
-│   └── ciab/            # (Optional) CIAB admin - Automattic internal only
-│
-├── docs/                # Documentation
-│   ├── getting-started.md
-│   └── repo-map.md
-│
-└── dk.config.json       # Central configuration
+Clone https://github.com/shaunandrews/dk-1 and set up the Design Kit workspace. Clone all repositories, install dependencies, and get everything ready for development. Follow the setup protocol in .cursor/rules/setup.mdc.
 ```
 
-## Environment Management
+That's it! The AI will handle everything—no terminal commands needed.
 
-Just tell the AI what you need:
+### Step 2: Start Building
 
-| You Say | What Happens |
-|---------|--------------|
-| "Set up the env" | Runs `./bin/setup.sh` - clones repos, installs deps |
-| "Reset everything" | Runs `./bin/reset.sh` - pulls latest from all repos |
-| "Full reset" | Runs `./bin/reset.sh --full` - reset + reinstall all deps |
-| "Show status" | Runs `./bin/status.sh` - shows state of all repos |
+Once setup is complete, just ask naturally. Here are examples of what you can ask:
 
-Or run directly:
+**Understanding & Exploring:**
+- "Explain how the profile settings screen works"
+- "Where does the code for the user dashboard live?"
+- "Show me how authentication is handled in Calypso"
+- "How does the block editor save content?"
+- "Where is the settings API defined in WordPress Core?"
+- "Explain the component structure in Gutenberg"
 
-```bash
-./bin/setup.sh          # Initial setup
-./bin/reset.sh          # Pull latest from all repos
-./bin/reset.sh --full   # Pull latest + reinstall dependencies
-./bin/status.sh         # Check status of all repos
-```
+**Finding Code:**
+- "Find all button components across the repos"
+- "Where is the notification system implemented?"
+- "Show me the code for the media library"
+- "Find where user preferences are stored"
+- "Locate the API endpoints for site settings"
 
-## Development Servers
+**Building & Updating:**
+- "I want to update the profile settings screen in the new dashboard"
+- "Create a new settings page with a toggle for dark mode"
+- "Add a notification center to the header"
+- "Build a prototype of a new onboarding flow"
+- "Update the color scheme in the theme customizer"
+- "I want to make a new plugin for WordPress"
 
-Use the `/start` command or just tell the AI what you want to work on:
+**Working with Components:**
+- "Show me all button variants available"
+- "What form components can I use?"
+- "Create a card component with an image and description"
+- "Find components that match this design pattern"
+- "What's the best component for a data table?"
 
-- `/start` - shows available servers and starts one
-- "Start Calypso" or "I want to work on Calypso"
+**Git & Pull Requests:**
+- "Checkout PR #12345 in Gutenberg"
+- "Show me the changes in Calypso PR #9876"
+- "Create a new branch for my feature"
+- "What files changed in the latest commit?"
+- "Help me commit these changes with a good message"
+
+**Development Servers:**
+- "Start the Calypso dev server"
 - "Show me Storybook"
 - "Start Gutenberg"
+- "I want to work on WordPress Core"
+- "Run Jetpack locally"
 
-| Server | URL | Requires Docker | Access |
-|--------|-----|-----------------|--------|
-| Calypso | http://calypso.localhost:3000 | No | Public |
-| Gutenberg | http://localhost:9999 | No | Public |
-| Storybook | http://localhost:50240 | No | Public |
-| WordPress Core | http://localhost:8889 | Yes | Public |
-| Jetpack | http://localhost:8889 | Yes | Public |
-| CIAB | http://localhost:9001/wp-admin/ | Yes | Automattic only |
+**Cross-Repo Work:**
+- "How does Calypso communicate with WordPress Core?"
+- "Where is the REST API endpoint for posts defined?"
+- "Show me how to add a new block that works in both Gutenberg and Calypso"
+- "Explain the data flow between repositories"
 
-Or run directly:
+## What's Inside
 
-```bash
-./bin/start.sh calypso    # http://calypso.localhost:3000
-./bin/start.sh gutenberg  # http://localhost:9999
-./bin/start.sh storybook  # http://localhost:50240
-./bin/start.sh core       # http://localhost:8889
-./bin/start.sh ciab       # http://localhost:9001/wp-admin/
-./bin/start.sh jetpack    # Runs in WP Core at http://localhost:8889
-```
+- **Calypso** - WordPress.com dashboard
+- **Gutenberg** - Block editor & component library
+- **WordPress Core** - Core WordPress software
+- **Jetpack** - Security, performance & marketing plugin
+- **CIAB** - (Optional) Automattic internal admin tools
 
-## Key Concepts
+All repositories are managed automatically. The AI knows where everything lives and how to work across them.
 
-### Component Library
+## Need Help?
 
-The primary component library is **`@wordpress/components`** from Gutenberg. Use it across all projects:
+Just ask your AI:
+- "Show me available commands"
+- "How do I start a dev server?"
+- "Find components that match this pattern"
+- "Reset the environment"
 
-```tsx
-import { Button, Card, TextControl, ToggleControl } from '@wordpress/components';
-```
-
-### Cross-Repo Features
-
-Many features touch multiple repositories:
-
-- **UI** lives in Calypso or Gutenberg
-- **Data** flows through the REST API
-- **Storage** happens in WordPress Core
-
-The AI understands these connections and can guide you through cross-repo work.
-
-### AI-First Workflow
-
-The `.cursor/rules/` directory contains context that helps the AI:
-
-- Understand each repository's structure
-- Know where components and patterns live
-- Suggest existing solutions before creating new ones
-- Handle git workflows appropriately
-
-## Troubleshooting
-
-**Repositories not cloning:**
-- Run `./bin/repos.sh clone` to clone all public repositories
-- Check your network connection and GitHub access
-
-**CIAB repository:**
-- CIAB is optional and requires Automattic internal access
-- To clone CIAB: `./bin/repos.sh clone-ciab`
-- If it fails, ensure your SSH key is configured for `github.a8c.com`
-
-**Dependencies failing:**
-- Check Node.js version (must be v18+)
-- Clear cache: `yarn cache clean` or `npm cache clean --force`
-
-**Port conflicts:**
-- Check if ports are in use: `lsof -i :3000`
-
-**Docker not installed (for WordPress Core / CIAB):**
-- Download Docker Desktop: https://docs.docker.com/desktop/install/
-- Only needed if you want to run local WordPress environments
-- Calypso, Gutenberg, and Storybook work without Docker
-
-## Documentation
-
-- **[Getting Started](docs/getting-started.md)** - Complete setup guide
-- **[Repository Map](docs/repo-map.md)** - How the repos connect
-- **[Jetpack Guide](docs/jetpack-guide.md)** - Jetpack development guide
-
-## Commands
-
-Type `/` in chat to access these commands:
-
-| Command | Purpose |
-|---------|---------|
-| `/setup` | Set up the environment (clone repos + install dependencies) |
-| `/start` | Start a development server |
-| `/find-component` | Find existing UI components |
-| `/build-screen` | Create new pages/views |
-| `/prototype` | Quick mockups |
-| `/git` | Version control help |
-| `/cross-repo` | Navigate between repos |
-
-## Configuration
-
-See `dk.config.json` for:
-
-- Repository paths and structure
-- Component library locations
-- Dev server configurations
-- Cross-repo connection mappings
-
-## Contributing
-
-When adding features to dk:
-
-1. Update relevant `.cursor/rules/*.mdc` files for AI context
-2. Add or update `.cursor/commands/*.md` for new workflows
-3. Update `dk.config.json` if paths or structure change
-4. Keep documentation in sync
-
-## License
-
-MIT - See individual repository licenses for Calypso, Gutenberg, and WordPress Core.
+The AI has full context about this workspace and can guide you through any task.

@@ -24,7 +24,14 @@ Calypso is WordPress.com's custom dashboard, built with React and TypeScript.
 repos/calypso/
 ├── client/
 │   ├── components/      # Reusable UI components (START HERE)
-│   ├── my-sites/        # Site management pages
+│   ├── dashboard/       # NEW: Redesigned Hosting Dashboard (see Dashboard section)
+│   │   ├── app/         # Dashboard app entry point
+│   │   ├── components/  # Dashboard-specific components
+│   │   ├── docs/        # Dashboard design documentation
+│   │   ├── sites/       # Sites management pages
+│   │   ├── domains/     # Domains pages
+│   │   └── me/          # User profile pages
+│   ├── my-sites/        # Site management pages (legacy)
 │   ├── layout/          # App shell and layouts
 │   ├── blocks/          # Gutenberg blocks for Calypso
 │   ├── state/           # Redux state management
@@ -40,9 +47,16 @@ repos/calypso/
 
 ### Finding Components
 
+**For traditional Calypso pages:**
 1. **First**: Check `client/components/` for Calypso-specific components
 2. **Then**: Check if `@wordpress/components` has what you need
 3. **Finally**: Create new in `client/components/[component-name]/`
+
+**For dashboard folder (`/client/dashboard`):**
+1. **First**: Check `@wordpress/components` - this is the primary UI library
+2. **Then**: Check `client/dashboard/components/` for dashboard-specific components
+3. **Finally**: Create new in `client/dashboard/components/[component-name]/`
+4. **Never**: Import from `calypso/components` or use Calypso CSS/state
 
 ### Component Structure
 
@@ -167,6 +181,191 @@ function MyComponent() {
   return <h1>{translate('Settings')}</h1>;
 }
 ```
+
+## Dashboard Folder (`/client/dashboard`)
+
+The `/client/dashboard` folder is a **redesign of Calypso** with its own architecture, design system, and development guidelines. It's a new Hosting Dashboard for WordPress.com built with modern design principles and a different tech stack than traditional Calypso.
+
+### Key Differences from Traditional Calypso
+
+| Aspect | Traditional Calypso | Dashboard Folder |
+|--------|-------------------|------------------|
+| **Components** | `calypso/components` | `@wordpress/components` first |
+| **State** | Redux + `calypso/state` | TanStack Query (no Redux) |
+| **Routing** | Calypso router | `@tanstack/react-router` |
+| **Styling** | SCSS with Calypso variables | Minimal CSS, component-based |
+| **i18n** | `i18n-calypso` | `@wordpress/i18n` + `@automattic/i18n-utils` |
+| **API** | Redux actions/thunks | `lib/wp` REST API calls |
+
+### Core Principles
+
+1. **WordPress Components First**: Use `@wordpress/components` as the primary UI library
+2. **Minimal CSS**: Avoid custom CSS as much as possible, preferring component composition
+3. **No Redux**: Use TanStack Query for server state management
+4. **Explicit Dependencies**: Be very explicit about what dependencies are included
+5. **TypeScript**: Use TypeScript with simple, concrete types
+6. **Performance**: Use loaders for data prefetching, placeholders instead of spinners
+
+### Design System
+
+The dashboard follows a component-based architecture with strong focus on the WordPress design system.
+
+#### Layout Components
+
+- **VStack/HStack**: Prefer these over Flex components for layout
+- **Page Layout**: Main container for every dashboard page (`client/dashboard/components/page-layout`)
+- **Header Bar**: Reusable header bar component (`client/dashboard/components/header-bar`)
+- **Menu/Responsive Menu**: Mobile-friendly navigation menus (`client/dashboard/components/menu`, `client/dashboard/components/responsive-menu`)
+
+#### Data Display Components
+
+- **DataViews**: Core component for displaying lists in tabular, grid, or list format with sorting, filtering, and pagination. Part of the design system - check with design team before making changes.
+- **DataForm**: Component for creating and editing data with form-based interface
+- **Card Components**: Use `client/dashboard/components/card` (custom wrapper around WordPress Card) instead of importing directly from `@wordpress/components`
+
+#### Other Key Components
+
+Available in `client/dashboard/components/`:
+- `callout`, `callout-skeleton`, `callout-overlay` - Callout components
+- `text-skeleton`, `text-blur` - Placeholder components (use instead of spinners)
+- `overview-card` - Standard card for data display
+- `dataviews-card` - Card component for displaying data views
+- `section-header` - Section headers
+- `notice` - Notice components
+- `stat` - Stat display components
+- `summary-button`, `summary-button-list` - Summary button components
+
+### Routing (`@tanstack/react-router`)
+
+Routes use loaders to prefetch data before rendering:
+
+```typescript
+import { createRoute, createLazyRoute } from '@tanstack/react-router';
+
+const myRoute = createRoute({
+  getParentRoute: () => parentRoute,
+  path: 'my-path',
+  loader: async ({ params }) => {
+    // Prefetch data using TanStack Query
+    await queryClient.ensureQueryData(myQuery(params.id));
+  },
+}).lazy(() =>
+  import('./my-component').then((d) =>
+    createLazyRoute('my-route')({
+      component: () => <d.default />,
+    })
+  )
+);
+```
+
+**Key Points:**
+- Routes are configuration-based and lazy-loaded
+- Use `loader` functions to prefetch data
+- Loaders use TanStack Query's `queryClient.ensureQueryData` for caching
+- Components can use `useQuery` or `useSuspenseQuery` to access loader data
+
+### Data Fetching (TanStack Query)
+
+The dashboard uses TanStack Query for all data fetching:
+
+```typescript
+import { useQuery, useSuspenseQuery } from '@tanstack/react-query';
+import { siteBySlugQuery } from '@automattic/api-queries';
+
+// In component
+const { data: site } = useSuspenseQuery(siteBySlugQuery(siteSlug));
+
+// For dynamic/conditional queries
+const { data, isLoading } = useQuery({
+  ...myQuery(id),
+  enabled: someCondition,
+});
+```
+
+**Key Points:**
+- Use queries from `@automattic/api-queries` package
+- Route loaders and components share the same `queryClient` cache
+- Prefer `useSuspenseQuery` when data is guaranteed (from loader)
+- Use `useQuery` for conditional or dynamic data fetching
+
+### Styling Guidelines
+
+1. **Minimal CSS**: Avoid custom CSS, prefer component composition
+2. **CSS Logical Properties**: Use logical properties for RTL support (e.g., `padding-inline` instead of `padding-left/right`)
+3. **No AutoRTL**: Dashboard doesn't use Calypso's autortl processing - all languages use the same CSS
+4. **Card Component**: Always use `client/dashboard/components/card` instead of `@wordpress/components` Card directly
+
+### Typography and Copy Guidelines
+
+- **Sentence Case**: Use sentence case for almost everything (buttons, modal titles, form labels, DataViews field labels)
+- **Punctuation**: End sentences with periods (except button/form labels and headings)
+- **Quotes**: Use curly quotes and apostrophes ("like this" not "like this")
+- **Snackbars**: 
+  - Toggles: "{Setting name} enabled." / "{Setting name} disabled."
+  - Non-toggles: "{Setting name} saved."
+  - Deletions: "{Setting name} deleted."
+  - Errors: "Failed to {action} {setting name}."
+
+### Internationalization
+
+Use `@wordpress/i18n` and `@automattic/i18n-utils`:
+
+```typescript
+import { __ } from '@wordpress/i18n';
+import { createInterpolateElement } from '@wordpress/element';
+
+// Simple translation
+__( 'Settings' )
+
+// With interpolation (preferred approach)
+createInterpolateElement(
+  __( 'Invitation sent to <newOwnerEmail />' ),
+  {
+    newOwnerEmail: <strong>{ newOwnerEmail }</strong>,
+  }
+)
+```
+
+**Key Points:**
+- Avoid `@automattic/i18n-calypso` (to be deprecated)
+- Keep translations simple - avoid complex HTML tags or placeholders
+- Apply formatting in code, not in translation strings
+
+### Entry Points
+
+The dashboard supports multiple entry points (WordPress.com, CIAB, etc.) with:
+- Custom branding (logo, colors via CSS variables)
+- Different feature sets via `supports` configuration
+- Shared core functionality
+
+Entry points are defined in `client/dashboard/app-*/` directories.
+
+### Testing
+
+- **E2E Testing**: Uses Calypso's existing infrastructure
+  - Tests: `test/e2e/specs/dashboard/`
+  - Page objects: `packages/calypso-e2e/src/lib/pages/dashboard-page.ts`
+- **Performance Testing**: Key focus area
+- Consider lighter testing approach without page objects for future
+
+### Documentation
+
+Comprehensive documentation is available in `client/dashboard/docs/`:
+- `README.md` - Overview and principles
+- `router.md` - Routing system documentation
+- `data-library.md` - Data fetching and state management
+- `ui-components.md` - Component architecture
+- `typography-and-copy.md` - Typography and copy guidelines
+- `testing.md` - Testing strategy
+- `entry-points.md` - Entry point configuration
+- `i18n.md` - Internationalization practices
+
+### Important Notes
+
+- **Avoid Calypso Dependencies**: Don't import Calypso's components, CSS, or state
+- **Avoid CSS Overrides**: Don't rely on CSS overrides and hacks - work with design system
+- **Document Hacks**: If hacks are necessary, document them in README with long-term solution
+- **Check Design Team**: Before modifying DataViews or core design system components, check with design team
 
 ## Git & Branch Workflows
 

@@ -1,6 +1,6 @@
 # Repository Map
 
-This document explains how Calypso, Gutenberg, WordPress Core, and CIAB connect and work together.
+This document explains how Calypso, Gutenberg, WordPress Core, CIAB, and Jetpack connect and work together.
 
 ## Overview
 
@@ -28,25 +28,30 @@ This document explains how Calypso, Gutenberg, WordPress Core, and CIAB connect 
            │    npm packages       │      Syncs to Core      │
            │◄──────────────────────┤                         │
            │                       ├────────────────────────►│
-           │              REST API                           │
-           └────────────────────────────────────────────────►│
-                                      │
-                                      │ REST API
-                                      │
-                           ┌──────────▼──────────┐
-                           │        CIAB         │
-                           │                     │
-                           │  WordPress Admin    │
-                           │  Redesign (SPA)     │
-                           │                     │
-                           │  • Modern UI        │
-                           │  • React/TypeScript │
-                           │  • TanStack Router  │
-                           │  • Plugin system   │
-                           └─────────────────────┘
+           │              REST API                           │◄───────────┐
+           └────────────────────────────────────────────────►│            │
+                                      │                      │            │
+                                      │ REST API             │   Plugin   │
+                                      │                      │            │
+          ┌───────────────────────────┴─────────────────┐    │            │
+          │                                             │    │            │
+          ▼                                             ▼    │            │
+┌─────────────────────┐                   ┌──────────────────┴───────────┐
+│        CIAB         │                   │          JETPACK             │
+│                     │                   │                              │
+│  WordPress Admin    │                   │  Security & Performance      │
+│  Redesign (SPA)     │                   │  Plugin                      │
+│                     │                   │                              │
+│  • Modern UI        │                   │  • Stats & Analytics         │
+│  • React/TypeScript │                   │  • Security (Protect)        │
+│  • TanStack Router  │                   │  • CDN (Photon)              │
+│  • Plugin system    │                   │  • Social (Publicize)        │
+└─────────────────────┘                   │  • Backup & Sync             │
+                                          │  • Custom Blocks             │
+                                          └──────────────────────────────┘
 ```
 
-## The Four Repositories
+## The Five Repositories
 
 ### Calypso (`repos/calypso`)
 
@@ -176,6 +181,43 @@ tests/                   # E2E tests (Playwright)
 - `@automattic/design-system` - Automattic components
 - `@wordpress/i18n` - Internationalization
 
+---
+
+### Jetpack (`repos/jetpack`)
+
+**What it is**: A WordPress plugin providing security, performance, marketing, and design tools.
+
+**What it does**:
+- Connects self-hosted WordPress sites to WordPress.com services
+- Provides security features (Protect, SSO, Backup)
+- Offers performance tools (CDN, lazy loading)
+- Adds marketing features (Stats, Publicize, Related Posts)
+- Extends Gutenberg with custom blocks
+
+**Key paths**:
+```
+projects/
+├── plugins/
+│   ├── jetpack/             # Main Jetpack plugin
+│   │   ├── modules/         # Feature modules
+│   │   ├── extensions/      # Gutenberg blocks
+│   │   ├── _inc/client/     # React admin UI
+│   │   └── json-endpoints/  # REST API
+│   ├── backup/              # Jetpack Backup
+│   ├── boost/               # Jetpack Boost
+│   └── ...                  # Other plugins
+├── packages/                # Shared PHP packages
+└── js-packages/             # Shared JS packages
+```
+
+**Tech stack**: PHP, JavaScript/TypeScript, React, SCSS, pnpm
+
+**Key modules**:
+- Stats, Protect, SSO, Publicize, Sharing
+- Related Posts, Likes, Comments, Subscriptions
+- Photon (CDN), Markdown, Infinite Scroll
+- Contact Forms, Sitemaps, VideoPress
+
 ## How They Connect
 
 ### Connection 1: Gutenberg → Calypso (npm packages)
@@ -258,6 +300,42 @@ await saveEntityRecord('postType', 'post', { title: 'New Post' });
 ```
 
 CIAB runs as a WordPress plugin and provides a SPA interface that replaces the traditional WordPress admin.
+
+### Connection 5: Jetpack → WordPress Core (Plugin)
+
+Jetpack runs as a plugin within WordPress Core. In Design Kit, it's symlinked via docker-compose:
+
+```yaml
+# In repos/wordpress-core/docker-compose.yml
+volumes:
+  - ../jetpack/projects/plugins/jetpack:/var/www/src/wp-content/plugins/jetpack
+```
+
+Jetpack extends WordPress with its own REST API:
+
+```php
+// Jetpack REST endpoints
+/wp-json/jetpack/v4/connection/   # Connection status
+/wp-json/jetpack/v4/module/       # Module management
+/wp-json/jetpack/v4/settings/     # Settings
+/wp-json/jetpack/v4/site/         # Site info
+```
+
+### Connection 6: Jetpack → Calypso (via WordPress.com)
+
+Jetpack connects self-hosted sites to WordPress.com, enabling Calypso to manage them:
+
+```
+Self-hosted WordPress + Jetpack
+    ↓
+Jetpack Connection (OAuth)
+    ↓
+WordPress.com Cloud Services
+    ↓
+Calypso Dashboard
+```
+
+This allows Calypso to manage Jetpack-connected sites alongside WordPress.com sites.
 
 ## Feature Flow Examples
 
@@ -386,11 +464,13 @@ Calypso shows confirmation
 | Create a new UI page | Calypso (`client/my-sites/`) or CIAB (`wordpress/plugins/ciab-admin/routes/`) |
 | Use existing components | Import from `@wordpress/components` |
 | Create a new component | Gutenberg (`packages/components/`) or Calypso (`client/components/`) or CIAB (`wordpress/plugins/ciab-admin/packages/`) |
-| Create a new block | Gutenberg (`packages/block-library/`) |
-| Add a REST endpoint | WordPress Core (`src/wp-includes/rest-api/`) |
+| Create a new block | Gutenberg (`packages/block-library/`) or Jetpack (`projects/plugins/jetpack/extensions/blocks/`) |
+| Add a REST endpoint | WordPress Core (`src/wp-includes/rest-api/`) or Jetpack (`projects/plugins/jetpack/json-endpoints/`) |
 | Store new data | WordPress Core (options, post meta, custom table) |
 | Add admin page (PHP) | WordPress Core (`src/wp-admin/`) |
 | Modernize WordPress admin | CIAB (`wordpress/plugins/ciab-admin/`) |
+| Add WordPress.com service | Jetpack (`projects/plugins/jetpack/modules/`) |
+| Create Jetpack feature | Jetpack (`projects/plugins/jetpack/`) |
 
 ## Quick Reference
 
@@ -410,12 +490,17 @@ cd repos/gutenberg && npm run storybook
 # → http://localhost:50240
 
 # WordPress Core
-cd repos/wordpress-core && npm run dev
+cd repos/wordpress-core && npm run env:start
 # → http://localhost:8889
 
 # CIAB
 cd repos/ciab && pnpm dev
 # → http://localhost:9001/wp-admin/
+
+# Jetpack (runs in WordPress Core)
+./bin/start.sh jetpack
+# → http://localhost:8889/wp-admin/plugins.php
+# Then: cd repos/jetpack && pnpm run watch
 ```
 
 ### Find Things
@@ -428,10 +513,15 @@ ls repos/ciab/wordpress/plugins/ciab-admin/packages/
 
 # Find a block
 ls repos/gutenberg/packages/block-library/src/
+ls repos/jetpack/projects/plugins/jetpack/extensions/blocks/
 
 # Find a CIAB route
 ls repos/ciab/wordpress/plugins/ciab-admin/routes/
 
+# Find a Jetpack module
+ls repos/jetpack/projects/plugins/jetpack/modules/
+
 # Find REST endpoint
 grep -r "register_rest_route" repos/wordpress-core/src/wp-includes/rest-api/
+grep -r "register_rest_route" repos/jetpack/projects/plugins/jetpack/
 ```

@@ -9,8 +9,9 @@ Design Kit is a unified workspace that brings together:
 - **Calypso** - WordPress.com's dashboard
 - **Gutenberg** - The WordPress Block Editor
 - **WordPress Core** - The foundation software
+- **Jetpack** - Security, performance, and marketing tools
 
-Instead of managing three separate repositories, dk lets you work across all of them with AI assistance that understands how everything connects.
+Instead of managing these repositories separately, dk lets you work across all of them with AI assistance that understands how everything connects.
 
 ## Prerequisites
 
@@ -20,9 +21,11 @@ Before you begin, make sure you have:
 - **Node.js** (v18+) - JavaScript runtime
 - **Yarn** - Package manager for Calypso
 - **npm** - Package manager for Gutenberg/Core
+- **pnpm** - Package manager for CIAB/Jetpack
+- **Composer** - PHP package manager for Jetpack
 - **Cursor** - AI-powered editor (recommended)
 
-### Optional (for WordPress Core / CIAB development)
+### Optional (for WordPress Core / CIAB / Jetpack development)
 
 - **Docker Desktop** - Required to run local WordPress environments
   - [Download for Mac](https://docs.docker.com/desktop/setup/install/mac-install/)
@@ -40,7 +43,7 @@ Note: Calypso, Gutenberg, and Storybook work without Docker.
 3. **That's it!** The AI will automatically detect this is a new project and set everything up for you
 
 The AI will:
-- Initialize all git submodules (Calypso, Gutenberg, WordPress Core, CIAB)
+- Initialize all git submodules (Calypso, Gutenberg, WordPress Core, CIAB, Jetpack)
 - Install dependencies for each repository
 - Take about 5-10 minutes depending on your connection
 - Keep you updated on progress
@@ -83,7 +86,8 @@ dk/
 ├── repos/               # The actual codebases
 │   ├── calypso/         # WordPress.com dashboard
 │   ├── gutenberg/       # Block editor
-│   └── wordpress-core/  # Core software
+│   ├── wordpress-core/  # Core software
+│   └── jetpack/         # Security & performance plugin
 ├── docs/                # Documentation
 └── dk.config.json       # Central configuration
 ```
@@ -140,6 +144,11 @@ Just tell the AI what you want to work on, and it will start the server and open
 **"Start CIAB"**
 - AI starts CIAB dev server and WordPress environment
 - AI opens http://localhost:9001/wp-admin/ in your browser
+
+**"Start Jetpack"**
+- AI starts WordPress Core with Jetpack plugin
+- AI opens http://localhost:8889/wp-admin/plugins.php in your browser
+- You can activate and develop Jetpack features
 
 The AI handles all the terminal commands, directory navigation, and browser opening. You just tell it what you want to work on.
 

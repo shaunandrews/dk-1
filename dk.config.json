@@ -124,6 +124,35 @@
         "url": "http://localhost:9001/wp-admin/"
       },
       "aiContext": []
+    },
+    
+    "jetpack": {
+      "path": "repos/jetpack",
+      "name": "Jetpack",
+      "description": "Security, performance, marketing, and design tools for WordPress",
+      "upstream": "https://github.com/Automattic/jetpack",
+      "defaultBranch": "trunk",
+      "stack": {
+        "language": "PHP/TypeScript",
+        "framework": "WordPress Plugin",
+        "styling": "SCSS",
+        "stateManagement": "@wordpress/data"
+      },
+      "paths": {
+        "mainPlugin": "projects/plugins/jetpack",
+        "plugins": "projects/plugins",
+        "packages": "projects/packages",
+        "jsPackages": "projects/js-packages",
+        "tools": "tools",
+        "docs": "docs"
+      },
+      "devServer": {
+        "command": "pnpm run watch",
+        "port": null,
+        "url": "http://localhost:8889/wp-admin/plugins.php",
+        "note": "Jetpack runs within WordPress Core environment"
+      },
+      "aiContext": ["AGENTS.md"]
     }
   },
   
@@ -147,6 +176,16 @@
       "description": "Calypso communicates with WordPress via REST API",
       "integration": "REST API endpoints at /wp-json/wp/v2/",
       "apiBase": "/wp-json/wp/v2/"
+    },
+    "jetpack-core": {
+      "description": "Jetpack plugin runs within WordPress Core environment",
+      "integration": "Symlinked into wp-content/plugins via docker-compose volume mount",
+      "mountPath": "../jetpack/projects/plugins/jetpack:/var/www/src/wp-content/plugins/jetpack"
+    },
+    "jetpack-calypso": {
+      "description": "Jetpack connects self-hosted WordPress sites to WordPress.com via Calypso",
+      "integration": "Jetpack API endpoints consumed by Calypso for site management",
+      "apiBase": "/wp-json/jetpack/v4/"
     }
   },
   

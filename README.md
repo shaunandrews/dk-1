@@ -4,7 +4,7 @@ A unified workspace for designers at Automattic to work across the WordPress eco
 
 ## What is Design Kit?
 
-Design Kit brings together **Calypso**, **Gutenberg**, and **WordPress Core** into a single workspace with AI-powered tooling that helps designers:
+Design Kit brings together **Calypso**, **Gutenberg**, **WordPress Core**, and **Jetpack** into a single workspace with AI-powered tooling that helps designers:
 
 - **Build screens and flows** without deep technical knowledge
 - **Discover and use existing components** across all repositories
@@ -50,6 +50,7 @@ dk/
 │   ├── calypso.mdc      # Calypso-specific context
 │   ├── gutenberg.mdc    # Gutenberg-specific context
 │   ├── wordpress-core.mdc
+│   ├── jetpack.mdc      # Jetpack-specific context
 │   └── cross-repo.mdc   # Cross-repo workflows
 │
 ├── .cursor/commands/    # Slash commands for common tasks
@@ -62,7 +63,8 @@ dk/
 ├── repos/               # Git submodules
 │   ├── calypso/         # WordPress.com dashboard
 │   ├── gutenberg/       # Block editor & components
-│   └── wordpress-core/  # Core WordPress software
+│   ├── wordpress-core/  # Core WordPress software
+│   └── jetpack/         # Security, performance & marketing plugin
 │
 ├── docs/                # Documentation
 │   ├── getting-started.md
@@ -101,6 +103,7 @@ Use the unified launcher (AI will call this automatically):
 ./bin/start.sh storybook  # http://localhost:50240
 ./bin/start.sh core       # http://localhost:8889
 ./bin/start.sh ciab       # http://localhost:9001/wp-admin/
+./bin/start.sh jetpack    # Runs in WP Core at http://localhost:8889
 ```
 
 ## Key Concepts
@@ -153,6 +156,7 @@ The `.cursor/rules/` directory contains context that helps the AI:
 
 - **[Getting Started](docs/getting-started.md)** - Complete setup guide
 - **[Repository Map](docs/repo-map.md)** - How the repos connect
+- **[Jetpack Guide](docs/jetpack-guide.md)** - Jetpack development guide
 
 ## Commands
 

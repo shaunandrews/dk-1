@@ -52,10 +52,12 @@ show_help() {
     echo "  storybook  - Gutenberg component library (http://localhost:50240)"
     echo "  core       - WordPress Core dev site (http://localhost:8889)"
     echo "  ciab       - Commerce in a Box (http://localhost:9001/wp-admin/)"
+    echo "  jetpack    - Jetpack plugin dev (runs in WP Core at http://localhost:8889)"
     echo ""
     echo "Examples:"
     echo "  $0 calypso"
     echo "  $0 storybook"
+    echo "  $0 jetpack"
     echo ""
 }
 
@@ -117,6 +119,63 @@ start_ciab() {
     exec pnpm dev
 }
 
+start_jetpack() {
+    check_docker
+    echo "🚀 Starting Jetpack development environment..."
+    
+    # Check Jetpack dependencies
+    cd "$ROOT_DIR/repos/jetpack"
+    if [ ! -d "node_modules" ]; then
+        echo "⚠️  Dependencies not installed. Run ./bin/setup.sh first."
+        exit 1
+    fi
+    
+    # Check if Jetpack was built
+    if [ ! -d "projects/plugins/jetpack/_inc/build" ]; then
+        echo "⚠️  Jetpack not built. Building now..."
+        pnpm jetpack build plugins/jetpack --deps
+    fi
+    
+    # Check WordPress Core dependencies
+    cd "$ROOT_DIR/repos/wordpress-core"
+    if [ ! -d "node_modules" ]; then
+        echo "⚠️  WordPress Core dependencies not installed. Run ./bin/setup.sh first."
+        exit 1
+    fi
+    
+    # Ensure mu-plugin exists for URL fixes
+    if [ ! -f "src/wp-content/mu-plugins/jetpack-monorepo-fix.php" ]; then
+        echo "⚠️  Jetpack mu-plugin missing. Run ./bin/setup.sh to create it."
+    fi
+    
+    echo ""
+    echo "   Jetpack runs within the WordPress Core environment."
+    echo "   Starting WordPress Core Docker containers..."
+    echo ""
+    
+    # Start WordPress Core environment
+    npm run env:start
+    
+    # Create symlink for Jetpack in the container
+    # The jetpack/projects folder is mounted at /var/www/jetpack-projects
+    # We need to symlink the plugin into wp-content/plugins so WordPress sees it
+    echo "   Creating Jetpack symlink in container..."
+    docker compose exec -T cli rm -rf /var/www/src/wp-content/plugins/jetpack 2>/dev/null || true
+    docker compose exec -T cli ln -s /var/www/jetpack-projects/plugins/jetpack /var/www/src/wp-content/plugins/jetpack
+    
+    # Activate Jetpack if not already active
+    echo "   Activating Jetpack plugin..."
+    docker compose exec -T cli wp plugin activate jetpack 2>/dev/null || true
+    
+    echo ""
+    echo "   ✅ WordPress Core is running at http://localhost:8889"
+    echo "   ✅ Jetpack is active at http://localhost:8889/wp-admin/admin.php?page=jetpack"
+    echo ""
+    echo "   To watch for changes during development:"
+    echo "   cd repos/jetpack && pnpm jetpack watch plugins/jetpack"
+    echo ""
+}
+
 # Main
 if [ $# -eq 0 ]; then
     show_help
@@ -138,6 +197,9 @@ case "$1" in
         ;;
     ciab)
         start_ciab
+        ;;
+    jetpack)
+        start_jetpack
         ;;
     -h|--help|help)
         show_help

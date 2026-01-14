@@ -10,3 +10,6 @@
 [submodule "repos/ciab"]
 	path = repos/ciab
 	url = git@github.a8c.com:Automattic/ciab-admin.git
+[submodule "repos/jetpack"]
+	path = repos/jetpack
+	url = https://github.com/Automattic/jetpack

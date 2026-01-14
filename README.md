@@ -16,7 +16,13 @@ Design Kit brings together **Calypso**, **Gutenberg**, **WordPress Core**, and *
 
 ### For Designers
 
-1. **Clone the repository** (or provide the repo URL to AI in Cursor)
+1. **Clone the repository:**
+   ```bash
+   git clone --recurse-submodules https://github.com/Automattic/dk.git
+   cd dk
+   ```
+   > **Note:** The `ciab` submodule requires Automattic internal access and will be skipped automatically for external users. All other repos (Calypso, Gutenberg, WordPress Core, Jetpack) are public.
+
 2. **Open in Cursor**: `cursor .`
 3. **Tell the AI to set things up** using one of these methods:
 
@@ -69,7 +75,8 @@ dk/
 │   ├── calypso/         # WordPress.com dashboard
 │   ├── gutenberg/       # Block editor & components
 │   ├── wordpress-core/  # Core WordPress software
-│   └── jetpack/         # Security, performance & marketing plugin
+│   ├── jetpack/         # Security, performance & marketing plugin
+│   └── ciab/            # (Optional) CIAB admin - Automattic internal only
 │
 ├── docs/                # Documentation
 │   ├── getting-started.md
@@ -107,14 +114,14 @@ Use the `/start` command or just tell the AI what you want to work on:
 - "Show me Storybook"
 - "Start Gutenberg"
 
-| Server | URL | Requires Docker |
-|--------|-----|-----------------|
-| Calypso | http://calypso.localhost:3000 | No |
-| Gutenberg | http://localhost:9999 | No |
-| Storybook | http://localhost:50240 | No |
-| WordPress Core | http://localhost:8889 | Yes |
-| CIAB | http://localhost:9001/wp-admin/ | Yes |
-| Jetpack | http://localhost:8889 | Yes |
+| Server | URL | Requires Docker | Access |
+|--------|-----|-----------------|--------|
+| Calypso | http://calypso.localhost:3000 | No | Public |
+| Gutenberg | http://localhost:9999 | No | Public |
+| Storybook | http://localhost:50240 | No | Public |
+| WordPress Core | http://localhost:8889 | Yes | Public |
+| Jetpack | http://localhost:8889 | Yes | Public |
+| CIAB | http://localhost:9001/wp-admin/ | Yes | Automattic only |
 
 Or run directly:
 
@@ -159,7 +166,13 @@ The `.cursor/rules/` directory contains context that helps the AI:
 ## Troubleshooting
 
 **Submodules not initializing:**
-- Try `git submodule update --init --recursive --depth 1`
+- Try `git submodule update --init --depth 1` (initializes all accessible submodules)
+- If you have Automattic access and want CIAB: `git submodule update --init repos/ciab`
+
+**CIAB submodule failing:**
+- This is expected for non-Automattic users — CIAB is a private repo
+- The `update = none` setting in `.gitmodules` should skip it automatically
+- If you have access but it's still failing, check your SSH key is configured for `github.a8c.com`
 
 **Dependencies failing:**
 - Check Node.js version (must be v18+)

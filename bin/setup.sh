@@ -17,14 +17,48 @@ cd "$ROOT_DIR"
 
 # Initialize and update submodules
 echo "📦 Initializing submodules..."
-git submodule update --init --depth 1
 
-# Check if submodules exist
-if [ ! -d "repos/calypso" ] || [ ! -d "repos/gutenberg" ] || [ ! -d "repos/wordpress-core" ] || [ ! -d "repos/ciab" ] || [ ! -d "repos/jetpack" ]; then
-    echo "❌ Error: Submodules not found. Please check your git configuration."
+PUBLIC_REPOS="repos/calypso repos/gutenberg repos/wordpress-core repos/jetpack"
+PRIVATE_REPOS="repos/ciab"
+FAILED_REPOS=""
+
+# Always init public repos
+for repo in $PUBLIC_REPOS; do
+    echo "  Initializing $repo..."
+    if git submodule update --init --depth 1 "$repo" 2>/dev/null; then
+        echo "  ✅ $repo initialized"
+    else
+        echo "  ⚠️  Warning: Failed to initialize $repo"
+        FAILED_REPOS="$FAILED_REPOS $repo"
+    fi
+done
+
+# Try private repos, but don't fail if inaccessible
+for repo in $PRIVATE_REPOS; do
+    echo "  Initializing $repo (requires Automattic access)..."
+    if git submodule update --init --depth 1 "$repo" 2>/dev/null; then
+        echo "  ✅ $repo initialized"
+    else
+        echo "  ⏭️  Skipping $repo (no access or SSH key not configured)"
+    fi
+done
+
+# Check that at least the public repos initialized
+PUBLIC_MISSING=""
+for repo in $PUBLIC_REPOS; do
+    if [ ! -d "$repo" ]; then
+        PUBLIC_MISSING="$PUBLIC_MISSING $repo"
+    fi
+done
+
+if [ -n "$PUBLIC_MISSING" ]; then
+    echo ""
+    echo "❌ Error: Required submodules not found:$PUBLIC_MISSING"
+    echo "   Please check your git configuration and network connection."
     exit 1
 fi
 
+echo ""
 echo "✅ Submodules initialized"
 echo ""
 
@@ -56,23 +90,28 @@ echo "✅ WordPress Core dependencies installed"
 cd "$ROOT_DIR"
 echo ""
 
-# CIAB setup
-echo "📦 Setting up CIAB..."
-cd "$ROOT_DIR/repos/ciab"
-if command -v pnpm &> /dev/null; then
-    pnpm install --frozen-lockfile 2>/dev/null || pnpm install
-    echo "✅ CIAB dependencies installed"
-    if command -v composer &> /dev/null; then
-        composer install
-        echo "✅ CIAB PHP dependencies installed"
+# CIAB setup (optional - requires Automattic access)
+if [ -d "$ROOT_DIR/repos/ciab" ]; then
+    echo "📦 Setting up CIAB..."
+    cd "$ROOT_DIR/repos/ciab"
+    if command -v pnpm &> /dev/null; then
+        pnpm install --frozen-lockfile 2>/dev/null || pnpm install
+        echo "✅ CIAB dependencies installed"
+        if command -v composer &> /dev/null; then
+            composer install
+            echo "✅ CIAB PHP dependencies installed"
+        else
+            echo "⚠️  Composer not found. Install composer to set up CIAB PHP dependencies"
+        fi
     else
-        echo "⚠️  Composer not found. Install composer to set up CIAB PHP dependencies"
+        echo "⚠️  pnpm not found. Install pnpm to set up CIAB: npm install -g pnpm"
     fi
+    cd "$ROOT_DIR"
+    echo ""
 else
-    echo "⚠️  pnpm not found. Install pnpm to set up CIAB: npm install -g pnpm"
+    echo "⏭️  Skipping CIAB setup (not initialized - requires Automattic access)"
+    echo ""
 fi
-cd "$ROOT_DIR"
-echo ""
 
 # Jetpack setup
 echo "📦 Setting up Jetpack..."
@@ -157,12 +196,16 @@ echo "  • Start Gutenberg:   ./bin/start.sh gutenberg"
 echo "  • Start Storybook:   ./bin/start.sh storybook"
 echo "  • Start WP Core:     ./bin/start.sh core"
 echo "  • Start Jetpack:     ./bin/start.sh jetpack"
-echo "  • Start CIAB:        ./bin/start.sh ciab"
+if [ -d "$ROOT_DIR/repos/ciab" ]; then
+    echo "  • Start CIAB:        ./bin/start.sh ciab"
+fi
 echo ""
 echo "URLs:"
 echo "  • Calypso:    http://calypso.localhost:3000"
 echo "  • Gutenberg:  http://localhost:9999"
 echo "  • Storybook:  http://localhost:50240"
 echo "  • WP Core:    http://localhost:8889"
-echo "  • CIAB:       http://localhost:9001"
+if [ -d "$ROOT_DIR/repos/ciab" ]; then
+    echo "  • CIAB:       http://localhost:9001"
+fi
 echo ""

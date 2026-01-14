@@ -1,15 +1,21 @@
 [submodule "repos/calypso"]
 	path = repos/calypso
 	url = https://github.com/Automattic/wp-calypso
+	shallow = true
 [submodule "repos/gutenberg"]
 	path = repos/gutenberg
 	url = https://github.com/WordPress/gutenberg
+	shallow = true
 [submodule "repos/wordpress-core"]
 	path = repos/wordpress-core
 	url = https://github.com/WordPress/wordpress-develop
+	shallow = true
 [submodule "repos/ciab"]
 	path = repos/ciab
 	url = git@github.a8c.com:Automattic/ciab-admin.git
+	shallow = true
+	update = none
 [submodule "repos/jetpack"]
 	path = repos/jetpack
 	url = https://github.com/Automattic/jetpack
+	shallow = true

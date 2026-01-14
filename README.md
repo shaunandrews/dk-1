@@ -18,10 +18,10 @@ Design Kit brings together **Calypso**, **Gutenberg**, **WordPress Core**, and *
 
 1. **Clone the repository:**
    ```bash
-   git clone --recurse-submodules https://github.com/Automattic/dk.git
+   git clone https://github.com/Automattic/dk.git
    cd dk
    ```
-   > **Note:** The `ciab` submodule requires Automattic internal access and will be skipped automatically for external users. All other repos (Calypso, Gutenberg, WordPress Core, Jetpack) are public.
+   > **Note:** The `ciab` repository requires Automattic internal access and is optional. All other repos (Calypso, Gutenberg, WordPress Core, Jetpack) are public and will be cloned automatically during setup.
 
 2. **Open in Cursor**: `cursor .`
 3. **Tell the AI to set things up** using one of these methods:
@@ -34,7 +34,7 @@ Design Kit brings together **Calypso**, **Gutenberg**, **WordPress Core**, and *
    - "Initialize everything"
    - "Get this project ready"
 
-The AI will initialize all git submodules, install dependencies, and get everything ready for you. You never need to open a terminal or run commands manually!
+The AI will clone all repositories, install dependencies, and get everything ready for you. You never need to open a terminal or run commands manually!
 
 ### For AI Assistants
 
@@ -71,7 +71,7 @@ dk/
 │   ├── git.md
 │   └── cross-repo.md
 │
-├── repos/               # Git submodules
+├── repos/               # Cloned repositories (managed by bin/repos.sh)
 │   ├── calypso/         # WordPress.com dashboard
 │   ├── gutenberg/       # Block editor & components
 │   ├── wordpress-core/  # Core WordPress software
@@ -91,7 +91,7 @@ Just tell the AI what you need:
 
 | You Say | What Happens |
 |---------|--------------|
-| "Set up the env" | Runs `./bin/setup.sh` - initializes submodules, installs deps |
+| "Set up the env" | Runs `./bin/setup.sh` - clones repos, installs deps |
 | "Reset everything" | Runs `./bin/reset.sh` - pulls latest from all repos |
 | "Full reset" | Runs `./bin/reset.sh --full` - reset + reinstall all deps |
 | "Show status" | Runs `./bin/status.sh` - shows state of all repos |
@@ -165,14 +165,14 @@ The `.cursor/rules/` directory contains context that helps the AI:
 
 ## Troubleshooting
 
-**Submodules not initializing:**
-- Try `git submodule update --init --depth 1` (initializes all accessible submodules)
-- If you have Automattic access and want CIAB: `git submodule update --init repos/ciab`
+**Repositories not cloning:**
+- Run `./bin/repos.sh clone` to clone all public repositories
+- Check your network connection and GitHub access
 
-**CIAB submodule failing:**
-- This is expected for non-Automattic users — CIAB is a private repo
-- The `update = none` setting in `.gitmodules` should skip it automatically
-- If you have access but it's still failing, check your SSH key is configured for `github.a8c.com`
+**CIAB repository:**
+- CIAB is optional and requires Automattic internal access
+- To clone CIAB: `./bin/repos.sh clone-ciab`
+- If it fails, ensure your SSH key is configured for `github.a8c.com`
 
 **Dependencies failing:**
 - Check Node.js version (must be v18+)
@@ -198,7 +198,7 @@ Type `/` in chat to access these commands:
 
 | Command | Purpose |
 |---------|---------|
-| `/setup` | Set up the environment (submodules + dependencies) |
+| `/setup` | Set up the environment (clone repos + install dependencies) |
 | `/start` | Start a development server |
 | `/find-component` | Find existing UI components |
 | `/build-screen` | Create new pages/views |

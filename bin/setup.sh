@@ -15,51 +15,10 @@ echo ""
 
 cd "$ROOT_DIR"
 
-# Initialize and update submodules
-echo "📦 Initializing submodules..."
-
-PUBLIC_REPOS="repos/calypso repos/gutenberg repos/wordpress-core repos/jetpack"
-PRIVATE_REPOS="repos/ciab"
-FAILED_REPOS=""
-
-# Always init public repos
-for repo in $PUBLIC_REPOS; do
-    echo "  Initializing $repo..."
-    if git submodule update --init --depth 1 "$repo" 2>/dev/null; then
-        echo "  ✅ $repo initialized"
-    else
-        echo "  ⚠️  Warning: Failed to initialize $repo"
-        FAILED_REPOS="$FAILED_REPOS $repo"
-    fi
-done
-
-# Try private repos, but don't fail if inaccessible
-for repo in $PRIVATE_REPOS; do
-    echo "  Initializing $repo (requires Automattic access)..."
-    if git submodule update --init --depth 1 "$repo" 2>/dev/null; then
-        echo "  ✅ $repo initialized"
-    else
-        echo "  ⏭️  Skipping $repo (no access or SSH key not configured)"
-    fi
-done
-
-# Check that at least the public repos initialized
-PUBLIC_MISSING=""
-for repo in $PUBLIC_REPOS; do
-    if [ ! -d "$repo" ]; then
-        PUBLIC_MISSING="$PUBLIC_MISSING $repo"
-    fi
-done
-
-if [ -n "$PUBLIC_MISSING" ]; then
-    echo ""
-    echo "❌ Error: Required submodules not found:$PUBLIC_MISSING"
-    echo "   Please check your git configuration and network connection."
-    exit 1
-fi
-
+# Clone repositories
+echo "📦 Cloning repositories..."
 echo ""
-echo "✅ Submodules initialized"
+"$SCRIPT_DIR/repos.sh" clone
 echo ""
 
 # Calypso setup

@@ -54,11 +54,13 @@ Tell the AI in natural language:
 
 The AI will:
 - Check for required tools (git, node, yarn, npm, pnpm, composer)
-- Initialize all git submodules (Calypso, Gutenberg, WordPress Core, CIAB, Jetpack)
+- Clone all repositories (Calypso, Gutenberg, WordPress Core, Jetpack)
 - Install dependencies for each repository
 - Take about 5-10 minutes depending on your connection
 - Keep you updated on progress
 - Confirm when everything is ready
+
+Note: CIAB is optional and requires Automattic access. It will be skipped if you don't have access.
 
 **You never need to open a terminal or run commands manually - just tell the AI what you need.**
 
@@ -67,7 +69,7 @@ The AI will:
 When you ask the AI to set up the project, it will:
 1. Read `README.md` to understand the project
 2. Check for required tools (git, node, yarn, npm, pnpm, composer)
-3. Initialize git submodules
+3. Clone all repositories using `bin/repos.sh`
 4. Install dependencies for all repositories
 5. Verify everything is set up correctly
 6. Tell you when it's done and what you can do next

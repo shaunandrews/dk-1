@@ -1,6 +1,6 @@
 # Setup
 
-Set up the Design Kit environment. This command initializes git submodules and installs all dependencies.
+Set up the Design Kit environment. This command clones all repositories and installs all dependencies.
 
 ## When to Use
 
@@ -11,7 +11,7 @@ Set up the Design Kit environment. This command initializes git submodules and i
 ## What This Does
 
 1. **Checks prerequisites** - git, node, yarn, npm, pnpm, composer, docker
-2. **Initializes submodules** - Clones Calypso, Gutenberg, WordPress Core, CIAB, and Jetpack
+2. **Clones repositories** - Uses `bin/repos.sh` to clone Calypso, Gutenberg, WordPress Core, and Jetpack (CIAB is optional)
 3. **Installs dependencies** - Runs the appropriate package manager for each repo
 4. **Reports status** - Tells the designer what's ready and what (if anything) is missing
 
@@ -44,12 +44,12 @@ Tell the designer:
 Determine if this is a fresh clone or partial setup:
 
 ```bash
-# Check if submodules are initialized
+# Check if repositories are cloned
 ls repos/calypso
 ls repos/gutenberg
 ls repos/wordpress-core
-ls repos/ciab
 ls repos/jetpack
+ls repos/ciab 2>/dev/null || echo "CIAB not cloned (optional)"
 
 # Check if dependencies are installed
 ls repos/calypso/node_modules
@@ -65,11 +65,11 @@ Execute the setup script:
 ```
 
 This script will:
-1. Initialize git submodules with `git submodule update --init --depth 1`
+1. Clone all public repositories using `bin/repos.sh clone`
 2. Install Calypso dependencies with `yarn install`
 3. Install Gutenberg dependencies with `npm ci`
 4. Install WordPress Core dependencies with `npm ci`
-5. Install CIAB dependencies with `pnpm install` and `composer install`
+5. Install CIAB dependencies (if cloned) with `pnpm install` and `composer install`
 6. Install Jetpack dependencies with `pnpm install` and `composer install`
 7. Build the Jetpack plugin
 
@@ -94,9 +94,11 @@ Tell the designer:
 
 ```
 I'll set up the Design Kit environment for you. This will:
-- Clone 5 git submodules (Calypso, Gutenberg, WordPress Core, CIAB, Jetpack)
+- Clone all repositories (Calypso, Gutenberg, WordPress Core, Jetpack)
 - Install dependencies for each repository
 - Take about 5-10 minutes
+
+Note: CIAB is optional and requires Automattic access. It will be skipped if you don't have access.
 
 Let me check your system first...
 ```
@@ -120,7 +122,7 @@ All required tools are available. Starting setup...
 Provide updates as each step completes:
 
 ```
-📦 Initializing submodules... ✅
+📦 Cloning repositories... ✅
 📦 Installing Calypso dependencies... ✅
 📦 Installing Gutenberg dependencies... ✅
 ...
@@ -151,8 +153,8 @@ Let me try to fix this...
 
 ## Common Issues
 
-### Submodule Authentication
-If submodules fail to clone, the designer may need to authenticate with GitHub.
+### Repository Authentication
+If repositories fail to clone, check your network connection and GitHub access. For CIAB, ensure your SSH key is configured for github.a8c.com.
 
 ### Disk Space
 Full setup requires ~10GB. Check with `df -h` if installs fail.
@@ -168,8 +170,8 @@ If npm/pnpm fail with EACCES, suggest using a Node version manager (nvm, fnm).
 If the script fails, these are the manual steps:
 
 ```bash
-# 1. Initialize submodules
-git submodule update --init --depth 1
+# 1. Clone repositories
+./bin/repos.sh clone
 
 # 2. Calypso
 cd repos/calypso && yarn install

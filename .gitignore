@@ -22,11 +22,8 @@ Thumbs.db
 .env.local
 .env.*.local
 
-# Submodule build artifacts (keep submodules clean)
-repos/*/node_modules/
-repos/*/vendor/
-repos/*/build/
-repos/*/dist/
+# Cloned repositories
+repos/
 
 # Temporary files
 *.tmp

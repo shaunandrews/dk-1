@@ -227,20 +227,23 @@ git reset --hard origin/trunk
 git checkout my-accidental-work
 ```
 
-## Submodule-Specific Commands
+## Repository Management Commands
 
-Since dk uses git submodules:
+Since dk uses cloned repositories (not submodules):
 
 ```bash
-# Update all submodules to latest
-git submodule update --remote
+# Update all repositories to latest
+./bin/repos.sh update
 
-# Pull latest in specific submodule
+# Check repository status
+./bin/repos.sh status
+
+# Clone CIAB (Automattic only)
+./bin/repos.sh clone-ciab
+
+# Pull latest in specific repository
 cd repos/calypso
 git pull origin trunk
-
-# Check submodule status from dk root
-git submodule status
 ```
 
 ## Response Pattern

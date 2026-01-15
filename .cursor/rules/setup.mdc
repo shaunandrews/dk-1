@@ -20,16 +20,61 @@ When the workspace is opened, immediately:
 ### Step 2: Prerequisites Check
 Before proceeding, check for required tools:
 - **Git** - Must be installed (check with `git --version`)
-- **Node.js** - Must be v18+ (check with `node --version`)
+- **nvm** - REQUIRED for Node version management (check with `command -v nvm`)
+- **Node.js** - Multiple versions needed via nvm (see Node Version Requirements below)
 - **Yarn** - Required for Calypso (check with `yarn --version`)
 - **npm** - Required for Gutenberg/WP Core (comes with Node.js)
-- **pnpm** - Required for CIAB (check with `pnpm --version`)
-- **Composer** - Required for CIAB PHP deps (check with `composer --version`)
-- **Docker** - Optional, required for WordPress Core/CIAB environments (check with `docker --version`)
+- **pnpm** - Required for CIAB and Jetpack (check with `pnpm --version`)
+- **Composer** - Required for CIAB and Jetpack PHP deps (check with `composer --version`)
+- **Docker** - Optional, required for WordPress Core/CIAB/Jetpack environments (check with `docker --version`)
+
+#### Node Version Requirements (CRITICAL)
+
+Each repository requires a DIFFERENT Node version. You MUST switch versions when working across repos:
+
+| Repo | Node Version | Package Manager | Switch Command |
+|------|-------------|-----------------|----------------|
+| Calypso | 22 | yarn | `nvm use` (reads .nvmrc) |
+| Gutenberg | 20 | npm | `nvm use` (reads .nvmrc) |
+| WordPress Core | 20 | npm | `nvm use` (reads .nvmrc) |
+| Jetpack | 22 | pnpm | `nvm use` (reads .nvmrc) |
+| CIAB | 22 | pnpm | `nvm use` (reads .nvmrc) |
+
+**AI Behavior for Node Versions:**
+1. Before running ANY npm/yarn/pnpm command in a repo, ALWAYS switch to the correct Node version
+2. Use `source ~/.nvm/nvm.sh && nvm use` inside each repo directory (reads .nvmrc)
+3. If nvm is not installed, inform the user and provide installation instructions
+4. When installing dependencies or starting servers, include the nvm switch in the command
+
+**Example commands:**
+```bash
+# Calypso (Node 22)
+cd repos/calypso && source ~/.nvm/nvm.sh && nvm use && yarn install
+
+# Gutenberg (Node 20)
+cd repos/gutenberg && source ~/.nvm/nvm.sh && nvm use && npm ci
+
+# Jetpack (Node 22)
+cd repos/jetpack && source ~/.nvm/nvm.sh && nvm use && pnpm install
+```
 
 If any required tools are missing, inform the designer and offer to help install them, or proceed with what's available.
 
-If Docker is missing, inform the designer that Calypso, Gutenberg, and Storybook will work fine, but WordPress Core and CIAB local environments require Docker Desktop to be installed. Provide download links:
+**Installing nvm:**
+If nvm is not installed, provide these instructions:
+```bash
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
+# Then restart terminal or run:
+source ~/.nvm/nvm.sh
+```
+
+Then install required Node versions:
+```bash
+nvm install 20
+nvm install 22
+```
+
+If Docker is missing, inform the designer that Calypso, Gutenberg, and Storybook will work fine, but WordPress Core, CIAB, and Jetpack local environments require Docker Desktop to be installed. Provide download links:
 - Mac: https://docs.docker.com/desktop/setup/install/mac-install/
 - Windows: https://docs.docker.com/desktop/setup/install/windows-install/
 - Linux: https://docs.docker.com/desktop/setup/install/linux/
@@ -42,11 +87,14 @@ Execute these steps automatically (using terminal commands via run_terminal_cmd)
    git submodule update --init --depth 1
    ```
 
-2. **Install Dependencies in Parallel** (when safe to do so)
-   - Calypso: `cd repos/calypso && yarn install --frozen-lockfile`
-   - Gutenberg: `cd repos/gutenberg && npm ci`
-   - WordPress Core: `cd repos/wordpress-core && npm ci`
-   - CIAB: `cd repos/ciab && pnpm install --frozen-lockfile && composer install`
+2. **Install Dependencies** (switch Node version for each repo)
+   - Calypso: `cd repos/calypso && source ~/.nvm/nvm.sh && nvm use && yarn install --frozen-lockfile`
+   - Gutenberg: `cd repos/gutenberg && source ~/.nvm/nvm.sh && nvm use && npm ci`
+   - WordPress Core: `cd repos/wordpress-core && source ~/.nvm/nvm.sh && nvm use && npm ci`
+   - CIAB: `cd repos/ciab && source ~/.nvm/nvm.sh && nvm use && pnpm install --frozen-lockfile && composer install`
+   - Jetpack: `cd repos/jetpack && source ~/.nvm/nvm.sh && nvm use && pnpm install && composer install`
+   
+   **Note:** Cannot run in parallel because each repo needs different Node versions
 
 3. **Verify Setup**
    - Check that all `node_modules` directories exist

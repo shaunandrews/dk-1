@@ -12,6 +12,7 @@ CIAB (Commerce in a Box) is a monorepo containing WordPress plugins that provide
 | Aspect | Details |
 |--------|---------|
 | **Repo Path** | `repos/ciab` |
+| **Node Version** | 22 (see .nvmrc, requires >=22.18.0) |
 | **Package Manager** | pnpm |
 | **Language** | TypeScript |
 | **Framework** | React |
@@ -19,7 +20,28 @@ CIAB (Commerce in a Box) is a monorepo containing WordPress plugins that provide
 | **State** | @wordpress/core-data, @wordpress/data |
 | **Routing** | TanStack Router |
 | **Dev Server** | `pnpm dev` → http://localhost:9001/wp-admin/ |
-| **Node Version** | >=22.18.0 (use `nvm use`) |
+
+## Node Version (CRITICAL)
+
+CIAB requires **Node 22** (specifically >=22.18.0). Before running ANY pnpm command:
+
+```bash
+cd repos/ciab
+source ~/.nvm/nvm.sh && nvm use
+```
+
+This reads the `.nvmrc` file and switches to the correct version. Always include this in your commands:
+
+```bash
+# Installing dependencies
+cd repos/ciab && source ~/.nvm/nvm.sh && nvm use && pnpm install
+
+# Starting dev server
+cd repos/ciab && source ~/.nvm/nvm.sh && nvm use && pnpm dev
+
+# Starting WordPress environment
+cd repos/ciab && source ~/.nvm/nvm.sh && nvm use && pnpm env:start
+```
 
 ## Repository Structure
 

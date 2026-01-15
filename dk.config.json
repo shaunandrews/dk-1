@@ -11,6 +11,8 @@
       "description": "WordPress.com custom dashboard and apps",
       "upstream": "https://github.com/Automattic/wp-calypso",
       "defaultBranch": "trunk",
+      "nodeVersion": "22.9.0",
+      "packageManager": "yarn",
       "stack": {
         "language": "TypeScript",
         "framework": "React",
@@ -43,6 +45,8 @@
       "description": "WordPress Block Editor and component library",
       "upstream": "https://github.com/WordPress/gutenberg",
       "defaultBranch": "trunk",
+      "nodeVersion": "20",
+      "packageManager": "npm",
       "stack": {
         "language": "JavaScript/TypeScript",
         "framework": "React",
@@ -75,6 +79,8 @@
       "description": "Core WordPress software (development repository)",
       "upstream": "https://github.com/WordPress/wordpress-develop",
       "defaultBranch": "trunk",
+      "nodeVersion": "20",
+      "packageManager": "npm",
       "stack": {
         "language": "PHP",
         "framework": "WordPress",
@@ -105,6 +111,8 @@
       "description": "Commerce in a Box admin interface",
       "upstream": "https://github.a8c.com/Automattic/ciab-admin",
       "defaultBranch": "trunk",
+      "nodeVersion": "22",
+      "packageManager": "pnpm",
       "stack": {
         "language": "TypeScript",
         "framework": "React",
@@ -132,6 +140,8 @@
       "description": "Security, performance, marketing, and design tools for WordPress",
       "upstream": "https://github.com/Automattic/jetpack",
       "defaultBranch": "trunk",
+      "nodeVersion": "22",
+      "packageManager": "pnpm",
       "stack": {
         "language": "PHP/TypeScript",
         "framework": "WordPress Plugin",

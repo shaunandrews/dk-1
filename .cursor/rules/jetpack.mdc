@@ -12,11 +12,34 @@ Jetpack is a WordPress plugin providing security, performance, marketing, and de
 | Aspect | Details |
 |--------|---------|
 | **Repo Path** | `repos/jetpack` |
-| **Language** | PHP, JavaScript/TypeScript |
+| **Node Version** | 22 (see .nvmrc) |
 | **Package Manager** | pnpm |
+| **Language** | PHP, JavaScript/TypeScript |
 | **PHP Dependencies** | Composer |
 | **Default Branch** | trunk |
 | **Main Plugin** | `projects/plugins/jetpack` |
+
+## Node Version (CRITICAL)
+
+Jetpack requires **Node 22**. Before running ANY pnpm command:
+
+```bash
+cd repos/jetpack
+source ~/.nvm/nvm.sh && nvm use
+```
+
+This reads the `.nvmrc` file and switches to the correct version. Always include this in your commands:
+
+```bash
+# Installing dependencies
+cd repos/jetpack && source ~/.nvm/nvm.sh && nvm use && pnpm install
+
+# Building Jetpack
+cd repos/jetpack && source ~/.nvm/nvm.sh && nvm use && pnpm jetpack build plugins/jetpack --deps
+
+# Watching for changes
+cd repos/jetpack && source ~/.nvm/nvm.sh && nvm use && pnpm jetpack watch plugins/jetpack
+```
 
 ## Key Directories
 

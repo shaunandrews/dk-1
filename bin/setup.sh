@@ -9,6 +9,21 @@ set -e
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(dirname "$SCRIPT_DIR")"
 
+# Helper function to switch Node version using nvm
+switch_node_version() {
+    local repo_dir="$1"
+    if [ -f "$repo_dir/.nvmrc" ]; then
+        if [ -f "$HOME/.nvm/nvm.sh" ]; then
+            # Source nvm and switch to the version specified in .nvmrc
+            source "$HOME/.nvm/nvm.sh"
+            nvm use 2>/dev/null || nvm install
+        else
+            echo "⚠️  nvm not found. Install nvm for automatic Node version switching."
+            echo "   curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash"
+        fi
+    fi
+}
+
 echo "🎨 Design Kit Setup"
 echo "==================="
 echo ""
@@ -21,9 +36,10 @@ echo ""
 "$SCRIPT_DIR/repos.sh" clone
 echo ""
 
-# Calypso setup
+# Calypso setup (requires Node 22)
 echo "📦 Setting up Calypso..."
 cd "$ROOT_DIR/repos/calypso"
+switch_node_version "$ROOT_DIR/repos/calypso"
 if command -v yarn &> /dev/null; then
     yarn install --frozen-lockfile 2>/dev/null || yarn install
     echo "✅ Calypso dependencies installed"
@@ -33,26 +49,39 @@ fi
 cd "$ROOT_DIR"
 echo ""
 
-# Gutenberg setup
+# Gutenberg setup (requires Node 20)
 echo "📦 Setting up Gutenberg..."
 cd "$ROOT_DIR/repos/gutenberg"
+switch_node_version "$ROOT_DIR/repos/gutenberg"
 npm ci 2>/dev/null || npm install
 echo "✅ Gutenberg dependencies installed"
+
+# Build Gutenberg (required for dev server and Storybook)
+echo "📦 Building Gutenberg..."
+npm run build
+echo "✅ Gutenberg built"
 cd "$ROOT_DIR"
 echo ""
 
-# WordPress Core setup
+# WordPress Core setup (requires Node 20)
 echo "📦 Setting up WordPress Core..."
 cd "$ROOT_DIR/repos/wordpress-core"
+switch_node_version "$ROOT_DIR/repos/wordpress-core"
 npm ci 2>/dev/null || npm install
 echo "✅ WordPress Core dependencies installed"
+
+# Build WordPress Core (required for dev server)
+echo "📦 Building WordPress Core..."
+npm run build
+echo "✅ WordPress Core built"
 cd "$ROOT_DIR"
 echo ""
 
-# CIAB setup (optional - requires Automattic access)
+# CIAB setup (optional - requires Automattic access, requires Node 22)
 if [ -d "$ROOT_DIR/repos/ciab" ]; then
     echo "📦 Setting up CIAB..."
     cd "$ROOT_DIR/repos/ciab"
+    switch_node_version "$ROOT_DIR/repos/ciab"
     if command -v pnpm &> /dev/null; then
         pnpm install --frozen-lockfile 2>/dev/null || pnpm install
         echo "✅ CIAB dependencies installed"
@@ -72,9 +101,10 @@ else
     echo ""
 fi
 
-# Jetpack setup
+# Jetpack setup (requires Node 22)
 echo "📦 Setting up Jetpack..."
 cd "$ROOT_DIR/repos/jetpack"
+switch_node_version "$ROOT_DIR/repos/jetpack"
 if command -v pnpm &> /dev/null; then
     pnpm install --frozen-lockfile 2>/dev/null || pnpm install
     echo "✅ Jetpack dependencies installed"

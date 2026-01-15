@@ -41,21 +41,12 @@ cd dk-test
 echo "✅ Repository cloned"
 echo ""
 
-# Initialize submodules manually (skip CIAB if it fails - it's an internal repo)
-echo "🔧 Initializing submodules..."
+# Clone repositories using the repos script
+echo "🔧 Cloning repositories..."
 echo "   Note: CIAB is an internal Automattic repo and may not be accessible."
 echo ""
 
-# Initialize public repos only first
-git config --file .gitmodules --get-regexp path | while read key path; do
-    url=$(git config --file .gitmodules --get "${key/%.path/.url}")
-    if [[ "$url" != *"github.a8c.com"* ]]; then
-        echo "   Initializing $path..."
-        git submodule update --init --depth 1 "$path" || echo "   ⚠️  Failed to initialize $path"
-    else
-        echo "   ⏭️  Skipping $path (internal repo, requires VPN/SSH access)"
-    fi
-done
+./bin/repos.sh clone
 
 echo ""
 echo "🔧 Installing dependencies..."
@@ -132,21 +123,21 @@ check_optional() {
 }
 
 # Required repos (public)
-check_required "repos/calypso" "Calypso submodule"
+check_required "repos/calypso" "Calypso repository"
 check_required "repos/calypso/node_modules" "Calypso dependencies"
-check_required "repos/gutenberg" "Gutenberg submodule"
+check_required "repos/gutenberg" "Gutenberg repository"
 check_required "repos/gutenberg/node_modules" "Gutenberg dependencies"
-check_required "repos/wordpress-core" "WordPress Core submodule"
+check_required "repos/wordpress-core" "WordPress Core repository"
 check_required "repos/wordpress-core/node_modules" "WordPress Core dependencies"
-check_required "repos/jetpack" "Jetpack submodule"
+check_required "repos/jetpack" "Jetpack repository"
 check_required "repos/jetpack/node_modules" "Jetpack dependencies"
 
 # Optional repos (internal) - check for package.json since git creates empty dirs
 if [ -f "repos/ciab/package.json" ]; then
-    check_optional "repos/ciab" "CIAB submodule"
+    check_optional "repos/ciab" "CIAB repository"
     check_optional "repos/ciab/node_modules" "CIAB dependencies"
 else
-    echo "   ⏭️  CIAB submodule (optional, not cloned)"
+    echo "   ⏭️  CIAB repository (optional, not cloned)"
     echo "   ⏭️  CIAB dependencies (optional, skipped)"
 fi
 echo ""

@@ -17,6 +17,21 @@ set -e
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(dirname "$SCRIPT_DIR")"
 
+# Helper function to switch Node version using nvm
+switch_node_version() {
+    local repo_dir="$1"
+    if [ -f "$repo_dir/.nvmrc" ]; then
+        if [ -f "$HOME/.nvm/nvm.sh" ]; then
+            source "$HOME/.nvm/nvm.sh"
+            nvm use 2>/dev/null || nvm install
+        else
+            echo "⚠️  nvm not found. Install nvm for automatic Node version switching."
+            echo "   curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash"
+            echo ""
+        fi
+    fi
+}
+
 check_docker() {
     if ! command -v docker &> /dev/null; then
         echo "❌ Docker is not installed."
@@ -62,8 +77,9 @@ show_help() {
 }
 
 start_calypso() {
-    echo "🚀 Starting Calypso..."
+    echo "🚀 Starting Calypso (Node 22)..."
     cd "$ROOT_DIR/repos/calypso"
+    switch_node_version "$ROOT_DIR/repos/calypso"
     if [ ! -d "node_modules" ]; then
         echo "⚠️  Dependencies not installed. Run ./bin/setup.sh first."
         exit 1
@@ -73,8 +89,9 @@ start_calypso() {
 }
 
 start_gutenberg() {
-    echo "🚀 Starting Gutenberg..."
+    echo "🚀 Starting Gutenberg (Node 20)..."
     cd "$ROOT_DIR/repos/gutenberg"
+    switch_node_version "$ROOT_DIR/repos/gutenberg"
     if [ ! -d "node_modules" ]; then
         echo "⚠️  Dependencies not installed. Run ./bin/setup.sh first."
         exit 1
@@ -84,8 +101,9 @@ start_gutenberg() {
 }
 
 start_storybook() {
-    echo "🚀 Starting Storybook..."
+    echo "🚀 Starting Storybook (Node 20)..."
     cd "$ROOT_DIR/repos/gutenberg"
+    switch_node_version "$ROOT_DIR/repos/gutenberg"
     if [ ! -d "node_modules" ]; then
         echo "⚠️  Dependencies not installed. Run ./bin/setup.sh first."
         exit 1
@@ -96,8 +114,9 @@ start_storybook() {
 
 start_core() {
     check_docker
-    echo "🚀 Starting WordPress Core..."
+    echo "🚀 Starting WordPress Core (Node 20)..."
     cd "$ROOT_DIR/repos/wordpress-core"
+    switch_node_version "$ROOT_DIR/repos/wordpress-core"
     if [ ! -d "node_modules" ]; then
         echo "⚠️  Dependencies not installed. Run ./bin/setup.sh first."
         exit 1
@@ -108,8 +127,9 @@ start_core() {
 
 start_ciab() {
     check_docker
-    echo "🚀 Starting CIAB..."
+    echo "🚀 Starting CIAB (Node 22)..."
     cd "$ROOT_DIR/repos/ciab"
+    switch_node_version "$ROOT_DIR/repos/ciab"
     if [ ! -d "node_modules" ]; then
         echo "⚠️  Dependencies not installed. Run ./bin/setup.sh first."
         exit 1
@@ -121,10 +141,11 @@ start_ciab() {
 
 start_jetpack() {
     check_docker
-    echo "🚀 Starting Jetpack development environment..."
+    echo "🚀 Starting Jetpack development environment (Node 22)..."
     
     # Check Jetpack dependencies
     cd "$ROOT_DIR/repos/jetpack"
+    switch_node_version "$ROOT_DIR/repos/jetpack"
     if [ ! -d "node_modules" ]; then
         echo "⚠️  Dependencies not installed. Run ./bin/setup.sh first."
         exit 1
@@ -136,8 +157,9 @@ start_jetpack() {
         pnpm jetpack build plugins/jetpack --deps
     fi
     
-    # Check WordPress Core dependencies
+    # Check WordPress Core dependencies (needs Node 20)
     cd "$ROOT_DIR/repos/wordpress-core"
+    switch_node_version "$ROOT_DIR/repos/wordpress-core"
     if [ ! -d "node_modules" ]; then
         echo "⚠️  WordPress Core dependencies not installed. Run ./bin/setup.sh first."
         exit 1

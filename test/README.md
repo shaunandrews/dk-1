@@ -18,7 +18,7 @@ This will:
 ## What It Tests
 
 - **Prerequisites detection** - Verifies Node, Yarn, pnpm, Git, Composer are available
-- **Submodule initialization** - All repos clone correctly
+- **Repository cloning** - All repos clone correctly
 - **Dependency installation** - node_modules exist for all repos
 - **Docker check** - The "Docker not installed" message appears for `core` and `ciab`
 

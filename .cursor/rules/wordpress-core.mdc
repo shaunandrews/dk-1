@@ -12,9 +12,56 @@ WordPress Core is the foundational software that powers WordPress sites. This is
 | Aspect | Details |
 |--------|---------|
 | **Repo Path** | `repos/wordpress-core` |
+| **Node Version** | 20 (see .nvmrc) |
+| **Package Manager** | npm |
 | **Language** | PHP (backend), JS (admin) |
 | **Database** | MySQL |
 | **Dev Server** | `npm run dev` → http://localhost:8889 |
+
+## Node Version (CRITICAL)
+
+WordPress Core requires **Node 20**. Before running ANY npm command:
+
+```bash
+cd repos/wordpress-core
+source ~/.nvm/nvm.sh && nvm use
+```
+
+This reads the `.nvmrc` file and switches to the correct version. Always include this in your commands:
+
+```bash
+# Installing dependencies
+cd repos/wordpress-core && source ~/.nvm/nvm.sh && nvm use && npm ci
+
+# Starting dev server
+cd repos/wordpress-core && source ~/.nvm/nvm.sh && nvm use && npm run dev
+
+# Running tests
+cd repos/wordpress-core && source ~/.nvm/nvm.sh && nvm use && npm run test-php
+```
+
+## Building the Project (REQUIRED)
+
+WordPress Core must be built before running the development environment. The initial setup script handles this, but if you've freshly cloned or are having issues:
+
+```bash
+cd repos/wordpress-core
+source ~/.nvm/nvm.sh && nvm use
+
+# Full build (required after fresh clone or major changes)
+npm run build
+
+# Then start development environment
+npm run dev
+```
+
+**When to rebuild:**
+- After fresh clone or pulling major changes
+- After switching branches with significant changes
+- If the development environment shows errors or missing assets
+- If admin styles or scripts aren't loading correctly
+
+The build compiles JavaScript, SCSS, and prepares assets for the development server.
 
 ## Key Directories
 

@@ -227,6 +227,43 @@ git reset --hard origin/trunk
 git checkout my-accidental-work
 ```
 
+## Browsing Code on GitHub
+
+For public repos, you can view code without checking out branches by constructing GitHub URLs:
+
+### URL Pattern
+
+```
+https://github.com/{owner}/{repo}/blob/{branch}/{path}
+```
+
+### Repository URLs
+
+| Repo | GitHub URL |
+|------|------------|
+| Calypso | `https://github.com/Automattic/wp-calypso/blob/{branch}/{path}` |
+| Gutenberg | `https://github.com/WordPress/gutenberg/blob/{branch}/{path}` |
+| WordPress Core | `https://github.com/WordPress/wordpress-develop/blob/{branch}/{path}` |
+
+### Examples
+
+```bash
+# View a file on a specific branch
+https://github.com/Automattic/wp-calypso/blob/add/developer-mode-toggle/client/dashboard/me/developer-mode/index.tsx
+
+# View file at a specific commit
+https://github.com/Automattic/wp-calypso/blob/abc1234/client/dashboard/me/profile/index.tsx
+
+# View a PR's changes
+https://github.com/Automattic/wp-calypso/pull/12345/files
+```
+
+### When to Use
+
+- **Viewing code on remote branches** without checking them out locally
+- **Referencing existing implementations** for patterns to follow
+- **Reviewing PRs** to understand what changes were made
+
 ## Repository Management Commands
 
 Since dk uses cloned repositories (not submodules):

@@ -12,11 +12,51 @@ Calypso is WordPress.com's custom dashboard, built with React and TypeScript.
 | Aspect | Details |
 |--------|---------|
 | **Repo Path** | `repos/calypso` |
+| **Node Version** | 22 (see .nvmrc) |
+| **Package Manager** | yarn |
 | **Language** | TypeScript |
 | **Framework** | React |
 | **Styling** | SCSS with CSS custom properties |
 | **State** | Redux + @wordpress/data |
-| **Dev Server** | `yarn start:debug` → http://calypso.localhost:3000 |
+| **Dev Server** | `yarn start:debug` (takes 5+ minutes for initial build) |
+
+## Node Version (CRITICAL)
+
+Calypso requires **Node 22**. Before running ANY yarn/npm command:
+
+```bash
+cd repos/calypso
+source ~/.nvm/nvm.sh && nvm use
+```
+
+This reads the `.nvmrc` file and switches to the correct version. Always include this in your commands:
+
+```bash
+# Installing dependencies
+cd repos/calypso && source ~/.nvm/nvm.sh && nvm use && yarn install
+
+# Starting dev server
+cd repos/calypso && source ~/.nvm/nvm.sh && nvm use && yarn start:debug
+```
+
+## CRITICAL: Two Interfaces (Legacy vs Dashboard)
+
+Calypso has **two separate interfaces** with different codebases. Always clarify which one the user is working in:
+
+| Interface | URL | Code Location | Stack |
+|-----------|-----|---------------|-------|
+| **Legacy Calypso** | `calypso.localhost:3000` | `client/blocks/`, `client/components/`, `client/my-sites/`, `client/me/` | Redux, i18n-calypso, SCSS |
+| **New Dashboard** | `my.localhost:3000` | `client/dashboard/` | TanStack Query, @wordpress/i18n, minimal CSS |
+
+**When making changes:**
+1. **ASK which interface** if not obvious from the file path
+2. Components with the same name may exist in BOTH places (e.g., `edit-gravatar` exists in both `client/blocks/` and `client/dashboard/me/`)
+3. Changes to one do NOT affect the other
+4. The Dashboard has its own components, routing, and state management - see the "Dashboard Folder" section below
+
+**Quick check:** Look at the URL or file path:
+- `my.localhost` or `client/dashboard/` → New Dashboard
+- `calypso.localhost` or `client/blocks/`, `client/me/` → Legacy Calypso
 
 ## Key Directories
 
@@ -295,6 +335,43 @@ const { data, isLoading } = useQuery({
 3. **No AutoRTL**: Dashboard doesn't use Calypso's autortl processing - all languages use the same CSS
 4. **Card Component**: Always use `client/dashboard/components/card` instead of `@wordpress/components` Card directly
 
+### CSS Custom Properties (Dashboard)
+
+The dashboard uses WordPress admin CSS custom properties. Key tokens:
+
+```scss
+// Theme/accent color (for focus rings, selections, primary actions)
+var(--wp-admin-theme-color)
+
+// Focus ring standard pattern
+outline: 2px solid var(--wp-admin-theme-color);
+outline-offset: 2px;
+
+// Gray scale (from @wordpress/base-styles)
+$gray-100  // Lightest
+$gray-200
+$gray-300
+$gray-400
+$gray-600
+$gray-700
+$gray-800
+$gray-900  // Darkest
+
+// Example usage
+.my-component {
+  &:focus {
+    outline: 2px solid var(--wp-admin-theme-color);
+    outline-offset: 2px;
+  }
+  
+  input[type="radio"] {
+    accent-color: var(--wp-admin-theme-color);
+  }
+}
+```
+
+**Note**: Do NOT use `--wp-components-color-accent` - it doesn't exist in the dashboard context. Always use `--wp-admin-theme-color` for accent/theme colors.
+
 ### Typography and Copy Guidelines
 
 - **Sentence Case**: Use sentence case for almost everything (buttons, modal titles, form labels, DataViews field labels)
@@ -387,7 +464,7 @@ When checking out a branch (especially for PRs):
 ```bash
 cd repos/calypso
 
-# Start development server
+# Start development server (takes 5+ minutes for initial build)
 yarn start
 
 # Start with debug mode (more memory, sourcemaps)
@@ -402,6 +479,8 @@ yarn tsc
 # Lint
 yarn eslint
 ```
+
+**Note on building:** Unlike Gutenberg and WordPress Core, Calypso's dev server (`yarn start`) handles building automatically. The initial build takes 5+ minutes, but subsequent starts are faster due to caching. No separate build step is required before running the dev server.
 
 ## AI Context Files
 

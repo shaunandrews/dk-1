@@ -315,6 +315,8 @@ add_action('wp_enqueue_scripts', function() {
 
 ## Dev Commands
 
+**This is the PRIMARY wp-env.** When both wordpress-core and gutenberg repos exist, always use this environment. Never start gutenberg's wp-env simultaneously.
+
 ```bash
 cd repos/wordpress-core
 

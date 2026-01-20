@@ -255,16 +255,18 @@ import {
 
 ## Dev Commands
 
+**CRITICAL:** Before running `npm run dev` in gutenberg, check if `repos/wordpress-core` exists. If it does, do NOT start gutenberg's wp-env. Use `npm run storybook` for component development instead, and use wordpress-core's `npm run dev` for the WordPress environment.
+
 ```bash
 cd repos/gutenberg
 
-# Start development
+# Start development (ONLY if wordpress-core repo doesn't exist)
 npm run dev
 
 # Build
 npm run build
 
-# Storybook
+# Storybook (use this for component work when wordpress-core exists)
 npm run storybook
 
 # Tests

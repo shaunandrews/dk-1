@@ -39,6 +39,7 @@ Each repository requires a DIFFERENT Node version. You MUST switch versions when
 | WordPress Core | 20 | npm | `nvm use` (reads .nvmrc) |
 | Jetpack | 22 | pnpm | `nvm use` (reads .nvmrc) |
 | CIAB | 22 | pnpm | `nvm use` (reads .nvmrc) |
+| Telex | 22 | pnpm | `nvm use 22` (no .nvmrc) |
 
 **AI Behavior for Node Versions:**
 1. Before running ANY npm/yarn/pnpm command in a repo, ALWAYS switch to the correct Node version
@@ -93,8 +94,49 @@ Execute these steps automatically (using terminal commands via run_terminal_cmd)
    - WordPress Core: `cd repos/wordpress-core && source ~/.nvm/nvm.sh && nvm use && npm ci`
    - CIAB: `cd repos/ciab && source ~/.nvm/nvm.sh && nvm use && pnpm install --frozen-lockfile && composer install`
    - Jetpack: `cd repos/jetpack && source ~/.nvm/nvm.sh && nvm use && pnpm install && composer install`
+   - Telex: See **Telex Setup** section below (requires additional steps)
    
    **Note:** Cannot run in parallel because each repo needs different Node versions
+
+3. **Telex Setup** (if repos/telex exists - requires Docker)
+   Telex has additional setup requirements beyond just `pnpm install`:
+   
+   ```bash
+   cd repos/telex
+   
+   # Install dependencies
+   pnpm install
+   
+   # Copy environment files
+   cp client/.env.example client/.env
+   cp server/.env.sample server/.env
+   
+   # Generate secrets
+   pnpm secrets:update
+   
+   # IMPORTANT: User must add their own API keys to server/.env:
+   # - WPCOM_CLIENT_ID (from developer.wordpress.com/apps)
+   # - WPCOM_CLIENT_SECRET
+   # - ANTHROPIC_API_KEY
+   
+   # Generate server config
+   pnpm run config:dev
+   
+   # Install PHP dependencies
+   cd server && composer install && cd ..
+   
+   # Start MinIO (S3 storage)
+   pnpm run minio:start
+   
+   # Create S3 bucket (CRITICAL!)
+   docker run --rm --network host --entrypoint sh minio/mc -c \
+     "mc alias set m http://localhost:11111 minioadmin minioadmin && mc mb m/w0-blocks --ignore-existing"
+   
+   # Setup block build workspace (CRITICAL!)
+   node cli/setup-workspace.js
+   ```
+   
+   **Note:** Telex requires Docker for MinIO and block builds. Inform user if Docker is not running.
 
 3. **Verify Setup**
    - Check that all `node_modules` directories exist
@@ -125,6 +167,22 @@ When the designer wants to work on a specific repo, you should:
 ./bin/start.sh storybook  # → http://localhost:50240
 ./bin/start.sh core       # → http://localhost:8889
 ./bin/start.sh ciab       # → http://localhost:9001/wp-admin/
+```
+
+### Telex Server (Special - requires manual start):
+Telex has its own dev command with an interactive CLI:
+```bash
+cd repos/telex
+
+# Ensure MinIO is running first
+pnpm run minio:status  # Check status
+pnpm run minio:start   # Start if needed
+
+# Start Telex (client + server + admin)
+pnpm run dev
+# → Client: http://localhost:3000
+# → API: http://localhost:8000
+# → Admin: http://localhost:4000
 ```
 
 ## Designer Interaction Patterns

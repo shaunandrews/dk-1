@@ -1,6 +1,6 @@
 # Repository Map
 
-This document explains how Calypso, Gutenberg, WordPress Core, CIAB, and Jetpack connect and work together.
+This document explains how Calypso, Gutenberg, WordPress Core, CIAB, Jetpack, and Telex connect and work together.
 
 ## Overview
 
@@ -49,9 +49,19 @@ This document explains how Calypso, Gutenberg, WordPress Core, CIAB, and Jetpack
 └─────────────────────┘                   │  • Backup & Sync             │
                                           │  • Custom Blocks             │
                                           └──────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────┐
+│                              TELEX                                       │
+│                  (AI-Powered Block Authoring)                            │
+│                                                                          │
+│  • Natural language → Gutenberg blocks    • WordPress Playground preview │
+│  • AI code generation                     • Export as plugin .zip        │
+│  • Artefact-based versioning             • CodeMirror editor             │
+└─────────────────────────────────────────────────────────────────────────┘
+         Uses: @wordpress/blocks, @wordpress/icons, @wp-playground/client
 ```
 
-## The Five Repositories
+## The Six Repositories
 
 ### Calypso (`repos/calypso`)
 
@@ -218,6 +228,43 @@ projects/
 - Photon (CDN), Markdown, Infinite Scroll
 - Contact Forms, Sitemaps, VideoPress
 
+---
+
+### Telex (`repos/telex`)
+
+**What it is**: An AI-powered WordPress Gutenberg block authoring environment.
+
+**What it does**:
+- Generates custom Gutenberg blocks from natural language prompts
+- Provides live preview via embedded WordPress Playground
+- Manages block versions through an artefact-based system
+- Exports blocks as installable WordPress plugins
+
+**Key paths**:
+```
+client/                  # React SPA (Vite, TanStack Router, Tailwind)
+├── src/
+│   ├── components/      # UI components
+│   ├── routes/          # File-based routing
+│   ├── hooks/           # Custom React hooks
+│   └── contexts/        # React context providers
+server/                  # PHP API
+├── src/                 # PHP source code
+└── public/              # Entry points
+cli/                     # Node.js CLI tool
+spec/                    # Artefact specification and schema
+admin/                   # WordPress admin plugin
+```
+
+**Tech stack**: React 19, TypeScript, Vite, Tailwind CSS, PHP 8.0+, pnpm
+
+**Key dependencies**:
+- `@wordpress/blocks` - Block registration (in generated output)
+- `@wordpress/icons` - Icon library
+- `@wp-playground/client` - WordPress Playground integration
+- `zustand` - State management
+- `@tanstack/react-router` - Client-side routing
+
 ## How They Connect
 
 ### Connection 1: Gutenberg → Calypso (npm packages)
@@ -337,6 +384,35 @@ Calypso Dashboard
 
 This allows Calypso to manage Jetpack-connected sites alongside WordPress.com sites.
 
+### Connection 7: Telex → Gutenberg (Block API)
+
+Telex generates blocks that follow Gutenberg's block API patterns:
+
+```
+User prompt in Telex
+    ↓
+AI generates block code (artefact XML)
+    ↓
+Block follows @wordpress/blocks patterns
+    ↓
+Preview in WordPress Playground
+    ↓
+Export as plugin .zip
+```
+
+Generated blocks use the same APIs as core blocks:
+
+```javascript
+// Generated block follows Gutenberg patterns
+import { registerBlockType } from '@wordpress/blocks';
+import { useBlockProps } from '@wordpress/block-editor';
+
+registerBlockType('custom/my-block', {
+    edit: () => <div {...useBlockProps()}>...</div>,
+    save: () => <div {...useBlockProps.save()}>...</div>,
+});
+```
+
 ## Feature Flow Examples
 
 ### Example: User Changes Site Title
@@ -417,6 +493,28 @@ If you're building a feature that needs work in multiple repos:
    └── Use @wordpress/core-data for data management
 ```
 
+### Example: Creating a Block with Telex
+
+Using Telex to rapidly prototype a custom block:
+
+```
+1. User describes block in Telex
+   └── "Create a testimonial block with author photo, quote, and name"
+
+2. Telex AI generates artefact
+   └── XML containing block.json, edit.js, save.js, style.scss
+
+3. Block is built and previewed
+   └── WordPress Playground shows live preview
+
+4. User iterates on design
+   └── Refine via prompts or direct code editing
+
+5. Export and deploy
+   └── Download as plugin .zip
+   └── Or refine for contribution to Gutenberg/Jetpack
+```
+
 ## Data Flows
 
 ### Read Flow (Getting Data)
@@ -465,12 +563,15 @@ Calypso shows confirmation
 | Use existing components | Import from `@wordpress/components` |
 | Create a new component | Gutenberg (`packages/components/`) or Calypso (`client/components/`) or CIAB (`wordpress/plugins/ciab-admin/packages/`) |
 | Create a new block | Gutenberg (`packages/block-library/`) or Jetpack (`projects/plugins/jetpack/extensions/blocks/`) |
+| Prototype a block quickly | Telex (AI-assisted block generation) |
 | Add a REST endpoint | WordPress Core (`src/wp-includes/rest-api/`) or Jetpack (`projects/plugins/jetpack/json-endpoints/`) |
 | Store new data | WordPress Core (options, post meta, custom table) |
 | Add admin page (PHP) | WordPress Core (`src/wp-admin/`) |
 | Modernize WordPress admin | CIAB (`wordpress/plugins/ciab-admin/`) |
 | Add WordPress.com service | Jetpack (`projects/plugins/jetpack/modules/`) |
 | Create Jetpack feature | Jetpack (`projects/plugins/jetpack/`) |
+| Improve Telex UI/UX | Telex (`client/src/components/`) |
+| Update Telex block generation | Telex (`spec/prompts/`, `client/packages/artefact-utils/`) |
 
 ## Quick Reference
 
@@ -501,6 +602,12 @@ cd repos/ciab && pnpm dev
 ./bin/start.sh jetpack
 # → http://localhost:8889/wp-admin/plugins.php
 # Then: cd repos/jetpack && pnpm run watch
+
+# Telex (requires MinIO for S3 storage)
+cd repos/telex && pnpm run minio:start  # Start S3 storage first
+cd repos/telex && pnpm run dev
+# → http://localhost:3000 (client)
+# → http://localhost:8000 (server API)
 ```
 
 ### Find Things
@@ -510,6 +617,7 @@ cd repos/ciab && pnpm dev
 ls repos/gutenberg/packages/components/src/
 ls repos/calypso/client/components/
 ls repos/ciab/wordpress/plugins/ciab-admin/packages/
+ls repos/telex/client/src/components/
 
 # Find a block
 ls repos/gutenberg/packages/block-library/src/
@@ -518,10 +626,16 @@ ls repos/jetpack/projects/plugins/jetpack/extensions/blocks/
 # Find a CIAB route
 ls repos/ciab/wordpress/plugins/ciab-admin/routes/
 
+# Find a Telex route
+ls repos/telex/client/src/routes/
+
 # Find a Jetpack module
 ls repos/jetpack/projects/plugins/jetpack/modules/
 
 # Find REST endpoint
 grep -r "register_rest_route" repos/wordpress-core/src/wp-includes/rest-api/
 grep -r "register_rest_route" repos/jetpack/projects/plugins/jetpack/
+
+# Find Telex artefact spec
+ls repos/telex/spec/
 ```

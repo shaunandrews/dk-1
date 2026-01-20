@@ -1,0 +1,378 @@
+---
+description: Telex-specific development context
+globs: ["repos/telex/**/*"]
+---
+
+# Telex Development Context
+
+Telex is an AI-powered WordPress Gutenberg block authoring environment. It enables users to create custom blocks through natural language prompts, with live preview via WordPress Playground.
+
+## Quick Reference
+
+| Aspect | Details |
+|--------|---------|
+| **Repo Path** | `repos/telex` |
+| **Node Version** | 22 |
+| **Package Manager** | pnpm |
+| **Client Language** | TypeScript |
+| **Server Language** | PHP 8.0+ |
+| **Client Framework** | React 19 (Vite) |
+| **Styling** | Tailwind CSS |
+| **State Management** | Zustand |
+| **Routing** | TanStack Router |
+| **Dev Server** | `pnpm run dev` |
+| **Client Port** | 3000 |
+| **Server Port** | 8000 |
+
+## Project Structure
+
+```
+repos/telex/
+├── client/              # React SPA (Vite, TanStack Router, Tailwind)
+│   ├── src/
+│   │   ├── components/  # UI components
+│   │   ├── routes/      # TanStack Router file-based routes
+│   │   ├── hooks/       # Custom React hooks
+│   │   ├── contexts/    # React context providers
+│   │   ├── stores/      # Zustand stores
+│   │   └── lib/         # Utility functions
+│   └── packages/        # Internal packages (artefact-utils)
+├── server/              # PHP API
+│   ├── src/             # PHP source code
+│   ├── public/          # Public entry points
+│   └── config/          # Configuration templates
+├── cli/                 # Node.js CLI tool (Ink for terminal UI)
+├── admin/               # WordPress admin plugin
+├── spec/                # Artefact specification and schema
+├── docker/              # Docker configuration
+└── docs/                # Documentation
+```
+
+## Core Concepts
+
+### The Artefact System
+
+The **artefact** is central to Telex - it's an XML file containing all block files and assets as a single source of truth:
+
+- **Schema**: Defined in `spec/artefact.xsd`
+- **Processing**: JavaScript (`packages/artefact-utils`) and PHP classes
+- **Workflow**: Artefact → Extract files → Build → Deploy to WordPress Playground
+
+```
+projects/
+  $uid/
+    $project-slug/
+      artefact.xml        # Current version
+      versions/           # Version history
+      src/                # Extracted files
+      build/              # Compiled output
+```
+
+### S3-First Storage
+
+Telex uses S3 as the source of truth for all artefacts:
+
+- **S3**: All `artefact.xml` files, versions, and state
+- **Local**: Only build artifacts (`src/`, `build/`, logs)
+- **MinIO**: Local S3-compatible storage for development
+
+## Development Setup (COMPLETE CHECKLIST)
+
+### Prerequisites
+
+- Docker Desktop (required for MinIO and block builds)
+- Composer (required for PHP dependencies)
+- pnpm (required for all JS operations)
+- WordPress.com OAuth app credentials (for authentication)
+- Anthropic API key (for AI block generation)
+
+### First-Time Setup (All Steps Required)
+
+Run these commands IN ORDER from `repos/telex`:
+
+```bash
+cd repos/telex
+
+# 1. Install all dependencies
+pnpm install
+
+# 2. Set up environment files
+cp client/.env.example client/.env
+cp server/.env.sample server/.env
+
+# 3. Generate secure secrets (JWT, APP_SECRET, SHARE_SECRET)
+pnpm secrets:update
+
+# 4. Add your API keys to server/.env:
+#    - WPCOM_CLIENT_ID=<your-wpcom-client-id>
+#    - WPCOM_CLIENT_SECRET=<your-wpcom-client-secret>
+#    - ANTHROPIC_API_KEY=<your-anthropic-api-key>
+
+# 5. Generate server configuration
+pnpm run config:dev
+
+# 6. Install PHP dependencies
+cd server && composer install && cd ..
+
+# 7. Start MinIO (S3 storage) - REQUIRED
+pnpm run minio:start
+
+# 8. Create the S3 bucket (CRITICAL - builds will fail without this!)
+docker run --rm --network host --entrypoint sh minio/mc -c \
+  "mc alias set m http://localhost:11111 minioadmin minioadmin && mc mb m/w0-blocks --ignore-existing"
+
+# 9. Set up block build workspace (CRITICAL - wp-scripts won't work without this!)
+node cli/setup-workspace.js
+
+# 10. Start development servers
+pnpm run dev
+```
+
+### MinIO Setup Details
+
+MinIO provides S3-compatible storage for local development:
+
+```bash
+pnpm run minio:start      # Start MinIO in background
+pnpm run minio:stop       # Stop MinIO
+pnpm run minio:status     # Check status
+pnpm run minio:logs       # View logs
+```
+
+- **S3 API**: http://localhost:11111
+- **Web Console**: http://localhost:11112
+- **Credentials**: `minioadmin` / `minioadmin`
+- **Bucket**: `w0-blocks` (must exist for builds to work)
+
+### Create Bucket (if missing)
+
+If builds fail with "NoSuchBucket" error:
+
+```bash
+docker run --rm --network host --entrypoint sh minio/mc -c \
+  "mc alias set m http://localhost:11111 minioadmin minioadmin && mc mb m/w0-blocks --ignore-existing"
+```
+
+### Setup Block Build Workspace (if wp-scripts not found)
+
+If builds fail with "Command wp-scripts not found":
+
+```bash
+node cli/setup-workspace.js
+```
+
+This installs `@wordpress/scripts` and block dependencies to `/tmp/projects/`.
+
+## Development Commands
+
+### Root Commands
+
+```bash
+pnpm run dev              # Start both client and server (interactive CLI)
+pnpm run client:dev       # Start only Vite dev server
+pnpm run client:build     # Build client for production
+pnpm run client:lint      # Run Biome linter
+pnpm run client:format    # Format code with Biome
+```
+
+### Testing
+
+```bash
+pnpm run test:e2e         # Run Playwright E2E tests
+pnpm run test:e2e:ui      # Run E2E tests with UI
+pnpm run test:e2e:headed  # Run E2E tests in headed mode
+
+# From client directory
+pnpm run test             # Run Vitest unit tests
+pnpm run test:watch       # Watch mode
+```
+
+### Server Commands
+
+```bash
+cd server
+composer install          # Install PHP dependencies
+php -S localhost:8000 -t public/  # Start PHP server manually
+```
+
+## Client Architecture
+
+### Routing (TanStack Router)
+
+File-based routing in `client/src/routes/`:
+
+```
+routes/
+├── __root.tsx              # Root layout
+├── index.tsx               # Home page (/)
+├── changelog.tsx           # Changelog (/changelog)
+├── faq.tsx                 # FAQ (/faq)
+├── projects.$publicId.tsx  # Project view (/projects/:publicId)
+├── projects.new.tsx        # New project (/projects/new)
+├── protected-layout.tsx    # Auth-protected layout
+└── settings.tsx            # Settings (/settings)
+```
+
+### State Management
+
+- **Zustand**: `client/src/stores/` - Client-side state
+- **Contexts**: `client/src/contexts/` - Auth, Project, AppEnv providers
+
+### Key Hooks
+
+```typescript
+// API hooks
+import { useArtefact } from '@/hooks/artefact';
+import { useProject } from '@/hooks/project';
+
+// Playground persistence
+import { usePlaygroundPersistence } from '@/hooks/usePlaygroundPersistence';
+import { useOPFSStorage } from '@/hooks/useOPFSStorage';
+
+// Chat/messaging
+import { useMessages } from '@/hooks/useMessages';
+import { useStream } from '@/hooks/useStream';
+```
+
+### Environment Variables
+
+Client uses Vite environment variables (prefix with `VITE_`):
+
+```bash
+# client/.env
+VITE_W0_BA_TOOLKIT_URL=http://localhost:8000
+```
+
+Access via:
+
+```typescript
+import { useAppEnv } from '@/contexts/AppEnvContext';
+const { apiUrl } = useAppEnv();
+```
+
+## Code Style
+
+- **Linting/Formatting**: Biome
+- **TypeScript**: Strict mode enabled
+- **React**: Functional components with hooks
+- **CSS**: Tailwind CSS with component-based approach
+- **PHP**: PSR-4 autoloading, PHP 8.0+ features
+
+### Running Checks
+
+```bash
+pnpm run client:check     # Run Biome check (format + lint)
+pnpm run client:lint      # Lint only
+pnpm run client:format    # Format only
+```
+
+## WordPress Playground Integration
+
+Telex uses WordPress Playground for live block preview:
+
+- **Package**: `@wp-playground/client`
+- **Persistence**: OPFS (Origin Private File System) for browser-side storage
+- **Features**: Native OPFS mounting, auto-save, compression, storage quota management
+
+```typescript
+// Using Playground persistence
+import { usePlaygroundPersistence } from '@/hooks/usePlaygroundPersistence';
+
+const { saveState, loadState, isReady } = usePlaygroundPersistence();
+```
+
+## Git Workflow (CRITICAL)
+
+**Before making any code changes in this repo, ALWAYS:**
+
+1. **Checkout main and pull latest:**
+   ```bash
+   cd repos/telex
+   git checkout main
+   git pull origin main
+   ```
+
+2. **Create a feature branch:**
+   ```bash
+   git checkout -b feature/descriptive-name
+   ```
+
+3. **Install dependencies if needed:**
+   ```bash
+   pnpm install
+   ```
+
+4. **Then make your changes**
+
+Never work directly on main. Always create a feature branch first.
+
+## Troubleshooting
+
+### "Failed to store public ID" / "NoSuchBucket" Error
+
+The MinIO bucket doesn't exist. Create it:
+
+```bash
+docker run --rm --network host --entrypoint sh minio/mc -c \
+  "mc alias set m http://localhost:11111 minioadmin minioadmin && mc mb m/w0-blocks --ignore-existing"
+```
+
+### "Command wp-scripts not found" / "ERR_PNPM_RECURSIVE_EXEC_FIRST_FAIL"
+
+The block build workspace isn't set up. Run:
+
+```bash
+node cli/setup-workspace.js
+```
+
+### "process is not defined" Error
+
+Vite uses `import.meta.env` not `process.env`:
+
+```typescript
+// Wrong
+process.env.API_URL
+
+// Correct
+import.meta.env.VITE_W0_BA_TOOLKIT_URL
+```
+
+### MinIO Connection Issues
+
+1. Check MinIO is running: `pnpm run minio:status`
+2. Verify console access: http://localhost:11112
+3. Check bucket exists (see NoSuchBucket fix above)
+4. Check `.env` credentials match MinIO defaults (`minioadmin`/`minioadmin`)
+
+### Build Failures on Docker
+
+Clear the projects folder if switching between Docker and local:
+
+```bash
+rm -rf /tmp/projects/*
+```
+
+pnpm symlinks are OS-specific and won't work across environments.
+
+### OAuth "Unknown client_id" Error
+
+Your WordPress.com OAuth credentials aren't configured. Add to `server/.env`:
+
+```bash
+WPCOM_CLIENT_ID=<your-client-id>
+WPCOM_CLIENT_SECRET=<your-client-secret>
+```
+
+Get credentials at https://developer.wordpress.com/apps/
+
+### Ports Already in Use
+
+Kill existing processes:
+
+```bash
+lsof -ti:3000,4000,8000 | xargs kill -9 2>/dev/null
+```
+
+## AI Context Files
+
+Read `CLAUDE.md` in the repo root for additional AI-specific guidance. It contains detailed architecture documentation and development patterns.

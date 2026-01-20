@@ -163,6 +163,45 @@
         "note": "Jetpack runs within WordPress Core environment"
       },
       "aiContext": ["AGENTS.md"]
+    },
+    
+    "telex": {
+      "path": "repos/telex",
+      "name": "Telex",
+      "description": "AI-powered WordPress Gutenberg block authoring environment",
+      "upstream": "https://github.a8c.com/Automattic/w0-block-authoring",
+      "defaultBranch": "main",
+      "nodeVersion": "22",
+      "packageManager": "pnpm",
+      "stack": {
+        "language": "TypeScript/PHP",
+        "framework": "React (Vite)",
+        "styling": "Tailwind CSS",
+        "stateManagement": "Zustand",
+        "routing": "TanStack Router"
+      },
+      "paths": {
+        "client": "client",
+        "components": "client/src/components",
+        "routes": "client/src/routes",
+        "hooks": "client/src/hooks",
+        "contexts": "client/src/contexts",
+        "server": "server",
+        "cli": "cli",
+        "spec": "spec",
+        "admin": "admin",
+        "docs": "docs"
+      },
+      "devServer": {
+        "command": "pnpm run dev",
+        "ports": {
+          "client": 3000,
+          "server": 8000
+        },
+        "url": "http://localhost:3000",
+        "note": "Requires MinIO for S3 storage: pnpm run minio:start"
+      },
+      "aiContext": ["CLAUDE.md"]
     }
   },
   
@@ -196,6 +235,21 @@
       "description": "Jetpack connects self-hosted WordPress sites to WordPress.com via Calypso",
       "integration": "Jetpack API endpoints consumed by Calypso for site management",
       "apiBase": "/wp-json/jetpack/v4/"
+    },
+    "telex-gutenberg": {
+      "description": "Telex generates Gutenberg blocks using the block API",
+      "integration": "Telex outputs WordPress block plugins compatible with Gutenberg block-library patterns",
+      "sharedPackages": [
+        "@wordpress/blocks",
+        "@wordpress/block-editor",
+        "@wordpress/components",
+        "@wordpress/icons"
+      ]
+    },
+    "telex-playground": {
+      "description": "Telex uses WordPress Playground for live block preview",
+      "integration": "@wp-playground/client for in-browser WordPress environment",
+      "note": "Blocks are previewed in an isolated WordPress Playground instance"
     }
   },
   

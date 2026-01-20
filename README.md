@@ -4,12 +4,13 @@ A unified workspace for designers at Automattic to work across the WordPress eco
 
 ## What is Design Kit?
 
-Design Kit brings together **Calypso**, **Gutenberg**, **WordPress Core**, and **Jetpack** into a single workspace with AI-powered tooling that helps designers:
+Design Kit brings together **Calypso**, **Gutenberg**, **WordPress Core**, **Jetpack**, and **Telex** into a single workspace with AI-powered tooling that helps designers:
 
 - **Build screens and flows** without deep technical knowledge
 - **Discover and use existing components** across all repositories
 - **Navigate cross-repo features** seamlessly
 - **Prototype rapidly** using real components
+- **Create custom Gutenberg blocks** with AI assistance via Telex
 
 ## Getting Started
 
@@ -70,6 +71,13 @@ Once setup is complete, just ask naturally. Here are examples of what you can as
 - "Start Gutenberg"
 - "I want to work on WordPress Core"
 - "Run Jetpack locally"
+- "Start Telex"
+
+**Block Authoring with Telex:**
+- "I want to work on Telex"
+- "Show me how Telex generates blocks"
+- "Where is the artefact schema defined?"
+- "How does Telex integrate with WordPress Playground?"
 
 **Cross-Repo Work:**
 - "How does Calypso communicate with WordPress Core?"
@@ -84,6 +92,7 @@ Once setup is complete, just ask naturally. Here are examples of what you can as
 - **WordPress Core** - Core WordPress software
 - **Jetpack** - Security, performance & marketing plugin
 - **CIAB** - (Optional) Automattic internal admin tools
+- **Telex** - (Optional) AI-powered Gutenberg block authoring tool
 
 All repositories are managed automatically. The AI knows where everything lives and how to work across them.
 
@@ -97,6 +106,7 @@ This workspace includes specialized AI rules (in `.cursor/rules/`) that teach th
 - **`wordpress-core.mdc`** - WordPress Core structure, APIs, and PHP conventions
 - **`jetpack.mdc`** - Jetpack plugin architecture and development patterns
 - **`ciab.mdc`** - CIAB (Commerce in a Box) internal tools context
+- **`telex.mdc`** - Telex AI block authoring tool context
 - **`cross-repo.mdc`** - How features span multiple repositories and workflows
 - **`setup.mdc`** - Environment setup protocol and automation
 

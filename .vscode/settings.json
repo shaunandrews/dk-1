@@ -1,12 +1,13 @@
 {
-  "git.autoRepositoryDetection": "subFolders",
+  "git.autoRepositoryDetection": true,
   "git.repositoryScanMaxDepth": 3,
   "git.scanRepositories": [
     "repos/calypso",
     "repos/gutenberg",
     "repos/wordpress-core",
     "repos/jetpack",
-    "repos/ciab"
+    "repos/ciab",
+    "repos/telex"
   ],
   "git.ignoredRepositories": [
     "repos/wordpress-core/src/wp-content/plugins/gutenberg",

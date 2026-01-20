@@ -25,17 +25,40 @@ This guide helps navigate features that span multiple repositories in the WordPr
 │                                                              │
 │  Exports: @wordpress/components, @wordpress/icons,           │
 │           @wordpress/block-editor, @wordpress/data           │
-└─────────────────────────────┬───────────────────────────────┘
-                              │
-                   Syncs to   │  PHP packages
-                              │
-┌─────────────────────────────┴───────────────────────────────┐
-│                    WordPress Core                            │
-│                (Foundation Software)                         │
-│                                                              │
-│  Provides: REST API, Database, Hooks, Block infrastructure   │
-└─────────────────────────────────────────────────────────────┘
+└───────────────────┬─────────────────────┬───────────────────┘
+                    │                     │
+         Syncs to   │  PHP packages       │  Block API
+                    │                     │
+┌───────────────────┴─────────────────────┼───────────────────┐
+│                    WordPress Core       │                    │
+│                (Foundation Software)    │                    │
+│                                         │                    │
+│  Provides: REST API, Database, Hooks,   │                    │
+│            Block infrastructure         │                    │
+└───────────────────┬─────────────────────┼───────────────────┘
+                    │                     │
+           Playground│                    │ Generates blocks
+                    │                     │
+                    │     ┌───────────────┴───────────────────┐
+                    └────►│              Telex                 │
+                          │    (AI Block Authoring Tool)       │
+                          │                                    │
+                          │  Uses: @wordpress/blocks,          │
+                          │        WordPress Playground        │
+                          │  Outputs: Block plugins (.zip)     │
+                          └────────────────────────────────────┘
 ```
+
+## Development Environment (wp-env)
+
+**CRITICAL:** When both `repos/wordpress-core` and `repos/gutenberg` exist, ONLY use the wordpress-core wp-env. NEVER start gutenberg's wp-env when wordpress-core is present.
+
+Before starting any wp-env:
+1. Check if `repos/wordpress-core` exists
+2. If yes, use `repos/wordpress-core` for `npm run dev`
+3. If only gutenberg exists, then gutenberg's `npm run dev` is acceptable
+
+For gutenberg component work when wordpress-core exists, use `npm run storybook` instead of `npm run dev`.
 
 ## Common Cross-Repo Scenarios
 
@@ -131,16 +154,63 @@ const fetchMyData = async (siteId) => {
 };
 ```
 
+### Scenario 5: Generate a Block with Telex and Test in WordPress
+
+**Flow**: Telex AI → Block Plugin → WordPress Playground → (Optional) WordPress Core
+
+Telex generates blocks from natural language prompts:
+
+1. **Telex** (`repos/telex`):
+   - User describes block in natural language
+   - AI generates block code as an artefact (XML)
+   - Block is built and previewed in WordPress Playground
+
+2. **Testing**:
+   - Preview immediately in Telex's embedded WordPress Playground
+   - Export as `.zip` plugin for installation elsewhere
+
+3. **Integration** (if contributing to ecosystem):
+   - Refine block code to match Gutenberg patterns
+   - Consider contributing to `repos/gutenberg/packages/block-library/`
+   - Or create as a standalone plugin
+
+```typescript
+// Telex artefact workflow
+// 1. User prompt → AI generates artefact XML
+// 2. Artefact extracted to block files
+// 3. Block built with @wordpress/scripts
+// 4. Preview in WordPress Playground
+// 5. Export as installable plugin
+```
+
+### Scenario 6: Improve Telex's Block Generation
+
+**Flow**: Gutenberg patterns → Telex AI context → Better blocks
+
+When improving Telex's block output quality:
+
+1. **Gutenberg** (`repos/gutenberg`):
+   - Study patterns in `packages/block-library/src/`
+   - Understand best practices from core blocks
+
+2. **Telex** (`repos/telex`):
+   - Update AI prompts in `spec/prompts/`
+   - Improve artefact schema in `spec/artefact.xsd`
+   - Update validation in `client/packages/artefact-utils/`
+
 ## Shared Packages Reference
 
 | Package | Source | Used In |
 |---------|--------|---------|
-| `@wordpress/components` | Gutenberg | Calypso, Gutenberg, Plugins |
-| `@wordpress/icons` | Gutenberg | Calypso, Gutenberg, Plugins |
+| `@wordpress/components` | Gutenberg | Calypso, Gutenberg, Plugins, Telex |
+| `@wordpress/icons` | Gutenberg | Calypso, Gutenberg, Plugins, Telex |
 | `@wordpress/data` | Gutenberg | Calypso, Gutenberg |
 | `@wordpress/api-fetch` | Gutenberg | Calypso, Gutenberg |
 | `@wordpress/element` | Gutenberg | Calypso, Gutenberg |
 | `@wordpress/i18n` | Gutenberg | All |
+| `@wordpress/blocks` | Gutenberg | Gutenberg, Telex (generated) |
+| `@wordpress/block-editor` | Gutenberg | Gutenberg, Telex (generated) |
+| `@wp-playground/client` | WordPress | Telex |
 
 ## API Boundaries
 
@@ -230,10 +300,12 @@ npm link @wordpress/components
 
 ## When Things Connect
 
-| User Action | Calypso | Gutenberg | Core |
-|-------------|---------|-----------|------|
-| Edit post | Router, shell | Block editor | REST API, storage |
-| Change setting | Settings UI | - | Options API |
-| Upload media | Media library | Media blocks | REST API, files |
-| Install plugin | Plugin UI | - | Plugins API |
-| View stats | Stats pages | - | Jetpack/API |
+| User Action | Calypso | Gutenberg | Core | Telex |
+|-------------|---------|-----------|------|-------|
+| Edit post | Router, shell | Block editor | REST API, storage | - |
+| Change setting | Settings UI | - | Options API | - |
+| Upload media | Media library | Media blocks | REST API, files | - |
+| Install plugin | Plugin UI | - | Plugins API | - |
+| View stats | Stats pages | - | Jetpack/API | - |
+| Create block | - | Block patterns | Block registration | AI generation, Playground preview |
+| Test block | - | Storybook | wp-env | WordPress Playground |

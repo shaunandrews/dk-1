@@ -21,6 +21,7 @@ PUBLIC_REPOS=(
 
 PRIVATE_REPOS=(
     "ciab|git@github.a8c.com:Automattic/ciab-admin.git"
+    "telex|git@github.a8c.com:Automattic/w0-block-authoring.git"
 )
 
 # Clone a single repository
@@ -127,27 +128,63 @@ clone_ciab() {
     fi
 }
 
-# Clone all repositories (public + CIAB if requested)
+# Clone Telex (private, requires Automattic access)
+clone_telex() {
+    echo "📦 Cloning Telex (requires Automattic access)..."
+    echo ""
+    
+    local telex_def="${PRIVATE_REPOS[1]}"
+    IFS='|' read -r name url <<< "$telex_def"
+    
+    if clone_repo "$name" "$url"; then
+        echo ""
+        echo "✅ Telex cloned successfully"
+        return 0
+    else
+        echo ""
+        echo "❌ Failed to clone Telex"
+        echo "   This requires Automattic internal access and SSH key configured for github.a8c.com"
+        return 1
+    fi
+}
+
+# Clone all repositories (public + private repos if requested)
 clone_all() {
     local include_ciab=false
+    local include_telex=false
+    local include_private=false
     
-    # Check for --include-ciab flag
+    # Check for flags
     for arg in "$@"; do
-        if [ "$arg" = "--include-ciab" ]; then
-            include_ciab=true
-            break
-        fi
+        case "$arg" in
+            --include-ciab) include_ciab=true ;;
+            --include-telex) include_telex=true ;;
+            --include-private) include_private=true ;;
+        esac
     done
     
     clone_all_public
     
-    if [ "$include_ciab" = true ]; then
+    if [ "$include_private" = true ]; then
         echo ""
         clone_ciab
-    else
         echo ""
-        echo "💡 Tip: To include CIAB, run: ./bin/repos.sh clone --include-ciab"
-        echo "   Or separately: ./bin/repos.sh clone-ciab"
+        clone_telex
+    else
+        if [ "$include_ciab" = true ]; then
+            echo ""
+            clone_ciab
+        fi
+        if [ "$include_telex" = true ]; then
+            echo ""
+            clone_telex
+        fi
+    fi
+    
+    if [ "$include_ciab" = false ] && [ "$include_telex" = false ] && [ "$include_private" = false ]; then
+        echo ""
+        echo "💡 Tip: To include private repos, run: ./bin/repos.sh clone --include-private"
+        echo "   Or separately: ./bin/repos.sh clone-ciab, ./bin/repos.sh clone-telex"
     fi
 }
 
@@ -178,6 +215,15 @@ update_all() {
         fi
     fi
     
+    # Update Telex if it exists
+    if [ -d "$REPOS_DIR/telex/.git" ]; then
+        if update_repo "telex"; then
+            updated=$((updated + 1))
+        else
+            skipped=$((skipped + 1))
+        fi
+    fi
+    
     echo ""
     echo "✅ Updated: $updated, Skipped: $skipped"
 }
@@ -199,6 +245,11 @@ show_status() {
         repo_status "ciab"
     fi
     
+    # Status of Telex if it exists
+    if [ -d "$REPOS_DIR/telex" ]; then
+        repo_status "telex"
+    fi
+    
     echo ""
 }
 
@@ -208,16 +259,23 @@ show_usage() {
 Usage: $0 <command> [options]
 
 Commands:
-  clone [--include-ciab]    Clone all public repositories (optionally include CIAB)
+  clone [options]            Clone all public repositories
+    --include-ciab           Also clone CIAB (Automattic access required)
+    --include-telex          Also clone Telex (Automattic access required)
+    --include-private        Clone all private repos (CIAB + Telex)
   clone-ciab                 Clone CIAB repository (Automattic access required)
+  clone-telex                Clone Telex repository (Automattic access required)
   update                     Update all cloned repositories
   status                     Show status of all repositories
 
 Examples:
-  $0 clone                  # Clone only public repos
-  $0 clone --include-ciab   # Clone all repos including CIAB
-  $0 clone-ciab             # Clone just CIAB
-  $0 update                 # Update all cloned repos
+  $0 clone                   # Clone only public repos
+  $0 clone --include-private # Clone all repos including CIAB and Telex
+  $0 clone --include-ciab    # Clone public repos + CIAB
+  $0 clone --include-telex   # Clone public repos + Telex
+  $0 clone-ciab              # Clone just CIAB
+  $0 clone-telex             # Clone just Telex
+  $0 update                  # Update all cloned repos
   $0 status                  # Show status
 
 EOF
@@ -234,6 +292,9 @@ main() {
             ;;
         clone-ciab)
             clone_ciab
+            ;;
+        clone-telex)
+            clone_telex
             ;;
         update)
             update_all

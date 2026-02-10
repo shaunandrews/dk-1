@@ -85,8 +85,10 @@ start_calypso() {
         exit 1
     fi
     echo "   URL: http://calypso.localhost:3000"
+    # Use our heap size; start:debug hardcodes 6144 and overrides NODE_OPTIONS, so we run start with debug env instead
     export NODE_OPTIONS="${NODE_OPTIONS:+$NODE_OPTIONS }--max-old-space-size=8192"
-    exec yarn start:debug
+    export SOURCEMAP="eval-source-map"
+    exec yarn start
 }
 
 start_gutenberg() {

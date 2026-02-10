@@ -328,6 +328,8 @@ nvm install 22
 - `.cursor/rules/*.mdc` - AI-specific guidance for each repository
 - `bin/*.sh` - Automation scripts for common tasks
 
+**When doing setup-related work** (first-time setup, `./bin/setup.sh`, `./bin/repos.sh clone`, installing dependencies, starting dev servers for the first time, or troubleshooting setup): **read `.cursor/rules/setup.mdc` first.** It defines the full AI-driven setup protocol and required steps.
+
 ## Troubleshooting
 
 ### "nvm not found"

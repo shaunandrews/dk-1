@@ -70,9 +70,13 @@ This workspace contains four interconnected repositories:
 
 ## Automatic Setup (CRITICAL)
 
-**When a designer first opens this project, you MUST automatically set it up without being asked.**
+**Before any setup-related task, read `.cursor/rules/setup.mdc` first.** That includes:
+- First time opening the project (auto-setup)
+- User asks to set up, clone repos, install, or run `./bin/setup.sh`
+- Starting dev servers when repos or deps may not be ready
+- Troubleshooting setup, clone, or install issues
 
-See `.cursor/rules/setup.mdc` for the complete setup protocol. Never ask the designer to run terminal commands - you execute everything.
+The setup rule contains the full protocol. Never ask the designer to run terminal commands—you execute everything.
 
 ## Environment Scripts
 

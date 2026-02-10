@@ -1,9 +1,11 @@
 ---
-description: AI-driven setup protocol for Design Kit
+description: "Design Kit setup protocol — read this when running or modifying setup.sh, cloning repos (repos.sh clone), first-time setup, installing dependencies, or starting dev servers. AI must execute setup; never ask the user to run terminal commands."
 globs: ["**/*"]
 ---
 
 # AI Setup Protocol for Design Kit
+
+**Read this rule when:** the user (or context) involves setup, first-time install, `./bin/setup.sh`, `./bin/repos.sh` clone/update, installing dependencies in any repo, starting a dev server for the first time, or troubleshooting "not set up" / clone / install issues. For those tasks, follow this protocol instead of guessing.
 
 When a designer opens this project in Cursor for the first time, you MUST automatically handle the entire setup process. The designer should never need to open a terminal or run commands manually.
 

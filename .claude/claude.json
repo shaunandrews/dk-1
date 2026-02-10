@@ -1,0 +1,69 @@
+{
+  "version": "1.0",
+  "name": "Design Kit (DK1)",
+  "description": "AI toolkit for Automattic designers - development environment",
+  "autoApprove": {
+    "commands": [
+      "yarn",
+      "npm",
+      "pnpm",
+      "node",
+      "git",
+      "gh",
+      "jest",
+      "vitest",
+      "eslint",
+      "prettier",
+      "tsc",
+      "webpack",
+      "vite",
+      "turbo",
+      "next",
+      "cat",
+      "ls",
+      "grep",
+      "find",
+      "jq",
+      "curl",
+      "pwd",
+      "echo"
+    ],
+    "patterns": [
+      "^yarn .*",
+      "^npm .*",
+      "^pnpm .*",
+      "^node .*",
+      "^git (status|log|diff|branch|show|reflog)",
+      "^gh (pr|issue|repo) (view|list|status)",
+      "^source ~/.nvm/nvm.sh && nvm use",
+      "^.*yarn (test|jest|build|dev|start|lint|format|typecheck)",
+      "^.*npm (test|run|start)",
+      "^cat .*\\.(js|ts|tsx|jsx|json|md|txt|yml|yaml)",
+      "^ls .*",
+      "^grep .*",
+      "^find .* -name",
+      "^jq .*",
+      "^curl -s .*",
+      "^pwd$",
+      "^echo .*"
+    ]
+  },
+  "alwaysDeny": {
+    "commands": [
+      "rm -rf /",
+      "sudo rm",
+      ":(){ :|:& };:"
+    ],
+    "patterns": [
+      "^rm -rf /$",
+      "^sudo rm -rf",
+      "^dd if=/dev/zero"
+    ]
+  },
+  "notes": [
+    "Auto-approves common development commands (yarn, npm, git read ops, tests)",
+    "Still prompts for potentially destructive operations (rm, git push, etc.)",
+    "Denies obviously dangerous commands",
+    "Covers DK1 workflow: test, build, lint, format, type-check"
+  ]
+}

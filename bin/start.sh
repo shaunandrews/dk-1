@@ -85,6 +85,7 @@ start_calypso() {
         exit 1
     fi
     echo "   URL: http://calypso.localhost:3000"
+    export NODE_OPTIONS="${NODE_OPTIONS:+$NODE_OPTIONS }--max-old-space-size=8192"
     exec yarn start:debug
 }
 

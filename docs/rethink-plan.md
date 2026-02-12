@@ -1,248 +1,309 @@
 # Design Kit Rethink Plan
 
 *February 12, 2026 — Prepared by Moneypenny*
-*Updated: February 12, 2026 — Skills stay in dk-1*
+*v3 — Skills all the way down. No Cursor rules.*
 
 ## The Problem
 
-Design Kit works well in Cursor, but the knowledge is locked in `.cursor/rules/*.mdc` and `.cursor/commands/*.md` — formats that only Cursor understands. The knowledge itself is valuable and portable — it just needs to be in a universal format.
+Design Kit has valuable WordPress ecosystem knowledge locked in Cursor-specific formats (`.cursor/rules/*.mdc`, `.cursor/commands/*.md`). The knowledge is portable — the format isn't.
 
-**Goal:** Restructure dk-1 as a skills-based design kit that works across tools (Cursor, Claude Code, OpenClaw, Codex, etc.). Skills live *here*, not in agent-skills. Some design-relevant agent-skills may migrate *into* dk-1.
-
----
-
-## What dk-1 Contains Today
-
-### Cursor Rules (`.cursor/rules/*.mdc`)
-
-| Rule | Lines | Content Type |
-|------|-------|-------------|
-| `base.mdc` | ~120 | AI persona + design-first behavior guidelines |
-| `calypso.mdc` | ~450 | Calypso architecture, two interfaces, components, dashboard folder, routing, state, styling |
-| `gutenberg.mdc` | ~280 | Gutenberg architecture, @wordpress/components, block dev, state management |
-| `gutenberg-components.mdc` | ~280 | @wordpress/components development guide (file structure, stories, tests, styling) |
-| `wordpress-core.mdc` | ~260 | WP Core architecture, REST API, admin pages, hooks, blocks, security |
-| `jetpack.mdc` | ~300 | Jetpack monorepo, modules, blocks, REST API, packages, WP Core integration |
-| `ciab.mdc` | ~180 | CIAB architecture, route system, components, state, dev commands |
-| `telex.mdc` | ~320 | Telex architecture, artefact system, S3 storage, Playground, setup |
-| `cross-repo.mdc` | ~200 | How repos connect, data flows, shared packages, feature flags |
-| `setup.mdc` | ~280 | AI-driven setup protocol, Node version management, dependency installation |
-
-### Cursor Commands (`.cursor/commands/*.md`)
-
-| Command | Content |
-|---------|---------|
-| `build-screen.md` | Templates for creating pages in Calypso, Gutenberg, WP Admin |
-| `find-component.md` | Component lookup tables across @wordpress/components and Calypso |
-| `prototype.md` | Quick scaffolding templates and tips |
-| `cross-repo.md` | Data flow diagrams and connection explanations |
-| `setup.md` | Trigger for setup protocol |
-| `start.md` | Dev server launcher |
-| `git.md` | Git workflow help |
-
-### Universal (already tool-agnostic)
-
-| Asset | Purpose |
-|-------|---------|
-| `bin/*.sh` | Shell scripts for setup, start, status, reset, repos |
-| `dk.config.json` | Central config for all repos |
-| `docs/*.md` | Getting started, repo map, visual guides |
-| `CLAUDE.md` | Claude Code guidance |
-| `README.md` | User-facing overview |
-
----
-
-## Relationship with Agent Skills
-
-The `agent-skills` repo has some WordPress skills that overlap with dk-1. But the two projects have different purposes:
-
-- **dk-1** = Design Kit for the WordPress ecosystem. Design-focused. Knows about Calypso, Gutenberg, WP Core, Jetpack, CIAB, Telex, and how they connect.
-- **agent-skills** = General-purpose agent skills. Broader scope (blogging, hosting, search, etc.).
-
-### Skills That Should Move INTO dk-1
-
-These agent-skills are design-focused and belong in the design kit:
-
-| Agent Skill | Why It Belongs in dk-1 |
-|-------------|----------------------|
-| `design-mockups` | Building and previewing design mockups — core design kit activity |
-| `wordpress-mockups` | WP/Gutenberg UI mockups with tokens, icons, components — directly relevant |
-| `design-atelier` | End-to-end design pipeline — design kit workflow |
-| `design-critique` | UI/UX audit — design kit capability |
-
-### Skills That Stay in Agent Skills
-
-These are general-purpose and don't belong in a WordPress design kit:
-
-| Agent Skill | Why It Stays |
-|-------------|-------------|
-| `blogger` | Writing/publishing — not design-specific |
-| `headless-browser` | General web tool |
-| `pressable` | Hosting management |
-| `ddg-search` | General search |
-| `skill-creator` | Meta-skill |
-| `project-setup`, `project-tracker` | Project management |
-
-### Skills That Overlap (deduplicate)
-
-| dk-1 Knowledge | Agent Skill | Resolution |
-|----------------|-------------|-----------|
-| `gutenberg.mdc` block dev | `wp-block-development` | dk-1 skill gets the design-focused version; agent-skill keeps the implementation-focused version |
-| `wordpress-core.mdc` REST API | `wp-rest-api` | Agent-skill is more detailed for backend work; dk-1 skill covers the design-relevant surface |
-| `gutenberg-components.mdc` | `wordpress-mockups` | Merge — dk-1 skill covers both using and developing components |
-| `find-component.md` tables | `wordpress-mockups` | Merge into dk-1's component skill |
+**Goal:** Restructure dk-1 as a pure skills-based design kit. No tool-specific formats. Works with Cursor, Claude Code, OpenClaw, Codex, or anything that can read a SKILL.md.
 
 ---
 
 ## The New Structure
 
-### dk-1 becomes skills-based:
+Everything is a skill. Shell scripts live inside the skills that use them. The top level is clean.
 
 ```
 dk-1/
-├── skills/                      # ← NEW: Universal skills (SKILL.md format)
-│   ├── calypso/
-│   │   └── SKILL.md             # Calypso architecture & conventions
+├── skills/
+│   │
+│   │── calypso/
+│   │   └── SKILL.md              # Calypso architecture, two interfaces, components,
+│   │                              # dashboard folder, routing, state, styling, dev commands
+│   │
 │   ├── gutenberg/
-│   │   └── SKILL.md             # Gutenberg, @wordpress/components
+│   │   └── SKILL.md              # Gutenberg, @wordpress/components, block dev,
+│   │                              # component development (stories, tests, styling)
+│   │
 │   ├── wordpress-core/
-│   │   └── SKILL.md             # WP Core architecture
+│   │   └── SKILL.md              # WP Core architecture, REST API, admin pages,
+│   │                              # hooks, blocks, security
+│   │
 │   ├── jetpack/
-│   │   └── SKILL.md             # Jetpack monorepo
+│   │   └── SKILL.md              # Jetpack monorepo, modules, blocks, packages,
+│   │                              # WP Core integration
+│   │
 │   ├── ciab/
-│   │   └── SKILL.md             # CIAB admin SPA
+│   │   └── SKILL.md              # CIAB admin SPA, route system, components, state
+│   │
 │   ├── telex/
-│   │   └── SKILL.md             # Telex block authoring
+│   │   └── SKILL.md              # Telex block authoring, artefact system, S3,
+│   │                              # WordPress Playground
+│   │
 │   ├── cross-repo/
-│   │   └── SKILL.md             # How repos connect
-│   ├── design-mockups/          # ← FROM agent-skills
-│   │   └── SKILL.md
-│   ├── wordpress-mockups/       # ← FROM agent-skills
-│   │   └── SKILL.md
-│   ├── design-atelier/          # ← FROM agent-skills
-│   │   └── SKILL.md
-│   ├── design-critique/         # ← FROM agent-skills
-│   │   └── SKILL.md
-│   ├── build-screen/            # ← FROM .cursor/commands/
-│   │   └── SKILL.md             # Screen templates for Calypso, Gutenberg, WP Admin
-│   ├── find-component/          # ← FROM .cursor/commands/
-│   │   └── SKILL.md             # Component lookup across repos
-│   └── prototype/               # ← FROM .cursor/commands/
-│       └── SKILL.md             # Quick scaffolding patterns
+│   │   └── SKILL.md              # How repos connect, data flows, shared packages,
+│   │                              # feature flags, coordinating changes
+│   │
+│   ├── setup/
+│   │   ├── SKILL.md              # Setup protocol, prerequisites, Node version mgmt
+│   │   └── scripts/
+│   │       ├── setup.sh          # ← from bin/setup.sh
+│   │       ├── repos.sh          # ← from bin/repos.sh
+│   │       ├── reset.sh          # ← from bin/reset.sh
+│   │       ├── status.sh         # ← from bin/status.sh
+│   │       └── which-repo.sh     # ← from bin/which-repo.sh
+│   │
+│   ├── dev-servers/
+│   │   ├── SKILL.md              # Starting/stopping dev servers, ports, URLs
+│   │   └── scripts/
+│   │       └── start.sh          # ← from bin/start.sh
+│   │
+│   ├── build-screen/
+│   │   └── SKILL.md              # Screen templates: Calypso pages, Gutenberg
+│   │                              # sidebars, WP Admin pages
+│   │
+│   ├── find-component/
+│   │   └── SKILL.md              # Component lookup across @wordpress/components,
+│   │                              # Calypso, CIAB. Tables, examples, Storybook refs
+│   │
+│   ├── prototype/
+│   │   └── SKILL.md              # Quick scaffolding, Storybook prototyping,
+│   │                              # templates for common patterns
+│   │
+│   ├── git-workflow/
+│   │   └── SKILL.md              # Multi-repo git: branch conventions, which-repo
+│   │                              # awareness, PR workflows, cross-repo changes
+│   │
+│   ├── design-mockups/           # ← from agent-skills
+│   │   ├── SKILL.md
+│   │   └── scripts/
+│   │
+│   ├── wordpress-mockups/        # ← from agent-skills
+│   │   ├── SKILL.md
+│   │   └── reference/            # tokens, icons, components data
+│   │
+│   ├── design-atelier/           # ← from agent-skills
+│   │   ├── SKILL.md
+│   │   └── docs/
+│   │
+│   └── design-critique/          # ← from agent-skills
+│       └── SKILL.md
 │
-├── .cursor/rules/               # Thin Cursor wrappers (reference skills)
-│   ├── base.mdc                 # Design persona (stays here — it's the DK identity)
-│   ├── setup.mdc                # Setup protocol (workspace-specific, stays)
-│   ├── calypso.mdc              # Glob + paths + "see skills/calypso"
-│   ├── gutenberg.mdc            # Glob + paths + "see skills/gutenberg"
-│   ├── wordpress-core.mdc       # Glob + paths + "see skills/wordpress-core"
-│   ├── jetpack.mdc              # Glob + paths + "see skills/jetpack"
-│   ├── ciab.mdc                 # Glob + paths + "see skills/ciab"
-│   ├── telex.mdc                # Glob + paths + "see skills/telex"
-│   └── cross-repo.mdc           # Glob + "see skills/cross-repo"
+├── docs/
+│   ├── overview.md               # Project overview
+│   ├── getting-started.md        # How to use dk-1
+│   ├── repo-map.md               # Visual repo connection map
+│   ├── rethink-plan.md           # This document
+│   └── *-visual-guide.md         # Visual guides
 │
-├── .cursor/commands/            # Thin command triggers (reference skills)
-│   ├── build-screen.md          # → skills/build-screen
-│   ├── find-component.md        # → skills/find-component
-│   ├── prototype.md             # → skills/prototype
-│   ├── setup.md                 # → .cursor/rules/setup.mdc
-│   ├── start.md                 # Stays (workspace-specific)
-│   ├── git.md                   # Stays (workspace-specific)
-│   └── cross-repo.md            # → skills/cross-repo
+├── repos/                        # Cloned repositories (git-ignored)
 │
-├── bin/                         # Shell scripts (unchanged)
-├── docs/                        # Workspace docs (unchanged)
-├── repos/                       # Cloned repositories (git-ignored)
-├── dk.config.json               # Central config (unchanged)
-├── CLAUDE.md                    # Updated to reference skills/
-└── README.md                    # Updated to mention skills
+├── dk.config.json                # Central config (repos, ports, connections)
+├── CLAUDE.md                     # Points to skills/
+├── README.md                     # User-facing overview
+├── .gitignore
+└── logs/                         # Dev session logs (git-ignored)
 ```
 
-### How It Works Across Tools
+**What's gone:**
+- `.cursor/rules/` — all knowledge moved to skills
+- `.cursor/commands/` — all workflows moved to skills
+- `bin/` — scripts distributed into `skills/setup/scripts/` and `skills/dev-servers/scripts/`
 
-| Tool | How It Consumes dk-1 |
-|------|---------------------|
-| **Cursor** | `.cursor/rules/*.mdc` activate per glob → reference `skills/` for deep knowledge |
-| **Claude Code** | `CLAUDE.md` → references `skills/` directory |
-| **OpenClaw** | Skills symlinked into agent workspace, loaded via `<available_skills>` |
-| **Other agents** | Read `skills/*/SKILL.md` directly |
-| **Humans** | Read `skills/*/SKILL.md` as documentation |
+**What's new:**
+- `skills/` — everything is a skill
+- `skills/setup/` and `skills/dev-servers/` — workspace operations with their scripts
+- `skills/git-workflow/` — multi-repo git knowledge (was split across `base.mdc` and `git.md`)
+- Design skills imported from agent-skills
+
+---
+
+## Skill Inventory
+
+### Repository Knowledge Skills
+
+Each skill is the definitive reference for working with that codebase.
+
+| Skill | Source | Key Content |
+|-------|--------|-------------|
+| `calypso` | `calypso.mdc` | Two interfaces (Legacy vs Dashboard), components, TanStack Query/Router, Redux, styling, i18n, entry points |
+| `gutenberg` | `gutenberg.mdc` + `gutenberg-components.mdc` | @wordpress/components, block development, Storybook, component file structure, state management |
+| `wordpress-core` | `wordpress-core.mdc` | REST API, admin pages, hooks, blocks, security, database, PHP conventions |
+| `jetpack` | `jetpack.mdc` | Monorepo structure, modules, blocks, packages, pnpm jetpack CLI, WP Core mounting |
+| `ciab` | `ciab.mdc` | Route auto-discovery, SPA architecture, @automattic/design-system, TanStack Router |
+| `telex` | `telex.mdc` | Artefact system, S3/MinIO, WordPress Playground, CLI, setup checklist |
+| `cross-repo` | `cross-repo.mdc` + `cross-repo.md` | Data flows, shared packages, feature flags, coordinating multi-repo changes |
+
+### Workflow Skills
+
+| Skill | Source | Key Content |
+|-------|--------|-------------|
+| `setup` | `setup.mdc` + `bin/setup.sh`, `repos.sh`, `reset.sh`, `status.sh`, `which-repo.sh` | Prerequisites, Node version management, clone/install protocol, scripts |
+| `dev-servers` | `start.md` + `bin/start.sh` | Starting servers, ports, URLs, wp-env conflict prevention |
+| `build-screen` | `build-screen.md` | Calypso page templates (basic, settings, list), Gutenberg sidebar/inspector, WP Admin pages |
+| `find-component` | `find-component.md` | Component lookup tables, priority order, usage examples, Storybook links |
+| `prototype` | `prototype.md` | Quick scaffolding, Storybook prototyping, settings/list/modal templates |
+| `git-workflow` | `git.md` + git sections from `base.mdc` | Multi-repo branch conventions, which-repo awareness, PR workflows |
+
+### Design Skills (from agent-skills)
+
+| Skill | Content |
+|-------|---------|
+| `design-mockups` | Build and preview HTML/CSS mockups with local server |
+| `wordpress-mockups` | WP/Gutenberg UI mockups with extracted tokens, icons, components |
+| `design-atelier` | End-to-end design pipeline, reference gathering, parallel sub-agents |
+| `design-critique` | UI/UX audit with Jobs/Ive philosophy |
+
+---
+
+## What Lives Where
+
+### dk-1 Owns (design kit knowledge)
+
+- All WordPress ecosystem skills (Calypso, Gutenberg, WP Core, Jetpack, CIAB, Telex)
+- Cross-repo workflow knowledge
+- Design skills (mockups, atelier, critique)
+- Workspace setup and dev server management
+- Screen building, component finding, prototyping
+
+### agent-skills Keeps (general-purpose)
+
+- `blogger` — writing/publishing
+- `headless-browser` — general web browsing
+- `pressable` — hosting management
+- `ddg-search` — web search
+- `skill-creator` — meta-skill
+- `project-setup`, `project-tracker` — project management
+- `wp-block-development`, `wp-plugin-development`, `wp-rest-api`, etc. — implementation-focused WP skills (vs dk-1's design-focused ones)
+
+### The Boundary
+
+**dk-1 skills** = "I'm a designer working in the WordPress ecosystem. Help me build, prototype, find components, understand architecture."
+
+**agent-skills WP skills** = "I'm implementing a WordPress plugin/block/theme. Help me write correct code, follow conventions, run tests."
+
+There's overlap in content (both know about @wordpress/components, both know about REST API) but different audiences and depth. dk-1 is design-first, agent-skills is implementation-first. That's fine — they can coexist.
+
+---
+
+## How Tools Consume dk-1
+
+| Tool | Entry Point | How Skills Load |
+|------|-------------|-----------------|
+| **Claude Code** | `CLAUDE.md` → lists skills, tells Claude to read relevant `SKILL.md` | On demand per task |
+| **OpenClaw** | `skills/` symlinked into workspace, listed in `<available_skills>` | Matched by description, loaded when relevant |
+| **Cursor** | Can use CLAUDE.md (Claude Code mode) or skills can be referenced via a thin `.cursorrules` | Same SKILL.md files |
+| **Codex / other** | Read `skills/*/SKILL.md` directly | Agent reads what it needs |
+| **Humans** | Browse `skills/` as documentation | Just markdown files |
+
+### CLAUDE.md Structure
+
+```markdown
+# CLAUDE.md
+
+## Project Overview
+Design Kit — a skills-based toolkit for designing across the WordPress ecosystem.
+
+## Skills
+The `skills/` directory contains all knowledge. Read the relevant SKILL.md for your task:
+
+### Repository Knowledge
+- `skills/calypso/` — Calypso architecture and conventions
+- `skills/gutenberg/` — Gutenberg, @wordpress/components, blocks
+- `skills/wordpress-core/` — WordPress Core, REST API, PHP
+- `skills/jetpack/` — Jetpack monorepo
+- `skills/ciab/` — CIAB admin SPA
+- `skills/telex/` — Telex block authoring
+- `skills/cross-repo/` — How repos connect
+
+### Workflows
+- `skills/setup/` — Environment setup (scripts in scripts/)
+- `skills/dev-servers/` — Starting dev servers (scripts in scripts/)
+- `skills/build-screen/` — Creating new screens/pages
+- `skills/find-component/` — Finding existing components
+- `skills/prototype/` — Quick prototyping
+- `skills/git-workflow/` — Multi-repo git operations
+
+### Design
+- `skills/design-mockups/` — HTML/CSS mockup building
+- `skills/wordpress-mockups/` — WP admin UI mockups
+- `skills/design-atelier/` — Full design pipeline
+- `skills/design-critique/` — UI/UX audits
+
+## Configuration
+See `dk.config.json` for repository paths, ports, and connections.
+
+## Design Principles
+- Design-first language: accept natural descriptions
+- Reuse over reinvent: search existing components first
+- Cross-repo awareness: features span multiple repos
+- Progressive disclosure: start simple, reveal complexity when needed
+```
 
 ---
 
 ## Migration Plan
 
-### Phase 1: Create skills/ directory
+### Phase 1: Create `skills/` with repo knowledge
 
-Convert each `.mdc` rule into a `skills/*/SKILL.md`:
+Convert each `.mdc` rule to `SKILL.md`:
 
-1. `calypso.mdc` → `skills/calypso/SKILL.md`
-2. `gutenberg.mdc` + `gutenberg-components.mdc` → `skills/gutenberg/SKILL.md`
-3. `wordpress-core.mdc` → `skills/wordpress-core/SKILL.md`
-4. `jetpack.mdc` → `skills/jetpack/SKILL.md`
-5. `ciab.mdc` → `skills/ciab/SKILL.md`
-6. `telex.mdc` → `skills/telex/SKILL.md`
-7. `cross-repo.mdc` → `skills/cross-repo/SKILL.md`
+1. `skills/calypso/SKILL.md` ← `calypso.mdc`
+2. `skills/gutenberg/SKILL.md` ← `gutenberg.mdc` + `gutenberg-components.mdc`
+3. `skills/wordpress-core/SKILL.md` ← `wordpress-core.mdc`
+4. `skills/jetpack/SKILL.md` ← `jetpack.mdc`
+5. `skills/ciab/SKILL.md` ← `ciab.mdc`
+6. `skills/telex/SKILL.md` ← `telex.mdc`
+7. `skills/cross-repo/SKILL.md` ← `cross-repo.mdc` + `cross-repo.md`
 
-Convert commands into skills:
+### Phase 2: Create workflow skills and move scripts
 
-8. `build-screen.md` → `skills/build-screen/SKILL.md`
-9. `find-component.md` → `skills/find-component/SKILL.md`
-10. `prototype.md` → `skills/prototype/SKILL.md`
+8. `skills/setup/SKILL.md` ← `setup.mdc`; move `bin/setup.sh`, `bin/repos.sh`, `bin/reset.sh`, `bin/status.sh`, `bin/which-repo.sh` → `skills/setup/scripts/`
+9. `skills/dev-servers/SKILL.md` ← `start.md` content; move `bin/start.sh` → `skills/dev-servers/scripts/`
+10. `skills/build-screen/SKILL.md` ← `build-screen.md`
+11. `skills/find-component/SKILL.md` ← `find-component.md`
+12. `skills/prototype/SKILL.md` ← `prototype.md`
+13. `skills/git-workflow/SKILL.md` ← `git.md` + git sections from various rules
 
-### Phase 2: Import design skills from agent-skills
+### Phase 3: Import design skills from agent-skills
 
-Copy (not symlink — dk-1 owns these now) into `skills/`:
-
-11. `design-mockups/` — with preview server scripts
-12. `wordpress-mockups/` — with tokens, icons, components data
-13. `design-atelier/` — with reference gathering system
-14. `design-critique/` — with audit framework
-
-Merge `find-component.md` lookup tables into `wordpress-mockups` or `find-component` skill.
-
-### Phase 3: Slim Cursor rules to wrappers
-
-Replace each `.mdc` with a thin version:
-- Keep the YAML frontmatter (description, globs)
-- Keep workspace-specific context (paths, Node versions, dev server URLs, port numbers)
-- Remove the deep knowledge (it's in the skill now)
-- Add a reference: "For detailed architecture, see `skills/{name}/SKILL.md`"
-
-`base.mdc` and `setup.mdc` stay mostly unchanged — they're workspace identity and workflow, not portable knowledge.
+14. Copy `design-mockups/` from agent-skills
+15. Copy `wordpress-mockups/` from agent-skills
+16. Copy `design-atelier/` from agent-skills
+17. Copy `design-critique/` from agent-skills
 
 ### Phase 4: Update entry points
 
-- Update `CLAUDE.md` to reference `skills/` directory
-- Update `README.md` to mention skills
-- Update `dk.config.json` if skills need to be registered there
+18. Rewrite `CLAUDE.md` to reference skills/
+19. Update `README.md`
+20. Update `dk.config.json` if needed
 
-### Phase 5: Clean up agent-skills
+### Phase 5: Remove old structure
 
-- Remove the 4 design skills from agent-skills (they live in dk-1 now)
-- Update agent-skills README
-- Update any symlinks in agent workspaces to point to dk-1/skills/ instead
+21. Delete `.cursor/rules/` directory
+22. Delete `.cursor/commands/` directory
+23. Delete `bin/` directory (scripts are in skills now)
+24. Remove design skills from agent-skills repo
+25. Update any symlinks pointing to agent-skills design skills
+
+### Phase 6: Test
+
+26. Test with Claude Code (does CLAUDE.md → skills/ work?)
+27. Test with OpenClaw (symlink skills/, verify loading)
+28. Verify scripts still work from new locations (update paths in scripts if needed)
 
 ---
 
-## What This Achieves
-
-| Before | After |
-|--------|-------|
-| Knowledge locked in Cursor `.mdc` format | Knowledge in universal SKILL.md format |
-| Design skills scattered across two repos | Design skills consolidated in dk-1 |
-| Only works in Cursor IDE | Works in Cursor, Claude Code, OpenClaw, any tool |
-| Cursor rules are 200-450 lines each | Cursor rules are ~30 lines (wrappers) |
-| Duplicated knowledge between dk-1 and agent-skills | Single source of truth in dk-1 for design; agent-skills for general |
-
 ## Open Questions
 
-1. **Skill naming:** Should the repo-specific skills be `calypso` or `wp-calypso`? Shorter is better within dk-1, but `wp-` prefix helps if they're ever referenced from outside.
+1. **Script paths:** Moving scripts from `bin/` to `skills/setup/scripts/` changes the relative paths. Scripts reference `repos/` and `dk.config.json` relative to project root. Options: (a) use `$DK_ROOT` env var, (b) scripts detect their own location and resolve root, (c) keep a thin `bin/` that delegates to skill scripts.
 
-2. **base.mdc:** The design-first AI persona is dk-1's identity. Should it also become a skill (so non-Cursor tools get the persona), or stay Cursor-only? Leaning toward making it a skill — it's the kit's voice.
+2. **Skill naming:** Short names (`calypso`) or prefixed (`wp-calypso`)? Leaning short — they're inside dk-1 already.
 
-3. **setup.mdc:** Tightly coupled to dk-1's multi-repo structure. Stays as Cursor rule. But should there also be a `skills/setup/SKILL.md` for Claude Code users?
+3. **Design persona:** `base.mdc` defines the design-first AI personality. Should this become a skill, or go into CLAUDE.md directly? It's more "kit identity" than "reusable knowledge."
 
-4. **OpenClaw integration:** How should dk-1 skills be made available to OpenClaw agents? Symlink `dk-1/skills/` into the workspace? Or register dk-1 as a skills source?
+4. **OpenClaw integration:** Best way to make dk-1 skills available? Symlink entire `dk-1/skills/` into workspace? Or individual skill symlinks?
 
-5. **Removing from agent-skills:** When the design skills move to dk-1, do we just delete them from agent-skills, or leave stubs pointing here?
+5. **Removing from agent-skills:** Delete the 4 design skills from agent-skills, or leave stubs saying "moved to dk-1"?

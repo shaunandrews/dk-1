@@ -2,70 +2,61 @@
 
 ## What Is This?
 
-Design Kit is a meta-repository that orchestrates the major WordPress ecosystem codebases — Calypso, Gutenberg, WordPress Core, Jetpack, CIAB, and Telex — into a single AI-assisted workspace for designers at Automattic.
+Design Kit is a skills-based toolkit for designers working across the WordPress ecosystem at Automattic. It brings together knowledge about Calypso, Gutenberg, WordPress Core, Jetpack, CIAB, and Telex — plus design workflow tools — as portable skills that work with any AI-assisted tool.
 
-It's not a monorepo. It doesn't contain application code. Instead, it provides the scaffolding: shell scripts for cloning/managing repos, AI rules that teach coding assistants about the ecosystem, slash commands for common design tasks, and documentation that maps how the six repositories connect.
+It's not a monorepo. It doesn't contain application code. It's a collection of skills (SKILL.md files), scripts, and documentation that help AI agents understand and navigate the WordPress ecosystem from a design perspective.
 
-The original design was Cursor-centric — `.cursor/rules/*.mdc` files and `.cursor/commands/*.md` — but the underlying knowledge (component libraries, cross-repo data flows, dev server configs, git conventions) is valuable to any AI-assisted workflow. The next evolution is making this knowledge portable across tools.
+**Tool-agnostic by design.** Skills work with Claude Code, OpenClaw, Cursor, Codex, or anything that can read markdown. No tool-specific formats.
 
 ## Architecture
 
 ```
 dk-1/
-├── .cursor/rules/       # AI rules (Cursor .mdc format)
-├── .cursor/commands/     # Slash commands (Cursor-specific)
-├── bin/                  # Shell scripts (universal)
-│   ├── setup.sh          # Clone repos + install deps
-│   ├── repos.sh          # Multi-repo management
-│   ├── start.sh          # Dev server launcher
-│   ├── status.sh         # Environment status
-│   ├── reset.sh          # Pull latest / clean install
-│   └── which-repo.sh     # Context detection
-├── docs/                 # Documentation (universal)
-├── dk.config.json        # Central config for all repos
-├── repos/                # Cloned repositories (git-ignored)
-│   ├── calypso/
-│   ├── gutenberg/
-│   ├── wordpress-core/
-│   ├── jetpack/
-│   ├── telex/
-│   └── (ciab/)
-├── CLAUDE.md             # Claude Code guidance
-└── README.md             # User-facing overview
+├── skills/                      # Everything is a skill
+│   ├── calypso/SKILL.md         # Calypso architecture & conventions
+│   ├── gutenberg/SKILL.md       # Gutenberg, @wordpress/components, blocks
+│   ├── wordpress-core/SKILL.md  # WP Core, REST API, PHP
+│   ├── jetpack/SKILL.md         # Jetpack monorepo
+│   ├── ciab/SKILL.md            # CIAB admin SPA
+│   ├── telex/SKILL.md           # Telex block authoring
+│   ├── cross-repo/SKILL.md      # How repos connect
+│   ├── setup/                   # Environment setup + scripts
+│   ├── dev-servers/             # Dev server management + scripts
+│   ├── build-screen/SKILL.md    # Screen/page templates
+│   ├── find-component/SKILL.md  # Component lookup
+│   ├── prototype/SKILL.md       # Quick scaffolding
+│   ├── git-workflow/SKILL.md    # Multi-repo git
+│   ├── design-mockups/          # HTML/CSS mockup building
+│   ├── wordpress-mockups/       # WP admin UI mockups
+│   ├── design-atelier/          # Full design pipeline
+│   └── design-critique/         # UI/UX audits
+├── docs/                        # Project documentation
+├── repos/                       # Cloned repositories (git-ignored)
+├── dk.config.json               # Central config (repos, ports, connections)
+├── CLAUDE.md                    # Entry point for Claude Code
+└── README.md                    # User-facing overview
 ```
 
-**Two tiers of content:**
-1. **Universal** — bin/ scripts, docs/, dk.config.json, CLAUDE.md. Works with any AI tool or manual workflow.
-2. **Cursor-specific** — .cursor/rules/ and .cursor/commands/. Only useful inside Cursor IDE.
+**Three categories of skills:**
+1. **Repository knowledge** (7) — Architecture and conventions for each codebase
+2. **Workflow** (6) — Setup, dev servers, screen building, component finding, prototyping, git
+3. **Design** (4) — Mockups, UI audits, design pipeline (imported from agent-skills)
 
-## Overlap with Agent Skills
+## Relationship with Agent Skills
 
-The `agent-skills` repo (`~/Developer/Projects/agent-skills/`) contains OpenClaw skills that cover similar WordPress territory:
+dk-1 and agent-skills serve different audiences:
 
-| dk-1 Cursor Rule | Agent Skill Equivalent |
-|-------------------|----------------------|
-| `gutenberg.mdc` | `wp-block-development`, `wp-interactivity-api` |
-| `gutenberg-components.mdc` | `wordpress-mockups`, `design-mockups` |
-| `wordpress-core.mdc` | `wp-plugin-development`, `wp-rest-api`, `wp-wpcli-and-ops` |
-| `jetpack.mdc` | `wp-plugin-development` (partial) |
-| `setup.mdc` | `wp-playground` |
-| `cross-repo.mdc` | No direct equivalent |
-| `base.mdc` (design persona) | `design-critique`, `design-atelier` |
-| `calypso.mdc` | No direct equivalent |
-| `ciab.mdc` | No direct equivalent |
-| `telex.mdc` | No direct equivalent |
+- **dk-1** = Design-focused. "I'm designing across the WordPress ecosystem."
+- **agent-skills** = Implementation-focused. "I'm building a WordPress plugin/block/theme."
 
-**Unique to dk-1:** Calypso, CIAB, and Telex knowledge; cross-repo workflow understanding; the meta-repo orchestration scripts.
-
-**Unique to agent-skills:** PHPStan, WP-CLI ops, performance profiling, Pressable hosting, blog publishing, headless browser.
-
-**Opportunity:** Extract the universal knowledge from dk-1's Cursor rules into portable skill format that works with OpenClaw, Claude Code, or any agent — while keeping the Cursor-specific wrappers thin.
+Design skills (mockups, atelier, critique) live here in dk-1. General-purpose skills (blogging, hosting, search, WP-CLI) stay in agent-skills.
 
 ## Links
 
 - **Repo:** `~/Developer/Projects/dk-1/`
 - **Remote:** https://github.com/shaunandrews/dk-1
 - **Agent Skills:** `~/Developer/Projects/agent-skills/`
+- **Rethink Plan:** [docs/rethink-plan.md](rethink-plan.md)
 
 ## Key People
 
@@ -73,7 +64,7 @@ The `agent-skills` repo (`~/Developer/Projects/agent-skills/`) contains OpenClaw
 
 ## What's Next
 
-- Rethink the Cursor-specific rules as universal skills
-- Identify what stays dk-1-only vs. what migrates to agent-skills
-- Make the design kit work across Cursor, Claude Code, OpenClaw, and other AI tools
-- Reduce duplication between dk-1 and agent-skills
+- Convert Cursor rules and commands to skills (Phase 1-2 of rethink plan)
+- Import design skills from agent-skills (Phase 3)
+- Update CLAUDE.md and README.md as entry points (Phase 4)
+- Remove old Cursor-specific structure (Phase 5)

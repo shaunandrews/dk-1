@@ -45,6 +45,11 @@ If missing, offer to run setup first:
 The dependencies for [repo] aren't installed yet. Let me run the setup first...
 ```
 
+**If the designer just pulled latest:** recommend running install in that repo first to avoid build failures from new dependencies (e.g. `yarn install` in calypso, `pnpm install` in ciab/jetpack):
+```
+Looks like you just pulled — I'll run [yarn/pnpm] install first so new dependencies don't cause the build to fail.
+```
+
 For Docker-dependent repos (core, ciab, jetpack), check Docker:
 ```bash
 docker info
@@ -64,29 +69,51 @@ Run the appropriate command in a **background terminal** so it keeps running:
 ./bin/start.sh [repo]
 ```
 
-**Important**: 
+**Important**:
 - This should run in the background. Tell the designer the server is starting.
-- Calypso uses `yarn start:debug` (not `yarn start`) for development.
+- The script sets `NODE_OPTIONS=--max-old-space-size=8192` for Calypso (no need to pass extra memory manually).
 
-### Step 4: Report Status
+### Step 4: Verify Startup and Handle Failures
+
+After starting in the background, **check that the server didn’t fail** during the first compile:
+
+1. **Wait briefly** (e.g. 15–25 seconds for Calypso/Gutenberg/Storybook) so the first build can run.
+2. **Read the terminal output** for that background command (e.g. the terminal file for the shell that ran `./bin/start.sh [repo]`).
+3. **Look for failure signals:**
+   - `webpack compiled with 1 error` (or more)
+   - `Module not found: Error: Can't resolve '...'`
+   - `exit_code: 1` or process ended
+   - Other clear build/runtime errors in the log
+
+**If the process exited or the log shows a build error:**
+
+- **Dependency / module not found:** Run the repo’s install command from the project root, then restart the server.
+  - Calypso: `cd repos/calypso && yarn install` then `./bin/start.sh calypso` again.
+  - Gutenberg: `cd repos/gutenberg && npm install` then restart.
+  - CIAB / Jetpack: `pnpm install` in that repo then restart.
+- **Other errors:** Read the full error, explain it in plain language, and suggest a fix (or run the fix if obvious, e.g. install deps).
+
+Tell the designer what you did (e.g. “Install was missing a new dependency; I ran `yarn install` and restarted the server.”).
+
+**If the server is still running and there’s no error in the log:** report success.
+
+### Step 5: Report Status
 
 Tell the designer:
-- ✅ The server is starting
+- ✅ The server is starting (or that you fixed a failure and restarted)
 - 🌐 The URL to access it
-- ⏱️ It may take a moment to compile
+- ⏱️ It may take a moment to compile (for first run)
 
 ## Response Patterns
 
 ### Starting Calypso
 
 ```
-🚀 Starting Calypso development server (debug mode)...
+🚀 Starting Calypso development server...
 
 This will be ready at http://calypso.localhost:3000
 It takes about 30-60 seconds to compile on first run.
-Running with yarn start:debug for development.
-
-I'll let you know when it's ready, or you can check the terminal for progress.
+I'll check the build output and tell you if anything fails (e.g. missing deps after a pull).
 ```
 
 ### Starting Storybook
@@ -200,12 +227,25 @@ There's an error in the build. Let me check what's happening...
 [Read the error, provide guidance]
 ```
 
+### Dependency / Build Failure (e.g. After Pull)
+
+When the process exits with `webpack compiled with 1 error` or `Module not found: Error: Can't resolve '...'`:
+
+1. **Read the terminal output** to confirm it's a missing module or dependency.
+2. **Run install in that repo** (from project root: `cd repos/[repo]` then `yarn install` / `npm install` / `pnpm install` as appropriate).
+3. **Restart the server** with `./bin/start.sh [repo]` in the background.
+4. **Re-run Step 4** (verify startup) and report back.
+
+```
+The build failed because a dependency wasn't installed (common after pulling). I've run [yarn/pnpm] install and restarted the server. It should be compiling now — try [URL] in a moment.
+```
+
 ### Server Won't Start
 
 ```
 The server didn't start properly. Let me check a few things:
 
 1. Are dependencies installed? [check node_modules]
-2. Any obvious errors? [check terminal output]
+2. Any obvious errors? [check terminal output — e.g. Module not found → run install]
 3. Is Docker running? [for core/ciab/jetpack]
 ```

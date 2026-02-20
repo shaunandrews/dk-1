@@ -266,11 +266,11 @@ pnpm typecheck-strict   # Strict mode
 
 ## WordPress Environment (wp-env)
 
-`pnpm env:start` runs a **Docker-based** WordPress environment using [`@wordpress/env` (wp-env)](https://developer.wordpress.org/block-editor/reference-guides/packages/packages-env/). This means:
+`pnpm env:start` runs a **wp-env Playground runtime** using [`@wordpress/env` (wp-env)](https://developer.wordpress.org/block-editor/reference-guides/packages/packages-env/). This means:
 
-- **Docker Desktop must be running** before you start the environment
-- wp-env spins up WordPress + MySQL containers automatically
-- The CIAB plugins are mounted into the container
+- **wp-env must be installed** (`npm install -g @wordpress/env`) before you start the environment
+- wp-env runs WordPress using Playground runtime (WebAssembly + SQLite) -- no Docker required
+- The CIAB plugins are mounted into the environment
 - Changes to plugin files are reflected immediately (with `pnpm dev` running for JS rebuilds)
 - `pnpm env:start:auto` finds available ports if 9001 is taken
 
@@ -346,8 +346,8 @@ The `dk.config.json` file lists `"stateManagement": "Redux"` for CIAB. This is *
 
 ## Troubleshooting
 
-### Docker Issues
-- **"Cannot connect to the Docker daemon"** -- Start Docker Desktop before running `pnpm env:start`.
+### Environment Issues
+- **wp-env fails to start** -- Ensure wp-env is installed (`npm install -g @wordpress/env`) and Node is the correct version.
 - **Port 9001 already in use** -- Use `pnpm env:start:auto` to find an available port, or stop whatever is using 9001.
 
 ### Build Failures
@@ -358,7 +358,7 @@ The `dk.config.json` file lists `"stateManagement": "Redux"` for CIAB. This is *
 ### Plugin Not Appearing
 - Make sure `pnpm build:all` (or `pnpm dev` for watch mode) has completed successfully.
 - Check that the WordPress environment is running (`pnpm env:start`).
-- Look for PHP errors in the Docker logs: `npx wp-env logs`.
+- Look for PHP errors in the wp-env logs: `npx wp-env logs`.
 
 ### TypeScript Errors
 - Run `pnpm typecheck` to see all type errors.

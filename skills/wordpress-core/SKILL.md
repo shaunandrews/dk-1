@@ -392,7 +392,7 @@ npm run dev             # Watch mode — rebuilds on file changes
 
 - Webpack configs live in `tools/webpack/`
 - Grunt tasks are defined in `Gruntfile.js`
-- Set `LOCAL_DIR=build` in `.env` to serve from compiled output instead of `src/`
+- With Docker runtime (`--runtime=docker`), set `LOCAL_DIR=build` in `.env` to serve compiled output instead of `src/`
 
 ## Testing
 
@@ -403,7 +403,7 @@ npm run dev             # Watch mode — rebuilds on file changes
 npm run test              # Grunt test suite (JS linting + QUnit)
 
 # PHP
-npm run test:php          # PHPUnit via Docker (runs vendor/bin/phpunit)
+npm run test:php          # PHPUnit (requires Docker runtime or local PHP)
 npm run test:coverage     # PHPUnit with HTML + PHP + text coverage reports
 
 # E2E / Visual / Performance (Playwright)

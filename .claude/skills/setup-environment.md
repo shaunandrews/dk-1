@@ -40,7 +40,10 @@ Bash: npm --version
 Bash: pnpm --version
 Bash: composer --version
 
-# Optional (for WP Core/CIAB/Jetpack)
+# Required for WP Core/CIAB/Jetpack
+Bash: npx @wordpress/env --version
+
+# Optional (only for Telex - MinIO)
 Bash: docker --version
 Bash: docker info
 ```
@@ -56,7 +59,8 @@ Checking prerequisites...
 ✅ npm: installed
 ✅ pnpm: installed
 ✅ Composer: installed
-⚠️ Docker: not running (optional - needed for WP Core/CIAB/Jetpack)
+✅ @wordpress/env: installed (for WP Core/CIAB/Jetpack)
+⚠️ Docker: not running (optional - only needed for Telex MinIO)
 
 All required tools are ready. Proceeding with setup...
 ```
@@ -77,7 +81,10 @@ Composer:
   Mac: brew install composer
   Or visit: https://getcomposer.org/download/
 
-Docker Desktop (optional):
+@wordpress/env (for WP Core/CIAB/Jetpack):
+  npm -g install @wordpress/env
+
+Docker Desktop (optional - only for Telex MinIO):
   Mac: https://docs.docker.com/desktop/setup/install/mac-install/
 ```
 
@@ -256,13 +263,10 @@ Skip for now? [Yes/No]
 ```
 ⚠️ Docker is not running
 
-Docker is optional but required for:
-• WordPress Core local environment
-• CIAB development
-• Jetpack development
-• Telex (MinIO for S3 storage)
+Docker is only needed for Telex (MinIO for S3 storage).
 
-Calypso, Gutenberg, and Storybook work without Docker.
+WordPress Core, CIAB, and Jetpack use wp-env with Playground runtime — no Docker required.
+Calypso, Gutenberg, and Storybook also work without Docker.
 
 Continue setup without Docker? [Yes/No]
 ```

@@ -74,9 +74,9 @@ const posts = await apiFetch({ path: '/wp/v2/posts' });
 
 ### 4. Jetpack → WordPress Core (Plugin)
 
-**Connection**: Jetpack runs as a plugin within WordPress Core via Docker volume mount
+**Connection**: Jetpack is mounted as a plugin via wp-env (.wp-env.json)
 
-**Integration**: Symlinked in Docker environment, mu-plugin fixes `plugins_url()`
+**Integration**: Mounted via configs/wp-env-jetpack.json, no manual symlinks needed
 
 ## Common Cross-Repo Scenarios
 

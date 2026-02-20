@@ -350,13 +350,17 @@ CIAB runs as a WordPress plugin and provides a SPA interface that replaces the t
 
 ### Connection 5: Jetpack → WordPress Core (Plugin)
 
-Jetpack runs as a plugin within WordPress Core. In Design Kit, it's symlinked via docker-compose:
+Jetpack runs as a plugin within WordPress Core. In Design Kit, it's mounted via wp-env:
 
-```yaml
-# In repos/wordpress-core/docker-compose.yml
-volumes:
-  - ../jetpack/projects/plugins/jetpack:/var/www/src/wp-content/plugins/jetpack
+```json
+// configs/wp-env-jetpack.json
+{
+    "core": "./repos/wordpress-core",
+    "plugins": ["./repos/jetpack/projects/plugins/jetpack"]
+}
 ```
+
+No Docker required -- wp-env uses Playground runtime (WebAssembly + SQLite).
 
 Jetpack extends WordPress with its own REST API:
 

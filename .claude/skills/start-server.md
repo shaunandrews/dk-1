@@ -14,9 +14,9 @@ This skill helps you start development servers for any Design Kit repository wit
 | Calypso | `./bin/start.sh calypso` | http://calypso.localhost:3000 | 22 | No |
 | Gutenberg | `./bin/start.sh gutenberg` | http://localhost:9999 | 20 | No |
 | Storybook | `./bin/start.sh storybook` | http://localhost:50240 | 20 | No |
-| WordPress Core | `./bin/start.sh core` | http://localhost:8889 | 20 | Yes |
-| CIAB | `./bin/start.sh ciab` | http://localhost:9001/wp-admin/ | 22 | Yes |
-| Jetpack | `./bin/start.sh jetpack` | http://localhost:8889 | 22 | Yes |
+| WordPress Core | `./bin/start.sh core` | http://localhost:8889 | 20 | No (wp-env Playground) |
+| CIAB | `./bin/start.sh ciab` | http://localhost:9001/wp-admin/ | 22 | No (wp-env Playground) |
+| Jetpack | `./bin/start.sh jetpack` | http://localhost:8889 | 22 | No (wp-env Playground) |
 | Telex | See special setup | http://localhost:3000 | 22 | Yes (MinIO) |
 
 ## Execution Steps
@@ -48,22 +48,19 @@ The dependencies for [repo] aren't installed yet. Let me run setup first...
 [Execute ./bin/setup.sh or suggest running it]
 ```
 
-**2.2 For Docker-dependent repos (core, ciab, jetpack), check Docker:**
+**2.2 For wp-env repos (core, ciab, jetpack), check @wordpress/env:**
 ```bash
-Bash: docker info
+Bash: npx @wordpress/env --version
 ```
 
-If Docker isn't running:
+If @wordpress/env isn't available:
 ```
-[Repo] requires Docker Desktop to be running.
+[Repo] requires @wordpress/env to be installed.
 
-Please start Docker Desktop and let me know when it's ready. You can check by looking for the whale icon in your menu bar - it should stop animating when Docker is ready.
+Ensure @wordpress/env is installed:
+  npm -g install @wordpress/env
 
-If you don't have Docker:
-• Mac: https://docs.docker.com/desktop/setup/install/mac-install/
-• Windows: https://docs.docker.com/desktop/setup/install/windows-install/
-
-Note: Calypso, Gutenberg, and Storybook don't require Docker!
+wp-env uses Playground runtime by default — no Docker needed.
 ```
 
 ### Step 3: Start the Server
@@ -79,8 +76,8 @@ run_in_background: true
 - **Calypso**: 30-60 seconds for initial compile (debug mode)
 - **Gutenberg**: ~30 seconds
 - **Storybook**: ~45 seconds
-- **WordPress Core**: 60-90 seconds (Docker container startup)
-- **Jetpack**: 60-90 seconds (includes Core + plugin setup)
+- **WordPress Core**: 5-10 seconds (Playground runtime)
+- **Jetpack**: 10-15 seconds (includes Core + plugin setup)
 
 ### Step 4: Communicate Status
 
@@ -201,5 +198,5 @@ cd repos/gutenberg && source ~/.nvm/nvm.sh && nvm use && npm run storybook
 cd repos/wordpress-core && source ~/.nvm/nvm.sh && nvm use && npm run dev
 
 # Jetpack
-cd repos/wordpress-core && source ~/.nvm/nvm.sh && nvm use && npm run env:start
+cd repos/wordpress-core && source ~/.nvm/nvm.sh && nvm use && wp-env start --runtime=playground
 ```

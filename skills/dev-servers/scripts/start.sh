@@ -46,27 +46,6 @@ check_wp_env() {
     fi
 }
 
-check_docker() {
-    # Only used for Telex now
-    if ! command -v docker &> /dev/null; then
-        echo "❌ Docker is not installed."
-        echo ""
-        echo "   Telex requires Docker Desktop for MinIO and block builder."
-        echo ""
-        echo "   Download Docker Desktop:"
-        echo "   • Mac: https://docs.docker.com/desktop/setup/install/mac-install/"
-        echo "   • Windows: https://docs.docker.com/desktop/setup/install/windows-install/"
-        echo "   • Linux: https://docs.docker.com/desktop/setup/install/linux/"
-        exit 1
-    fi
-    if ! docker info &> /dev/null; then
-        echo "❌ Docker is installed but not running."
-        echo ""
-        echo "   Please start Docker Desktop and try again."
-        exit 1
-    fi
-}
-
 show_help() {
     echo "🚀 Design Kit Dev Server Launcher"
     echo ""

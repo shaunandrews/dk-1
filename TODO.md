@@ -1,20 +1,20 @@
 # TODO
 
-## In Progress (`update/skills-migration` branch)
+## Skills Migration (merged)
 
-- [x] Remove old Cursor rules and commands directory
-- [x] Remove old scripts directory (migrated to skills/*/scripts/)
+- [x] Migrate Cursor rules/commands to skills/ structure
+- [x] Remove old Cursor rules, commands, and scripts directories
 - [x] Add automated test suite (`tests/run.sh`)
+- [x] Merge PR #1 to main
 - [ ] Test with Claude Code in a fresh session
 - [ ] Test with at least one repo: clone, install deps, start dev server
-- [ ] Merge PR #1 to main
 
-## Codespaces Integration
+## Codespaces (merged)
 
-- [ ] Create `.devcontainer/devcontainer.json` (see `docs/codespaces-plan.md`)
-- [ ] Write or adapt postCreateCommand script
-- [ ] Test in a real Codespace: full onboarding flow
-- [ ] Verify port forwarding works for dev servers (Calypso, Storybook, WordPress)
+- [x] Create `.devcontainer/devcontainer.json`
+- [x] Test in a real Codespace
+- [x] Verify port forwarding works (Storybook confirmed working)
+- [ ] Fix Docker-in-Docker for wp-env servers (or wait for Docker replacement)
 - [ ] Test Claude Code CLI inside Codespace
 - [ ] Add "Open in Codespace" button to README
 - [ ] Evaluate prebuilds once config is stable

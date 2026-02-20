@@ -25,6 +25,9 @@ Thumbs.db
 # Cloned repositories
 repos/
 
+# Development logs
+logs/
+
 # Temporary files
 *.tmp
 *.temp

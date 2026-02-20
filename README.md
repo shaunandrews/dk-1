@@ -14,55 +14,45 @@ Design Kit brings together **Calypso**, **Gutenberg**, **WordPress Core**, **Jet
 
 ## Getting Started
 
-### Step 1: Ask Your AI to Set It Up
+### Step 1: Set Up the Environment
 
-Open Cursor (or your AI-powered editor) and use this prompt:
+Open your AI-powered editor (Claude Code, Cursor, or similar) in this directory and ask:
 
 ```
-Clone https://github.com/shaunandrews/dk-1 and set up the Design Kit workspace. Clone all repositories, install dependencies, and get everything ready for development. Follow the setup protocol in .cursor/rules/setup.mdc.
+Set up the Design Kit workspace. Clone all repositories, install dependencies, and get everything ready for development. Read skills/setup/SKILL.md for the full protocol.
 ```
 
-That's it! The AI will handle everything—no terminal commands needed.
+The AI will handle cloning repos, installing dependencies, and configuring everything.
 
 ### Step 2: Start Building
 
-Once setup is complete, just ask naturally. Here are examples of what you can ask:
+Once setup is complete, just ask naturally:
 
 **Understanding & Exploring:**
 - "Explain how the profile settings screen works"
 - "Where does the code for the user dashboard live?"
 - "Show me how authentication is handled in Calypso"
 - "How does the block editor save content?"
-- "Where is the settings API defined in WordPress Core?"
-- "Explain the component structure in Gutenberg"
 
 **Finding Code:**
 - "Find all button components across the repos"
 - "Where is the notification system implemented?"
 - "Show me the code for the media library"
-- "Find where user preferences are stored"
-- "Locate the API endpoints for site settings"
 
 **Building & Updating:**
 - "I want to update the profile settings screen in the new dashboard"
 - "Create a new settings page with a toggle for dark mode"
 - "Add a notification center to the header"
 - "Build a prototype of a new onboarding flow"
-- "Update the color scheme in the theme customizer"
-- "I want to make a new plugin for WordPress"
 
 **Working with Components:**
 - "Show me all button variants available"
 - "What form components can I use?"
 - "Create a card component with an image and description"
-- "Find components that match this design pattern"
-- "What's the best component for a data table?"
 
 **Git & Pull Requests:**
 - "Checkout PR #12345 in Gutenberg"
-- "Show me the changes in Calypso PR #9876"
 - "Create a new branch for my feature"
-- "What files changed in the latest commit?"
 - "Help me commit these changes with a good message"
 
 **Development Servers:**
@@ -70,61 +60,42 @@ Once setup is complete, just ask naturally. Here are examples of what you can as
 - "Show me Storybook"
 - "Start Gutenberg"
 - "I want to work on WordPress Core"
-- "Run Jetpack locally"
-- "Start Telex"
-
-**Block Authoring with Telex:**
-- "I want to work on Telex"
-- "Show me how Telex generates blocks"
-- "Where is the artefact schema defined?"
-- "How does Telex integrate with WordPress Playground?"
-
-**Cross-Repo Work:**
-- "How does Calypso communicate with WordPress Core?"
-- "Where is the REST API endpoint for posts defined?"
-- "Show me how to add a new block that works in both Gutenberg and Calypso"
-- "Explain the data flow between repositories"
 
 ## What's Inside
 
-- **Calypso** - WordPress.com dashboard
-- **Gutenberg** - Block editor & component library
-- **WordPress Core** - Core WordPress software
-- **Jetpack** - Security, performance & marketing plugin
-- **CIAB** - (Optional) Automattic internal admin tools
-- **Telex** - (Optional) AI-powered Gutenberg block authoring tool
+### Repositories (under `repos/`)
 
-All repositories are managed automatically. The AI knows where everything lives and how to work across them.
+- **Calypso** — WordPress.com dashboard
+- **Gutenberg** — Block editor & component library
+- **WordPress Core** — Core WordPress software
+- **Jetpack** — Security, performance & marketing plugin
+- **CIAB** — (Optional) Automattic internal admin tools
+- **Telex** — (Optional) AI-powered Gutenberg block authoring tool
 
-## How It Works: Cursor Rules
+### Skills (under `skills/`)
 
-This workspace includes specialized AI rules (in `.cursor/rules/`) that teach the AI about the WordPress ecosystem:
+All workspace knowledge lives in `skills/`. Each skill has a `SKILL.md` that any AI tool can read:
 
-- **`base.mdc`** - Core AI behavior focused on design-first language and simplifying technical complexity
-- **`calypso.mdc`** - Calypso-specific context: structure, patterns, and conventions
-- **`gutenberg.mdc`** - Gutenberg block editor and component library knowledge
-- **`wordpress-core.mdc`** - WordPress Core structure, APIs, and PHP conventions
-- **`jetpack.mdc`** - Jetpack plugin architecture and development patterns
-- **`ciab.mdc`** - CIAB (Commerce in a Box) internal tools context
-- **`telex.mdc`** - Telex AI block authoring tool context
-- **`cross-repo.mdc`** - How features span multiple repositories and workflows
-- **`setup.mdc`** - Environment setup protocol and automation
+**Repository knowledge:** `calypso`, `gutenberg`, `wordpress-core`, `jetpack`, `ciab`, `telex`, `cross-repo`
 
-These rules help the AI:
-- Understand where code lives across repositories
-- Suggest existing components before creating new ones
-- Navigate cross-repo features seamlessly
-- Use the right patterns and conventions for each project
-- Handle git workflows appropriately
+**Workflows:** `setup`, `dev-servers`, `build-screen`, `find-component`, `prototype`, `git-workflow`
 
-You also have slash commands (in `.cursor/commands/`) for common tasks like `/setup`, `/start`, `/find-component`, and more. Just type `/` in chat to see them all.
+These skills teach the AI about the WordPress ecosystem — where code lives, how repos connect, which components exist, and how to work across projects. They're plain markdown, so they work with any AI tool: Claude Code, Cursor, Codex, or anything else that reads files.
+
+## How It Works
+
+1. **You describe what you want** in natural language
+2. **The AI reads the relevant skill** to understand the codebase
+3. **It finds existing components** before creating new ones
+4. **It writes code** using the right patterns and conventions
+5. **It handles git** so you can focus on design
+
+No need to memorize terminal commands, build systems, or repo structure. The AI knows where everything lives.
 
 ## Need Help?
 
 Just ask your AI:
-- "Show me available commands"
+- "Show me available skills"
 - "How do I start a dev server?"
 - "Find components that match this pattern"
 - "Reset the environment"
-
-The AI has full context about this workspace and can guide you through any task.

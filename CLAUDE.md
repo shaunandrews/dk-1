@@ -84,5 +84,4 @@ See `dk.config.json` for repository paths, ports, Node versions, and cross-repo 
 
 - `docs/overview.md` — Project overview
 - `docs/repo-map.md` — Visual repo connection map
-- `docs/getting-started.md` — Setup instructions
 - `TODO.md` — Current task list

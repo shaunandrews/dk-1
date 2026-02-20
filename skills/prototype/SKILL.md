@@ -22,7 +22,7 @@ Help the designer quickly scaffold and preview ideas without getting bogged down
 
 ```bash
 # Start dev server
-./bin/start.sh calypso
+./skills/dev-servers/scripts/start.sh calypso
 ```
 
 **Create prototype component**:
@@ -80,7 +80,7 @@ export default function Prototype() {
 **Fastest path**: Use Storybook for isolated component prototyping
 
 ```bash
-./bin/start.sh storybook
+./skills/dev-servers/scripts/start.sh storybook
 ```
 
 Create a story file:
@@ -350,7 +350,7 @@ function ModalPrototype() {
 Gutenberg's Storybook is great for isolated component prototyping:
 
 ```bash
-./bin/start.sh storybook
+./skills/dev-servers/scripts/start.sh storybook
 ```
 
 ### 2. Copy Existing Patterns

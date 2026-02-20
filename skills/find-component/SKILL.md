@@ -176,7 +176,7 @@ import Button from 'calypso/components/button';
 ### @wordpress/components Storybook
 
 - **Live**: https://wordpress.github.io/gutenberg/?path=/docs/components-introduction--docs
-- **Local**: Run `./bin/start.sh storybook`
+- **Local**: Run `./skills/dev-servers/scripts/start.sh storybook`
 
 ### Calypso Design System
 

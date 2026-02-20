@@ -587,7 +587,7 @@ cd repos/gutenberg && npm run dev
 # → http://localhost:9999
 
 # Gutenberg Storybook (for components)
-cd repos/gutenberg && npm run storybook
+cd repos/gutenberg && npm run storybook:dev
 # → http://localhost:50240
 
 # WordPress Core
@@ -599,9 +599,9 @@ cd repos/ciab && pnpm dev
 # → http://localhost:9001/wp-admin/
 
 # Jetpack (runs in WordPress Core)
-./bin/start.sh jetpack
+./skills/dev-servers/scripts/start.sh jetpack
 # → http://localhost:8889/wp-admin/plugins.php
-# Then: cd repos/jetpack && pnpm run watch
+# Then: cd repos/jetpack && pnpm jetpack watch plugins/jetpack
 
 # Telex (requires MinIO for S3 storage)
 cd repos/telex && pnpm run minio:start  # Start S3 storage first

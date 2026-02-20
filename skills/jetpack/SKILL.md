@@ -153,7 +153,7 @@ A mu-plugin (`jetpack-monorepo-fix.php`) fixes `plugins_url()` for package asset
 
 ```bash
 # Start WordPress Core with Jetpack (recommended)
-./bin/start.sh jetpack
+./skills/dev-servers/scripts/start.sh jetpack
 
 # Or manually:
 cd repos/wordpress-core

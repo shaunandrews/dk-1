@@ -15,7 +15,7 @@ Multi-repository version control workflows for Design Kit — branch conventions
 
 1. **dk-1 (Main Repository)** - The Design Kit configuration repository
    - Location: Root directory (`/Users/shaun/Developer/Projects/dk-1`)
-   - Contains: `.cursor/rules/`, `bin/`, `docs/`, `dk.config.json`
+   - Contains: `skills/`, `scripts/`, `docs/`, `dk.config.json`
    - Default branch: `main`
    - Branch naming: `update/feature-name`, `add/feature-name`, `fix/issue-name`
    - **NEVER use sub-repo names in branch names** (e.g., `feature/telex-thinking-mode`)
@@ -30,10 +30,10 @@ Multi-repository version control workflows for Design Kit — branch conventions
 
 ```bash
 # Check which repository you're currently in
-./bin/which-repo.sh
+./skills/setup/scripts/which-repo.sh
 
 # See status of all repositories
-./bin/repos.sh status
+./skills/setup/scripts/repos.sh status
 ```
 
 ### Common Mistake: Branch Name Confusion
@@ -343,7 +343,7 @@ git checkout -b feature/correct-branch-name
 
 ```bash
 # Use the helper script
-./bin/which-repo.sh
+./skills/setup/scripts/which-repo.sh
 
 # Or check manually
 pwd
@@ -393,13 +393,13 @@ Since dk uses cloned repositories (not submodules):
 
 ```bash
 # Update all repositories to latest
-./bin/repos.sh update
+./skills/setup/scripts/repos.sh update
 
 # Check repository status
-./bin/repos.sh status
+./skills/setup/scripts/repos.sh status
 
 # Clone CIAB (Automattic only)
-./bin/repos.sh clone-ciab
+./skills/setup/scripts/repos.sh clone-ciab
 
 # Pull latest in specific repository
 cd repos/calypso

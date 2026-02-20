@@ -56,15 +56,6 @@ Design skills (mockups, atelier, critique) live here in dk-1. General-purpose sk
 - **Repo:** `~/Developer/Projects/dk-1/`
 - **Remote:** https://github.com/shaunandrews/dk-1
 - **Agent Skills:** `~/Developer/Projects/agent-skills/`
-- **Rethink Plan:** [docs/rethink-plan.md](rethink-plan.md)
-
 ## Key People
 
 - **Shaun Andrews** — Creator, Design Engineer at Automattic
-
-## What's Next
-
-- Convert Cursor rules and commands to skills (Phase 1-2 of rethink plan)
-- Import design skills from agent-skills (Phase 3)
-- Update CLAUDE.md and README.md as entry points (Phase 4)
-- Remove old Cursor-specific structure (Phase 5)

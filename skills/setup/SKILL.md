@@ -7,7 +7,7 @@ globs: ["**/*"]
 
 Environment setup protocol for Design Kit — cloning repositories, installing dependencies, and starting development servers.
 
-**Read this rule when:** the user (or context) involves setup, first-time install, `./bin/setup.sh`, `./bin/repos.sh` clone/update, installing dependencies in any repo, starting a dev server for the first time, or troubleshooting "not set up" / clone / install issues. For those tasks, follow this protocol instead of guessing.
+**Read this rule when:** the user (or context) involves setup, first-time install, `./skills/setup/scripts/setup.sh`, `./skills/setup/scripts/repos.sh` clone/update, installing dependencies in any repo, starting a dev server for the first time, or troubleshooting "not set up" / clone / install issues. For those tasks, follow this protocol instead of guessing.
 
 ## When to Use
 
@@ -22,7 +22,7 @@ Environment setup protocol for Design Kit — cloning repositories, installing d
 ## What This Does
 
 1. **Checks prerequisites** - git, node, yarn, npm, pnpm, composer, docker
-2. **Clones repositories** - Uses `bin/repos.sh` to clone Calypso, Gutenberg, WordPress Core, and Jetpack (CIAB is optional)
+2. **Clones repositories** - Uses `skills/setup/scripts/repos.sh` to clone Calypso, Gutenberg, WordPress Core, and Jetpack (CIAB is optional)
 3. **Installs dependencies** - Runs the appropriate package manager for each repo
 4. **Reports status** - Tells the designer what's ready and what (if anything) is missing
 
@@ -36,7 +36,7 @@ When the workspace is opened, immediately:
 1. Check if this is a fresh clone (no `repos/` subdirectories exist)
 2. Read `README.md` to understand the project structure
 3. Read `dk.config.json` to understand repository configuration
-4. Read `bin/setup.sh` to understand setup steps
+4. Read `skills/setup/scripts/setup.sh` to understand setup steps
 5. Read `.gitmodules` to see which repos need to be cloned
 
 ### Step 2: Prerequisites Check
@@ -162,11 +162,11 @@ Execute these steps automatically (using terminal commands via run_terminal_cmd)
    Alternatively, execute the setup script which handles all of the above:
 
    ```bash
-   ./bin/setup.sh
+   ./skills/setup/scripts/setup.sh
    ```
 
    This script will:
-   1. Clone all public repositories using `bin/repos.sh clone`
+   1. Clone all public repositories using `skills/setup/scripts/repos.sh clone`
    2. Install Calypso dependencies with `yarn install`
    3. Install Gutenberg dependencies with `npm ci`
    4. Install WordPress Core dependencies with `npm ci`
@@ -239,7 +239,7 @@ Execute these steps automatically (using terminal commands via run_terminal_cmd)
    - Report any errors clearly
 
    ```bash
-   ./bin/status.sh
+   ./skills/setup/scripts/status.sh
    ```
 
 ### Step 5: Post-Setup Communication
@@ -258,17 +258,17 @@ When the designer wants to work on a specific repo, you should:
 
 1. **Detect Intent**: Understand which repo they want to work on
 2. **Check Status**: Verify dependencies are installed
-3. **Start Server**: Run `./bin/start.sh [repo]` in the background
+3. **Start Server**: Run `./skills/dev-servers/scripts/start.sh [repo]` in the background
 4. **Open Browser**: Automatically open the development URL
 5. **Monitor**: Keep track of running processes
 
 ### Server Commands:
 ```bash
-./bin/start.sh calypso    # → http://calypso.localhost:3000
-./bin/start.sh gutenberg  # → http://localhost:9999
-./bin/start.sh storybook  # → http://localhost:50240
-./bin/start.sh core       # → http://localhost:8889
-./bin/start.sh ciab       # → http://localhost:9001/wp-admin/
+./skills/dev-servers/scripts/start.sh calypso    # → http://calypso.localhost:3000
+./skills/dev-servers/scripts/start.sh gutenberg  # → http://localhost:9999
+./skills/dev-servers/scripts/start.sh storybook  # → http://localhost:50240
+./skills/dev-servers/scripts/start.sh core       # → http://localhost:8889
+./skills/dev-servers/scripts/start.sh ciab       # → http://localhost:9001/wp-admin/
 ```
 
 ### Telex Server (Special - requires manual start):
@@ -306,7 +306,7 @@ Designer: "I want to work on Calypso"
 
 You: "Starting Calypso development server for you..."
 
-[Run ./bin/start.sh calypso in background, open browser]
+[Run ./skills/dev-servers/scripts/start.sh calypso in background, open browser]
 
 You: "✅ Calypso is running at http://calypso.localhost:3000 (I've opened it in your browser)"
 ```
@@ -409,7 +409,7 @@ If the script fails, these are the manual steps:
 
 ```bash
 # 1. Clone repositories
-./bin/repos.sh clone
+./skills/setup/scripts/repos.sh clone
 
 # 2. Calypso
 cd repos/calypso && yarn install
@@ -434,10 +434,9 @@ pnpm jetpack build plugins/jetpack --deps
 
 1. **`README.md`** - Project overview and quick start
 2. **`dk.config.json`** - Repository configuration and dev server info
-3. **`bin/setup.sh`** - Setup script logic
-4. **`bin/start.sh`** - Dev server launcher
+3. **`skills/setup/scripts/setup.sh`** - Setup script logic
+4. **`skills/dev-servers/scripts/start.sh`** - Dev server launcher
 5. **`.gitmodules`** - Submodule definitions
-6. **`docs/getting-started.md`** - Detailed setup instructions
 
 ## Important Rules
 

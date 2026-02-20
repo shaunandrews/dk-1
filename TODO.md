@@ -1,17 +1,13 @@
 # TODO
 
-## Skills Migration (`update/skills-migration` branch)
+## In Progress (`update/skills-migration` branch)
 
-- [ ] Re-run skills migration (sub-agent created files but failed to commit)
-  - Convert `.cursor/rules/*.mdc` → `skills/*/SKILL.md`
-  - Convert `.cursor/commands/*.md` → workflow skills
-  - Copy scripts from `bin/` to `skills/*/scripts/` with self-detecting paths
-  - Rewrite CLAUDE.md and README.md
-- [ ] Review converted skills for accuracy and completeness
-- [ ] Test with Claude Code in a fresh session (point it at the branch, run through onboarding)
-- [ ] Test setup scripts work from new `skills/*/scripts/` locations
+- [x] Remove old Cursor rules and commands directory
+- [x] Remove old scripts directory (migrated to skills/*/scripts/)
+- [x] Add automated test suite (`tests/run.sh`)
+- [ ] Test with Claude Code in a fresh session
 - [ ] Test with at least one repo: clone, install deps, start dev server
-- [ ] Merge to main once validated
+- [ ] Merge PR #1 to main
 
 ## Codespaces Integration
 
@@ -23,15 +19,7 @@
 - [ ] Add "Open in Codespace" button to README
 - [ ] Evaluate prebuilds once config is stable
 
-## Cleanup (after skills migration is validated)
+## Future
 
-- [ ] Remove `.cursor/rules/` directory
-- [ ] Remove `.cursor/commands/` directory
-- [ ] Remove `bin/` directory (scripts live in skills now)
-- [ ] Update `.gitignore` if needed
-
-## Documentation
-
-- [ ] Update `docs/getting-started.md` for skills-based structure
-- [ ] Update `docs/overview.md` to reflect new architecture
-- [ ] Archive `docs/rethink-plan.md` (completed)
+- [ ] Import design skills from agent-skills repo (design-mockups, wordpress-mockups, design-atelier, design-critique)
+- [ ] Add visual guides for remaining repos (Gutenberg, WordPress Core, Jetpack, Telex)

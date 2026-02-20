@@ -17,12 +17,12 @@ Start a development server for one of the Design Kit repositories.
 
 | Repo | Command | URL | Requires Docker |
 |------|---------|-----|-----------------|
-| Calypso | `./bin/start.sh calypso` | http://calypso.localhost:3000 | No |
-| Gutenberg | `./bin/start.sh gutenberg` | http://localhost:9999 | No |
-| Storybook | `./bin/start.sh storybook` | http://localhost:50240 | No |
-| WordPress Core | `./bin/start.sh core` | http://localhost:8889 | Yes |
-| CIAB | `./bin/start.sh ciab` | http://localhost:9001/wp-admin/ | Yes |
-| Jetpack | `./bin/start.sh jetpack` | http://localhost:8889 | Yes |
+| Calypso | `./skills/dev-servers/scripts/start.sh calypso` | http://calypso.localhost:3000 | No |
+| Gutenberg | `./skills/dev-servers/scripts/start.sh gutenberg` | http://localhost:9999 | No |
+| Storybook | `./skills/dev-servers/scripts/start.sh storybook` | http://localhost:50240 | No |
+| WordPress Core | `./skills/dev-servers/scripts/start.sh core` | http://localhost:8889 | Yes |
+| CIAB | `./skills/dev-servers/scripts/start.sh ciab` | http://localhost:9001/wp-admin/ | Yes |
+| Jetpack | `./skills/dev-servers/scripts/start.sh jetpack` | http://localhost:8889 | Yes |
 | Telex | `cd repos/telex && pnpm dev` | http://localhost:3000 (app), :8000 (API), :4000 (admin) | Yes |
 
 ## AI Execution Steps
@@ -73,7 +73,7 @@ Please start Docker Desktop and let me know when it's ready.
 Run the appropriate command in a **background terminal** so it keeps running:
 
 ```bash
-./bin/start.sh [repo]
+./skills/dev-servers/scripts/start.sh [repo]
 ```
 
 **Important**:
@@ -85,7 +85,7 @@ Run the appropriate command in a **background terminal** so it keeps running:
 After starting in the background, **check that the server didn't fail** during the first compile:
 
 1. **Wait briefly** (e.g. 15–25 seconds for Calypso/Gutenberg/Storybook) so the first build can run.
-2. **Read the terminal output** for that background command (e.g. the terminal file for the shell that ran `./bin/start.sh [repo]`).
+2. **Read the terminal output** for that background command (e.g. the terminal file for the shell that ran `./skills/dev-servers/scripts/start.sh [repo]`).
 3. **Look for failure signals:**
    - `webpack compiled with 1 error` (or more)
    - `Module not found: Error: Can't resolve '...'`
@@ -95,7 +95,7 @@ After starting in the background, **check that the server didn't fail** during t
 **If the process exited or the log shows a build error:**
 
 - **Dependency / module not found:** Run the repo's install command from the project root, then restart the server.
-  - Calypso: `cd repos/calypso && yarn install` then `./bin/start.sh calypso` again.
+  - Calypso: `cd repos/calypso && yarn install` then `./skills/dev-servers/scripts/start.sh calypso` again.
   - Gutenberg: `cd repos/gutenberg && npm install` then restart.
   - CIAB / Jetpack: `pnpm install` in that repo then restart.
 - **Other errors:** Read the full error, explain it in plain language, and suggest a fix (or run the fix if obvious, e.g. install deps).
@@ -183,7 +183,7 @@ It will start three services:
 - Admin panel: http://localhost:4000
 ```
 
-Telex is not managed by `./bin/start.sh`. Start it manually:
+Telex is not managed by `./skills/dev-servers/scripts/start.sh`. Start it manually:
 
 ```bash
 cd repos/telex
@@ -282,7 +282,7 @@ When the process exits with `webpack compiled with 1 error` or `Module not found
 
 1. **Read the terminal output** to confirm it's a missing module or dependency.
 2. **Run install in that repo** (from project root: `cd repos/[repo]` then `yarn install` / `npm install` / `pnpm install` as appropriate).
-3. **Restart the server** with `./bin/start.sh [repo]` in the background.
+3. **Restart the server** with `./skills/dev-servers/scripts/start.sh [repo]` in the background.
 4. **Re-run Step 4** (verify startup) and report back.
 
 ```

@@ -31,22 +31,34 @@ switch_node_version() {
     fi
 }
 
+check_wp_env() {
+    if ! command -v wp-env &> /dev/null; then
+        echo "⚠️  wp-env not found. Installing @wordpress/env..."
+        npm install -g @wordpress/env
+        if ! command -v wp-env &> /dev/null; then
+            echo "❌ Failed to install @wordpress/env."
+            echo ""
+            echo "   Install it manually:"
+            echo "   npm install -g @wordpress/env"
+            exit 1
+        fi
+        echo "   ✅ @wordpress/env installed."
+    fi
+}
+
 check_docker() {
+    # Only used for Telex now
     if ! command -v docker &> /dev/null; then
         echo "❌ Docker is not installed."
         echo ""
-        echo "   WordPress Core and CIAB require Docker Desktop to run local environments."
+        echo "   Telex requires Docker Desktop for MinIO and block builder."
         echo ""
         echo "   Download Docker Desktop:"
         echo "   • Mac: https://docs.docker.com/desktop/setup/install/mac-install/"
         echo "   • Windows: https://docs.docker.com/desktop/setup/install/windows-install/"
         echo "   • Linux: https://docs.docker.com/desktop/setup/install/linux/"
-        echo ""
-        echo "   Note: Calypso, Gutenberg, and Storybook don't require Docker."
         exit 1
     fi
-
-    # Check if Docker daemon is running
     if ! docker info &> /dev/null; then
         echo "❌ Docker is installed but not running."
         echo ""
@@ -64,9 +76,9 @@ show_help() {
     echo "  calypso    - WordPress.com dashboard (http://calypso.localhost:3000)"
     echo "  gutenberg  - Block Editor dev site (http://localhost:9999)"
     echo "  storybook  - Gutenberg component library (http://localhost:50240)"
-    echo "  core       - WordPress Core dev site (http://localhost:8889)"
-    echo "  ciab       - Commerce in a Box (http://localhost:9001/wp-admin/)"
-    echo "  jetpack    - Jetpack plugin dev (runs in WP Core at http://localhost:8889)"
+    echo "  core       - WordPress Core dev site (http://localhost:8889) [no Docker]"
+    echo "  ciab       - Commerce in a Box (http://localhost:9001/wp-admin/) [no Docker]"
+    echo "  jetpack    - Jetpack plugin dev (runs in WP Core at http://localhost:8889) [no Docker]"
     echo ""
     echo "Examples:"
     echo "  $0 calypso"
@@ -115,20 +127,26 @@ start_storybook() {
 }
 
 start_core() {
-    check_docker
-    echo "🚀 Starting WordPress Core (Node 20)..."
+    check_wp_env
+    echo "🚀 Starting WordPress Core (Playground runtime)..."
     cd "$DK_ROOT/repos/wordpress-core"
     switch_node_version "$DK_ROOT/repos/wordpress-core"
     if [ ! -d "node_modules" ]; then
         echo "⚠️  Dependencies not installed. Run $DK_ROOT/skills/setup/scripts/setup.sh first."
         exit 1
     fi
+    # Ensure .wp-env.json exists (may not after fresh clone since repos/ is gitignored)
+    if [ ! -f ".wp-env.json" ]; then
+        cp "$DK_ROOT/configs/wp-env-core.json" ".wp-env.json"
+    fi
     echo "   URL: http://localhost:8889"
-    exec npm run dev
+    echo "   Runtime: WordPress Playground (no Docker required)"
+    echo "   Database: SQLite"
+    exec wp-env start --runtime=playground
 }
 
 start_ciab() {
-    check_docker
+    check_wp_env
     echo "🚀 Starting CIAB (Node 22)..."
     cd "$DK_ROOT/repos/ciab"
     switch_node_version "$DK_ROOT/repos/ciab"
@@ -137,13 +155,13 @@ start_ciab() {
         exit 1
     fi
     echo "   URL: http://localhost:9001/wp-admin/"
-    echo "   Note: You may also need to run 'pnpm env:start' in another terminal"
+    echo "   Runtime: WordPress Playground (no Docker required)"
     exec pnpm dev
 }
 
 start_jetpack() {
-    check_docker
-    echo "🚀 Starting Jetpack development environment (Node 22)..."
+    check_wp_env
+    echo "🚀 Starting Jetpack development environment..."
 
     # Check Jetpack dependencies
     cd "$DK_ROOT/repos/jetpack"
@@ -159,45 +177,24 @@ start_jetpack() {
         pnpm jetpack build plugins/jetpack --deps
     fi
 
-    # Check WordPress Core dependencies (needs Node 20)
-    cd "$DK_ROOT/repos/wordpress-core"
-    switch_node_version "$DK_ROOT/repos/wordpress-core"
-    if [ ! -d "node_modules" ]; then
-        echo "⚠️  WordPress Core dependencies not installed. Run $DK_ROOT/skills/setup/scripts/setup.sh first."
-        exit 1
-    fi
+    # Use the dk root wp-env config that includes Jetpack
+    cd "$DK_ROOT"
 
-    # Ensure mu-plugin exists for URL fixes
-    if [ ! -f "src/wp-content/mu-plugins/jetpack-monorepo-fix.php" ]; then
-        echo "⚠️  Jetpack mu-plugin missing. Run $DK_ROOT/skills/setup/scripts/setup.sh to create it."
-    fi
+    # Copy Jetpack wp-env config to root (wp-env reads .wp-env.json from cwd)
+    cp "$DK_ROOT/configs/wp-env-jetpack.json" "$DK_ROOT/.wp-env.json"
 
     echo ""
     echo "   Jetpack runs within the WordPress Core environment."
-    echo "   Starting WordPress Core Docker containers..."
+    echo "   Starting via wp-env with Playground runtime..."
     echo ""
-
-    # Start WordPress Core environment
-    npm run env:start
-
-    # Create symlink for Jetpack in the container
-    # The jetpack/projects folder is mounted at /var/www/jetpack-projects
-    # We need to symlink the plugin into wp-content/plugins so WordPress sees it
-    echo "   Creating Jetpack symlink in container..."
-    docker compose exec -T cli rm -rf /var/www/src/wp-content/plugins/jetpack 2>/dev/null || true
-    docker compose exec -T cli ln -s /var/www/jetpack-projects/plugins/jetpack /var/www/src/wp-content/plugins/jetpack
-
-    # Activate Jetpack if not already active
-    echo "   Activating Jetpack plugin..."
-    docker compose exec -T cli wp plugin activate jetpack 2>/dev/null || true
-
-    echo ""
-    echo "   ✅ WordPress Core is running at http://localhost:8889"
-    echo "   ✅ Jetpack is active at http://localhost:8889/wp-admin/admin.php?page=jetpack"
+    echo "   URL: http://localhost:8889"
+    echo "   Jetpack admin: http://localhost:8889/wp-admin/admin.php?page=jetpack"
+    echo "   Runtime: WordPress Playground (no Docker required)"
     echo ""
     echo "   To watch for changes during development:"
     echo "   cd repos/jetpack && pnpm jetpack watch plugins/jetpack"
     echo ""
+    exec wp-env start --runtime=playground
 }
 
 # Main

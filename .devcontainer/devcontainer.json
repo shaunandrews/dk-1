@@ -9,11 +9,10 @@
       "nvmInstallPath": "/usr/local/share/nvm",
       "nvmNodeVersions": "20 22"
     },
-    "ghcr.io/devcontainers/features/docker-in-docker:2": {},
     "ghcr.io/devcontainers/features/git:1": {}
   },
 
-  "postCreateCommand": "bash -c 'sudo apt-get update && sudo apt-get install -y php-cli php-xml php-mbstring php-curl php-zip unzip && curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer && npm install -g pnpm yarn @anthropic-ai/claude-code'",
+  "postCreateCommand": "bash -c 'sudo apt-get update && sudo apt-get install -y php-cli php-xml php-mbstring php-curl php-zip unzip && curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer && npm install -g pnpm yarn @wordpress/env @anthropic-ai/claude-code'",
 
   "forwardPorts": [3000, 8000, 8889, 9001, 9999, 50240],
   "portsAttributes": {
@@ -26,8 +25,8 @@
   },
 
   "hostRequirements": {
-    "cpus": 4,
-    "memory": "16gb"
+    "cpus": 2,
+    "memory": "8gb"
   },
 
   "secrets": {

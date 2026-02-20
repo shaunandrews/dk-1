@@ -36,5 +36,8 @@ logs/
 # Git worktrees
 .worktrees/
 
+# wp-env runtime config (copied from configs/ by start scripts)
+.wp-env.json
+
 # Local development overrides
 dk.config.local.json

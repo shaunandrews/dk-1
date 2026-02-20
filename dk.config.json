@@ -85,7 +85,7 @@
         "language": "PHP",
         "framework": "WordPress",
         "styling": "CSS",
-        "database": "MySQL"
+        "database": "SQLite (Playground runtime)"
       },
       "paths": {
         "admin": "src/wp-admin",
@@ -98,10 +98,11 @@
         "blocks": "src/wp-includes/blocks"
       },
       "devServer": {
-        "command": "npm run dev",
+        "command": "wp-env start --runtime=playground",
         "port": 8889,
         "url": "http://localhost:8889"
       },
+      "wpEnvConfig": "configs/wp-env-core.json",
       "aiContext": []
     },
     
@@ -228,8 +229,8 @@
     },
     "jetpack-core": {
       "description": "Jetpack plugin runs within WordPress Core environment",
-      "integration": "Symlinked into wp-content/plugins via docker-compose volume mount",
-      "mountPath": "../jetpack/projects/plugins/jetpack:/var/www/src/wp-content/plugins/jetpack"
+      "integration": "Mounted via .wp-env.json plugin path (no Docker required)",
+      "wpEnvConfig": "configs/wp-env-jetpack.json"
     },
     "jetpack-calypso": {
       "description": "Jetpack connects self-hosted WordPress sites to WordPress.com via Calypso",

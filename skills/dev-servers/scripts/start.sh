@@ -107,7 +107,7 @@ start_storybook() {
 
 start_core() {
     check_wp_env
-    echo "🚀 Starting WordPress Core (Playground runtime)..."
+    echo "🚀 Starting WordPress Core (Node 20, Playground runtime)..."
     cd "$DK_ROOT/repos/wordpress-core"
     switch_node_version "$DK_ROOT/repos/wordpress-core"
     if [ ! -d "node_modules" ]; then
@@ -135,12 +135,15 @@ start_ciab() {
     fi
     echo "   URL: http://localhost:9001/wp-admin/"
     echo "   Runtime: WordPress Playground (no Docker required)"
+    echo ""
+    echo "   Note: You may also need to run 'pnpm env:start' in another terminal"
+    echo "   to start the WordPress environment separately."
     exec pnpm dev
 }
 
 start_jetpack() {
     check_wp_env
-    echo "🚀 Starting Jetpack development environment..."
+    echo "🚀 Starting Jetpack development environment (Node 22)..."
 
     # Check Jetpack dependencies
     cd "$DK_ROOT/repos/jetpack"

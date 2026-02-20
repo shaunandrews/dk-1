@@ -15,8 +15,8 @@ WordPress Core is the foundational software that powers WordPress sites. This is
 | **Node Version** | 20 (see .nvmrc) |
 | **Package Manager** | npm |
 | **Language** | PHP (backend), JS (admin) |
-| **Database** | MySQL |
-| **Dev Server** | `npm run dev` → http://localhost:8889 |
+| **Database** | SQLite (via Playground runtime) |
+| **Dev Server** | `wp-env start --runtime=playground` → http://localhost:8889 |
 
 ## Node Version (CRITICAL)
 
@@ -320,8 +320,14 @@ add_action('wp_enqueue_scripts', function() {
 ```bash
 cd repos/wordpress-core
 
-# Start development environment
-npm run dev
+# Start development environment (no Docker required)
+wp-env start --runtime=playground
+
+# Stop environment
+wp-env stop
+
+# Destroy and start fresh
+wp-env destroy
 
 # Build
 npm run build
@@ -333,44 +339,46 @@ npm run test-php
 npm run test
 ```
 
+**Escape hatch:** If you need MySQL or `wp-env run` for advanced work:
+```bash
+wp-env start --runtime=docker  # Requires Docker Desktop
+```
+
 ## Environment Commands
 
-The local dev environment runs via Docker. All `env:*` scripts are in `package.json`:
+The local dev environment runs via wp-env with WordPress Playground (no Docker required):
 
 ```bash
 cd repos/wordpress-core
 
-# Lifecycle
-npm run env:start       # Start Docker containers + composer update
-npm run env:stop        # Stop containers
-npm run env:restart     # Stop + start
-npm run env:clean       # Stop + remove volumes and orphans
-npm run env:reset       # Nuclear option — removes images, volumes, everything
-npm run env:install     # Run the WordPress install script
-npm run env:pull        # Pull latest Docker images
-
-# Utilities
-npm run env:cli         # Run WP-CLI commands (e.g., npm run env:cli -- plugin list)
-npm run env:composer    # Run Composer inside the container
-npm run env:logs        # Tail Docker logs
+wp-env start --runtime=playground   # Start WordPress (SQLite, no Docker)
+wp-env stop                         # Stop the environment
+wp-env destroy                      # Remove environment completely
 ```
 
-### Environment Configuration (.env)
+The old Docker-based `npm run env:*` commands still exist in the repo but are no longer used by dk. Use `wp-env` commands instead.
 
-Copy `.env.example` to `.env` to customize. Key options:
+### Environment Configuration (.wp-env.json)
 
-| Variable | Default | Purpose |
-|----------|---------|---------|
-| `LOCAL_PORT` | `8889` | Dev server port |
-| `LOCAL_DIR` | `src` | Run from `src` (dev) or `build` (compiled) |
-| `LOCAL_PHP` | `latest` | PHP version (`latest` or `{version}-fpm`) |
-| `LOCAL_PHP_XDEBUG` | `false` | Enable Xdebug |
-| `LOCAL_PHP_XDEBUG_MODE` | `develop,debug` | Xdebug features (use `coverage` for code coverage) |
-| `LOCAL_PHP_MEMCACHED` | `false` | Enable Memcached |
-| `LOCAL_DB_TYPE` | `mysql` | `mysql` or `mariadb` |
-| `LOCAL_DB_VERSION` | `8.4` | Database version |
-| `LOCAL_MULTISITE` | `false` | Enable multisite |
-| `LOCAL_WP_DEBUG` | `true` | WP_DEBUG constant |
+The environment is configured via `.wp-env.json` (created automatically by the start script from `configs/wp-env-core.json`):
+
+```json
+{
+	"core": ".",
+	"plugins": [],
+	"themes": [],
+	"port": 8889,
+	"testsPort": 8890,
+	"config": {
+		"WP_DEBUG": true,
+		"SCRIPT_DEBUG": true
+	}
+}
+```
+
+To customize, edit `configs/wp-env-core.json`. See [@wordpress/env docs](https://developer.wordpress.org/block-editor/reference-guides/packages/packages-env/) for all options.
+
+**Escape hatch for Docker runtime:** Some old `.env` options (like `LOCAL_PHP`, `LOCAL_DB_TYPE`) only apply to the Docker runtime. If you need them, use `wp-env start --runtime=docker`.
 
 ## Build System
 

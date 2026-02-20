@@ -20,10 +20,10 @@ Start a development server for one of the Design Kit repositories.
 | Calypso | `./skills/dev-servers/scripts/start.sh calypso` | http://calypso.localhost:3000 | No |
 | Gutenberg | `./skills/dev-servers/scripts/start.sh gutenberg` | http://localhost:9999 | No |
 | Storybook | `./skills/dev-servers/scripts/start.sh storybook` | http://localhost:50240 | No |
-| WordPress Core | `./skills/dev-servers/scripts/start.sh core` | http://localhost:8889 | Yes |
-| CIAB | `./skills/dev-servers/scripts/start.sh ciab` | http://localhost:9001/wp-admin/ | Yes |
-| Jetpack | `./skills/dev-servers/scripts/start.sh jetpack` | http://localhost:8889 | Yes |
-| Telex | `cd repos/telex && pnpm dev` | http://localhost:3000 (app), :8000 (API), :4000 (admin) | Yes |
+| WordPress Core | `./skills/dev-servers/scripts/start.sh core` | http://localhost:8889 | No (wp-env Playground) |
+| CIAB | `./skills/dev-servers/scripts/start.sh ciab` | http://localhost:9001/wp-admin/ | No (wp-env Playground) |
+| Jetpack | `./skills/dev-servers/scripts/start.sh jetpack` | http://localhost:8889 | No (wp-env Playground) |
+| Telex | `cd repos/telex && pnpm dev` | http://localhost:3000 (app), :8000 (API), :4000 (admin) | Yes (Docker required) |
 
 ## AI Execution Steps
 
@@ -57,15 +57,20 @@ The dependencies for [repo] aren't installed yet. Let me run the setup first...
 Looks like you just pulled — I'll run [yarn/pnpm] install first so new dependencies don't cause the build to fail.
 ```
 
-For Docker-dependent repos (core, ciab, jetpack), check Docker:
+For WordPress-powered repos (core, jetpack), check wp-env:
 ```bash
-docker info
+wp-env --version
 ```
 
-If Docker isn't running:
+If wp-env isn't installed:
 ```
-WordPress Core/CIAB/Jetpack requires Docker Desktop to be running.
-Please start Docker Desktop and let me know when it's ready.
+@wordpress/env is not installed. Let me install it for you...
+npm install -g @wordpress/env
+```
+
+For Telex only, check Docker:
+```bash
+docker info
 ```
 
 ### Step 3: Start the Server
@@ -141,7 +146,7 @@ You'll be able to browse all @wordpress/components with live examples.
 ```
 🚀 Starting WordPress Core development environment...
 
-This uses Docker to run a full WordPress installation.
+This uses wp-env with WordPress Playground (no Docker required).
 It will be ready at http://localhost:8889
 
 Default credentials:
@@ -157,7 +162,7 @@ Default credentials:
 This runs WordPress Core with the Jetpack plugin activated.
 It will be ready at http://localhost:8889
 
-I'm also setting up the Jetpack symlink so your changes will be reflected live.
+Jetpack is automatically mounted as a plugin via wp-env — no manual setup needed.
 ```
 
 **Jetpack build/watch**: Jetpack requires a build step before the dev server will work. The start script handles this automatically, but if you need to do it manually:
@@ -198,21 +203,26 @@ pnpm dev
 
 **Prerequisites**: Docker must be running. MinIO must be started and have a bucket created (handled by `pnpm dev:setup` during initial setup).
 
-### Docker Not Running
+### wp-env Not Installed
 
 ```
-⚠️ WordPress Core/CIAB/Jetpack requires Docker Desktop to be running.
+⚠️ @wordpress/env is not installed.
+
+Let me install it for you...
+npm install -g @wordpress/env
+```
+
+### Docker Not Running (Telex Only)
+
+```
+⚠️ Telex requires Docker Desktop for MinIO (S3 storage) and the block builder.
 
 Please:
 1. Open Docker Desktop
-2. Wait for it to start (the whale icon should stop animating)
+2. Wait for it to start
 3. Tell me when it's ready
 
-If you don't have Docker installed:
-- Mac: https://docs.docker.com/desktop/setup/install/mac-install/
-- Windows: https://docs.docker.com/desktop/setup/install/windows-install/
-
-Note: Calypso, Gutenberg, and Storybook don't need Docker!
+Note: All other repos (Calypso, Gutenberg, WP Core, Jetpack) work without Docker!
 ```
 
 ### Dependencies Not Installed
@@ -296,5 +306,5 @@ The server didn't start properly. Let me check a few things:
 
 1. Are dependencies installed? [check node_modules]
 2. Any obvious errors? [check terminal output — e.g. Module not found → run install]
-3. Is Docker running? [for core/ciab/jetpack]
+3. Is wp-env installed? [for core/jetpack] Is Docker running? [for telex only]
 ```

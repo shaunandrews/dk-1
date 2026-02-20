@@ -72,7 +72,6 @@ repos/jetpack/
 │       └── pr-is-up-to-date/
 ├── tools/                     # Development tooling
 │   ├── cli/                   # Monorepo `jetpack` CLI (see CLI section)
-│   ├── docker/                # Docker environment
 │   ├── e2e-commons/           # Shared E2E test utilities (Playwright)
 │   ├── js-tools/              # ESLint configs, Prettier, semver, git hooks
 │   ├── performance/           # Performance testing scripts
@@ -98,32 +97,15 @@ packages:
 
 Key settings: strict peer deps, no hoisting (`hoistPattern: []`), workspace cycles ignored, 1-day minimum release age for dependency updates.
 
-## CLI: `jetpack` vs `jp`
-
-There are **two separate CLIs** in this repo. They are different tools.
-
-### `jetpack` (Monorepo Dev CLI)
+## CLI: `jetpack` (Monorepo Dev CLI)
 
 - **Location:** `tools/cli/` (package name: `jetpack-cli`, private)
 - **How to run:** `pnpm jetpack <command>` from the monorepo root
-- **What it is:** The primary monorepo development CLI. Handles builds, tests, watching, changelogs, Docker, releases, and project generation.
-- **Commands:** `build`, `watch`, `test`, `changelog`, `clean`, `docker`, `generate`, `install`, `dependencies`, `cli`, `phan`, `release`, `draft`, `rsync`, `docs`
-- **Global access:** Run `pnpm jetpack cli link` to make `jetpack` available globally (creates a pnpm global symlink of `tools/cli`). Check status with `pnpm jetpack cli status`.
+- **What it is:** The primary monorepo development CLI. Handles builds, tests, watching, changelogs, releases, and project generation.
+- **Commands:** `build`, `watch`, `test`, `changelog`, `clean`, `generate`, `install`, `dependencies`, `cli`, `phan`, `release`, `draft`, `rsync`, `docs`
+- **Global access:** Run `pnpm jetpack cli link` to make `jetpack` available globally (creates a pnpm global link of `tools/cli`). Check status with `pnpm jetpack cli status`.
 
-### `jp` (Docker Wrapper CLI)
-
-- **Location:** `projects/js-packages/jetpack-cli/` (package name: `@automattic/jetpack-cli`, published to npm)
-- **Install:** `npm install -g @automattic/jetpack-cli`
-- **What it is:** A Docker-based wrapper that runs `pnpm jetpack` commands inside a Docker container, so you don't need matching Node/pnpm/PHP versions locally.
-- **How it works:** Finds the monorepo root, then runs `tools/docker/bin/monorepo pnpm jetpack <args>`. Docker host commands (`up`, `down`, `stop`, `clean`) run on the host directly.
-- **Extra commands:** `jp init` (clone monorepo), `jp init-hooks` (set up git hooks for Docker), `jp docker up/down/stop/clean`
-- **Excluded from workspace:** Note `jetpack-cli` is explicitly excluded in `pnpm-workspace.yaml`.
-
-### Which to use?
-
-- **Direct development (Node/pnpm installed locally):** Use `pnpm jetpack <command>`
-- **Docker-based development:** Use `jp <command>`
-- **In dk (this project):** We use `pnpm jetpack` since we manage Node versions directly via nvm
+**In dk**, we use `pnpm jetpack` since we manage Node versions directly via nvm.
 
 ### CLI Link (Optional)
 
@@ -133,21 +115,7 @@ After `pnpm install`, you can optionally run `pnpm jetpack cli link` to make the
 
 ### Running Jetpack in WordPress Core
 
-Jetpack runs in WordPress Core via Docker. The entire `projects` folder is mounted so that internal symlinks in `jetpack_vendor` resolve correctly:
-
-```yaml
-# In repos/wordpress-core/docker-compose.yml
-volumes:
-  # Mount full projects folder for symlink resolution
-  - ../jetpack/projects:/var/www/jetpack-projects
-```
-
-A symlink is automatically created when starting:
-```
-/var/www/src/wp-content/plugins/jetpack → /var/www/jetpack-projects/plugins/jetpack
-```
-
-A mu-plugin (`jetpack-monorepo-fix.php`) fixes `plugins_url()` for package assets.
+Jetpack is mounted as a plugin via wp-env. The `configs/wp-env-jetpack.json` configuration mounts the Jetpack plugin from the monorepo into the WordPress environment. The full `projects` folder is mounted so that internal symlinks in `jetpack_vendor` resolve correctly. Plugin activation is handled automatically by wp-env.
 
 ### Start Development
 
@@ -155,10 +123,8 @@ A mu-plugin (`jetpack-monorepo-fix.php`) fixes `plugins_url()` for package asset
 # Start WordPress Core with Jetpack (recommended)
 ./skills/dev-servers/scripts/start.sh jetpack
 
-# Or manually:
-cd repos/wordpress-core
-npm run env:start
-# Then create symlink and activate plugin
+# This internally runs wp-env with the Jetpack config:
+# wp-env start --runtime=playground (using configs/wp-env-jetpack.json)
 
 # Jetpack admin:
 # http://localhost:8889/wp-admin/admin.php?page=jetpack
@@ -254,7 +220,7 @@ projects/plugins/jetpack/
 
 ### jetpack_vendor Directory
 
-`jetpack_vendor/` contains symlinks to Composer packages from the monorepo (`projects/packages/`). In production builds, these are real copies; in development, they're symlinks managed by Composer. This is why the entire `projects/` folder must be mounted in Docker — the symlinks need to resolve. The `i18n-map.php` file maps package text domains for translations.
+`jetpack_vendor/` contains symlinks to Composer packages from the monorepo (`projects/packages/`). In production builds, these are real copies; in development, they're symlinks managed by Composer. This is why the wp-env config mounts the entire `projects/` folder — the symlinks need to resolve. The `i18n-map.php` file maps package text domains for translations.
 
 ## Jetpack Modules
 
@@ -480,38 +446,6 @@ tools/check-development-environment.sh
 ```
 
 `install-monorepo.sh` handles macOS (Homebrew) and Linux (apt) environments. `check-development-environment.sh` validates Node, pnpm, PHP, Composer versions against `.github/versions.sh`.
-
-## Docker Environment
-
-The Docker setup lives in `tools/docker/`. Key files:
-
-| File | Purpose |
-|------|---------|
-| `docker-compose.yml` | Main Docker Compose config |
-| `default.env` | Default environment variables |
-| `.env` | Your local overrides (create this, gitignored) |
-| `bin/monorepo` | Script that runs commands inside the monorepo container |
-| `config/` | PHP and server configuration |
-
-### Docker .env Setup
-
-Copy values from `default.env` to `.env` to override defaults:
-
-```bash
-# Default credentials (change these if publicly accessible)
-WP_DOMAIN=localhost
-WP_ADMIN_USER=jp_docker_acct
-WP_ADMIN_PASSWORD=jp_docker_pass
-```
-
-### Docker Commands
-
-```bash
-pnpm jetpack docker up -d      # Start containers
-pnpm jetpack docker install     # Install WordPress
-pnpm jetpack docker down        # Stop containers
-pnpm jetpack docker clean       # Remove everything (volumes + data)
-```
 
 ## AI Context Files
 

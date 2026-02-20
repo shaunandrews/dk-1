@@ -21,7 +21,7 @@ Environment setup protocol for Design Kit — cloning repositories, installing d
 
 ## What This Does
 
-1. **Checks prerequisites** - git, node, yarn, npm, pnpm, composer, docker
+1. **Checks prerequisites** - git, node, yarn, npm, pnpm, composer, @wordpress/env (docker optional for Telex)
 2. **Clones repositories** - Uses `skills/setup/scripts/repos.sh` to clone Calypso, Gutenberg, WordPress Core, and Jetpack (CIAB is optional)
 3. **Installs dependencies** - Runs the appropriate package manager for each repo
 4. **Reports status** - Tells the designer what's ready and what (if anything) is missing
@@ -49,7 +49,8 @@ Before proceeding, check for required tools:
 - **npm** - Required for Gutenberg/WP Core (comes with Node.js)
 - **pnpm** - Required for CIAB and Jetpack (check with `pnpm --version`)
 - **Composer** - Required for CIAB and Jetpack PHP deps (check with `composer --version`)
-- **Docker** - Optional, required for WordPress Core/CIAB/Jetpack environments (check with `docker --version`)
+- **@wordpress/env** - Required for WordPress Core/Jetpack environments (install with `npm install -g @wordpress/env`)
+- **Docker** - Optional, only required for Telex (MinIO/block builder) (check with `docker --version`)
 
 Run these checks and report findings to the designer:
 
@@ -62,7 +63,10 @@ npm --version
 pnpm --version
 composer --version
 
-# Optional (for WP Core/CIAB/Jetpack)
+# Required (for WP Core/Jetpack)
+wp-env --version
+
+# Optional (for Telex only)
 docker --version
 ```
 
@@ -118,7 +122,9 @@ nvm install 20
 nvm install 22
 ```
 
-If Docker is missing, inform the designer that Calypso, Gutenberg, and Storybook will work fine, but WordPress Core, CIAB, and Jetpack local environments require Docker Desktop to be installed. Provide download links:
+If Docker is missing, inform the designer that all repos work without Docker except Telex (which needs Docker for MinIO and block builder). WordPress Core, Jetpack, and CIAB use wp-env with Playground runtime — no Docker needed.
+
+If Telex is needed and Docker is missing, provide download links:
 - Mac: https://docs.docker.com/desktop/setup/install/mac-install/
 - Windows: https://docs.docker.com/desktop/setup/install/windows-install/
 - Linux: https://docs.docker.com/desktop/setup/install/linux/
@@ -346,7 +352,8 @@ Let me check your system first...
 ✅ npm: installed
 ✅ pnpm: installed
 ✅ Composer: installed
-⚠️ Docker: not running (optional - needed for WP Core/CIAB/Jetpack local environments)
+✅ @wordpress/env: installed
+⚠️ Docker: not running (optional - only needed for Telex)
 
 All required tools are available. Starting setup...
 ```

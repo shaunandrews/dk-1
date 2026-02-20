@@ -1,0 +1,50 @@
+{
+  "name": "Design Kit",
+  "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
+
+  "features": {
+    "ghcr.io/devcontainers/features/node:1": {
+      "nodeGypDependencies": true,
+      "nvmVersion": "latest",
+      "nvmInstallPath": "/usr/local/share/nvm",
+      "nvmNodeVersions": "20 22"
+    },
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {},
+    "ghcr.io/devcontainers/features/php:1": {
+      "version": "8.2",
+      "installComposer": true
+    },
+    "ghcr.io/devcontainers/features/git:1": {}
+  },
+
+  "postCreateCommand": "bash -c 'npm install -g pnpm yarn @anthropic-ai/claude-code'",
+
+  "forwardPorts": [3000, 8000, 8889, 9001, 9999, 50240],
+  "portsAttributes": {
+    "3000": { "label": "Calypso / Telex", "onAutoForward": "notify" },
+    "8000": { "label": "Telex API", "onAutoForward": "notify" },
+    "8889": { "label": "WordPress Core / Jetpack", "onAutoForward": "notify" },
+    "9001": { "label": "CIAB", "onAutoForward": "notify" },
+    "9999": { "label": "Gutenberg Dev", "onAutoForward": "notify" },
+    "50240": { "label": "Storybook", "onAutoForward": "notify" }
+  },
+
+  "hostRequirements": {
+    "cpus": 4,
+    "memory": "16gb"
+  },
+
+  "secrets": {
+    "ANTHROPIC_API_KEY": {
+      "description": "Anthropic API key for Claude Code CLI. Get one at console.anthropic.com"
+    }
+  },
+
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "terminal.integrated.defaultProfile.linux": "bash"
+      }
+    }
+  }
+}
